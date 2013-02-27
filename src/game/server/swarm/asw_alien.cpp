@@ -932,7 +932,7 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	// if we take fire damage, catch on fire
 	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) )
 	{
-		ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, info.GetAttacker(), info.GetWeapon() );
+		//ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, info.GetAttacker(), info.GetWeapon() );
 	}
 
 	// make the alien move slower for 0.5 seconds

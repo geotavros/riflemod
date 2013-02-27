@@ -715,6 +715,12 @@ float CASW_Weapon::GetReloadTime()
 	{
 		float fSpeedScale = MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE);
 		fReloadTime *= fSpeedScale;
+
+		// bots reload very fast because they are stupid to die during long reloads
+		if ( !GetMarine()->IsInhabited() )
+		{
+			fReloadTime = 0.5f; 
+		}
 	}
 
 	//CALL_ATTRIB_HOOK_FLOAT( fReloadTime, mod_reload_time );
@@ -746,6 +752,17 @@ bool CASW_Weapon::Reload( void )
 			if ( pMR )
 			{
 				pMR->m_TimelineAmmo.RecordValue( pMarine->GetAllAmmoCount() );
+			}
+		}
+
+		if ( !stricmp(this->GetPickupClass(), "asw_pickup_rifle")  ||
+			 !stricmp(this->GetPickupClass(), "asw_pickup_prifle") ||
+			 !stricmp(this->GetPickupClass(), "asw_pickup_flamer") )
+		{
+			CASW_Marine *m = this->GetMarine();
+			if (m)
+			{
+				m->GiveAmmo( 1000, this->GetPrimaryAmmoType() );
 			}
 		}
 #endif

@@ -6087,6 +6087,30 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="riflemod"
+					>
+					<File
+						RelativePath=".\asw_announcement.h"
+						>
+					</File>
+					<File
+						RelativePath=".\asw_health_regen.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\asw_health_regen.h"
+						>
+					</File>
+					<File
+						RelativePath=".\asw_item_regen.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\asw_item_regen.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -7058,4 +7082,6 @@
 			</File>
 		</Filter>
 	</Files>
+	<Globals>
+	</Globals>
 </VisualStudioProject>

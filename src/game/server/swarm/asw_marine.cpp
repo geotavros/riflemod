@@ -1228,6 +1228,12 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		}
 	}
 
+	// scale down the damage received by bots 
+	if ( !IsInhabited() )
+	{
+		newInfo.ScaleDamage( 0.25f );
+	}
+
 	int iPreDamageHealth = GetHealth();
 	CASW_GameStats.Event_MarineTookDamage( this, newInfo );
 	int result = BaseClass::OnTakeDamage_Alive(newInfo);
@@ -4396,6 +4402,17 @@ bool CASW_Marine::IsOutOfAmmo()
 
 void CASW_Marine::OnWeaponOutOfAmmo(bool bChatter)
 {
+	CASW_Weapon *cur_weapon = GetActiveASWWeapon();
+// 	if ( cur_weapon )
+// 	{
+// 		if ( !stricmp(cur_weapon->GetPickupClass(), "asw_pickup_rifle") ||
+// 			!stricmp(cur_weapon->GetPickupClass(), "asw_pickup_prifle") )
+// 		{
+// 			this->GiveAmmo( 1000, cur_weapon->GetPrimaryAmmoType() );
+// 			return;
+// 		}
+// 	}
+
 	if (bChatter && GetMarineSpeech())
 	{
 		GetMarineSpeech()->Chatter(CHATTER_NO_AMMO);
@@ -4470,7 +4487,11 @@ void CASW_Marine::PhysicsLandedOnGround( float fFallSpeed )
 				//Msg("Marine fell with speed %f modded to %f damage is %f\n", fFallVel, fFallVelMod, flFallDamage);
 				if ( flFallDamage > 0 )
 				{
-					TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) ); 
+					// fixed fall damage for bots by adding this check 
+					if ( asw_marine_fall_damage.GetBool() )
+					{
+						TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) ); 
+					}
 					CRecipientFilter filter;
 					filter.AddRecipientsByPAS( GetAbsOrigin() );
 

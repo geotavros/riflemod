@@ -308,19 +308,20 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 	if ( bCheckSecondaryAmmo && (m_iClip2 || pMarine->GetAmmoCount(m_iSecondaryAmmoType) > 0) )
 		return false;
 
-	if ( !m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-	{
-#ifndef CLIENT_DLL
-		if (pMarine)
-		{
-			pMarine->Weapon_Detach(this);
-			if (bActive)
-				pMarine->SwitchToNextBestWeapon(NULL);
-		}
-		Kill();
-		return true;
-#endif
-	}
+	// riflemod: commented weapon destruction on empty
+//	if ( !m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+//	{
+//#ifndef CLIENT_DLL
+//		if (pMarine)
+//		{
+//			pMarine->Weapon_Detach(this);
+//			if (bActive)
+//				pMarine->SwitchToNextBestWeapon(NULL);
+//		}
+//		Kill();
+//		return true;
+//#endif
+//	}
 	return false;
 }
 

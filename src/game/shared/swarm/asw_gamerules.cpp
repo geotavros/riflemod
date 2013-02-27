@@ -721,6 +721,10 @@ CAlienSwarm::CAlienSwarm()
 	m_MapResetFilter.AddKeepEntity("event_queue_saveload_proxy");
 	m_MapResetFilter.AddKeepEntity("ai_network");
 
+	// riflemod: keep health regen entity all the time 
+	m_MapResetFilter.AddKeepEntity("asw_health_regen");
+	m_MapResetFilter.AddKeepEntity("asw_item_regen");
+
 	m_iMissionRestartCount = 0;
 	m_bDoneCrashShieldbugConv = false;
 	m_bShouldStartMission = false;
@@ -1717,6 +1721,8 @@ void CAlienSwarm::StartMission()
 	}
 
 	AddBonusChargesToPickups();
+
+	asw_marine_death_cam.SetValue(0);
 }
 
 void CAlienSwarm::UpdateLaunching()
@@ -2370,8 +2376,79 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	else
 	{
 		// give the pMarine the equipment selected on the briefing screen
-		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-			GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
+		//for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+		//	GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
+
+		int sentry_id = 5;
+		if (pMR->m_iWeaponsInSlots.Get( 2 ) == 17 ||
+			pMR->m_iWeaponsInSlots.Get( 2 ) == 14 ||
+			pMR->m_iWeaponsInSlots.Get( 2 ) == 19)
+			sentry_id = pMR->m_iWeaponsInSlots.Get( 2 );
+		// commented old giving, and giving mine here:
+		switch (pMR->m_MarineProfileIndex)
+		{
+		case 0:		// Sarge
+			GiveStartingWeaponToMarine( pMarine, 0, 0 );
+			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+			// GiveStartingWeaponToMarine( pMarine, 6, 2 );
+			break;
+		case 1:		// Wildcat
+			GiveStartingWeaponToMarine( pMarine, 0, 0 );
+			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+			// GiveStartingWeaponToMarine( pMarine, 5, 2 );
+			break;
+		case 2:		// Faith
+			if (m_hEquipReq.Get())	// don't bother with checkings for now, just give flamer :)
+			{
+				GiveStartingWeaponToMarine( pMarine, 13, 0 );
+			}
+			else
+			{
+				GiveStartingWeaponToMarine( pMarine, 0, 0 );
+			}
+			
+			GiveStartingWeaponToMarine( pMarine, 6, 1 );	// heal
+			//GiveStartingWeaponToMarine( pMarine, 7, 2 );	// freeze
+			break;	
+		case 3:		// Crash
+			GiveStartingWeaponToMarine( pMarine, 1, 0 );	
+			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+			//GiveStartingWeaponToMarine( pMarine, 1, 2 );
+			break;
+		case 4:		// Jaeger
+			GiveStartingWeaponToMarine( pMarine, 0, 0 );
+			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+			//GiveStartingWeaponToMarine( pMarine, 3, 2 );
+			break;
+		case 5:		// Wolfe
+			GiveStartingWeaponToMarine( pMarine, 0, 0 );
+			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+			//GiveStartingWeaponToMarine( pMarine, 5, 2 );
+			break;
+		case 6:		// Bastile
+			if (m_hEquipReq.Get())	// don't bother with checkings for now, just give flamer :)
+			{
+				GiveStartingWeaponToMarine( pMarine, 13, 0 );
+			}
+			else
+			{
+				GiveStartingWeaponToMarine( pMarine, 0, 0 );
+			}
+			GiveStartingWeaponToMarine( pMarine, 6, 1 );
+			//GiveStartingWeaponToMarine( pMarine, 8, 2 );
+			break;
+		case 7:		// Vegas
+			GiveStartingWeaponToMarine( pMarine, 1, 0 );
+			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+			//GiveStartingWeaponToMarine( pMarine, 9, 2 );
+			break;
+		default:
+			Warning("Unknown marine profile index found\n");
+		}
+
+		// give extra item the one the player have selected 
+		GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( 2 ), 2);
+		// end of mine code
 
 		// store off his initial equip selection for stats tracking
 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
@@ -2501,6 +2578,8 @@ void InitBodyQue()
 {
 }
 
+static CUtlMap<CASW_Player*, float> player_join_time_;
+
 void CAlienSwarm::Think()
 {
 	ThinkUpdateTimescale();
@@ -2527,6 +2606,21 @@ void CAlienSwarm::Think()
 				UnreserveMarines();
 			}
 			CheckForceReady();
+
+// 			FOR_EACH_MAP(player_join_time_, i)
+// 			{
+// 				float msgtime = player_join_time_.Element(i);
+// 				if (gpGlobals->curtime > msgtime)
+// 				{
+// 					CASW_Player *pPlayer = player_join_time_.Key(i);
+// 					ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "Welcome to RifleMod server. Forced rifles with infinite ammo.");
+// 					ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "Predefined equipment but choosable Extra item. Stronger aliens.");
+// 					ClientPrint( pPlayer, ASW_HUD_PRINTTALKANDCONSOLE, "Slow health and extra item regeneration");
+// 					player_join_time_.RemoveAt(i);
+// 					break; // will print other messages in next think 
+// 				}
+// 			}		
+
 		}
 		break;
 	case ASW_GS_LAUNCHING:
@@ -4162,6 +4256,10 @@ void CAlienSwarm::CreateStandardEntities( void )
 #endif
 	CBaseEntity::Create( "asw_gamerules", vec3_origin, vec3_angle );
 	Assert( pEnt );
+
+	// riflemod: create health regeneration entity
+	CBaseEntity::Create("asw_health_regen", vec3_origin, vec3_angle);
+	CBaseEntity::Create("asw_item_regen", vec3_origin, vec3_angle);
 #endif
 }
 
@@ -5321,11 +5419,41 @@ void CAlienSwarm::RequestSkillDown(CASW_Player *pPlayer)
 		//SetSkillLevel(m_iSkillLevel - 1);
 }
 
+ConVar asw_alien_health_scale_easy(		"asw_alien_health_scale_easy",		"1.0", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_normal(	"asw_alien_health_scale_normal",	"2.0", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_hard(		"asw_alien_health_scale_hard",		"3.0", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_insane(	"asw_alien_health_scale_insane",	"3.5", 0, "How much alien health is changed per mission difficulty level");
+ConVar asw_alien_health_scale_brutal(	"asw_alien_health_scale_brutal",	"4.0", 0, "How much alien health is changed per mission difficulty level");
+
 // alters alien health by 20% per notch away from 8
 float CAlienSwarm::ModifyAlienHealthBySkillLevel(float health)
 {
-	float fDiff = GetMissionDifficulty() - 5;
+	/*float fDiff = GetMissionDifficulty() - 5;
 	float f = 1.0 + fDiff * asw_difficulty_alien_health_step.GetFloat();
+	*/
+	// commented and added mine scale factors
+	float f = 1.0f; 
+	switch (m_iSkillLevel)
+	{
+	case 1:
+		f = asw_alien_health_scale_easy.GetFloat();
+		break;
+	case 2:
+		f = asw_alien_health_scale_normal.GetFloat();
+		break;
+	case 3:
+		f = asw_alien_health_scale_hard.GetFloat();
+		break;
+	case 4:
+		f = asw_alien_health_scale_insane.GetFloat();
+		break;
+	case 5:
+		f = asw_alien_health_scale_brutal.GetFloat();
+		break;
+	default:
+		Assert(false && "m_iSkillLevel unknown value found in ModifyAlienHealthBySkillLevel()");
+	}
+	// end of mine code
 
 	return f * health;
 }
@@ -6257,10 +6385,14 @@ void CAlienSwarm::BroadcastSound( const char *sound )
 	MessageEnd();
 }
 
+
+
 void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 {
 	// Set briefing start time
 	m_fBriefingStartedTime = gpGlobals->curtime;
+
+	// player_join_time_.Insert(pPlayer, gpGlobals->curtime + 5);
 }
 
 void CAlienSwarm::DropPowerup( CBaseEntity *pSource, const CTakeDamageInfo &info, const char *pszSourceClass )

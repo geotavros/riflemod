@@ -102,7 +102,7 @@ public:
 	
 	virtual void			Precache( void );
 	virtual void			Think( void );
-	virtual const char *GetGameDescription( void ) { return "Alien Swarm"; }
+	virtual const char *GetGameDescription( void ) { return "Rifle Mod"; }
 	virtual void			OnServerHibernating();
 	
 	// briefing roster functions

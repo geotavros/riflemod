@@ -1668,6 +1668,13 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						pTempCommander->SwitchMarine(0);
 					}
 				}
+				// riflemod: allow drop in 
+				else if ( pMarine &&  !pMarine->IsInhabited() )
+				{
+					pMarine->SetCommander( this );
+					pMR->SetCommander( this );
+					bReturnedMarines = true;
+				}
 			}
 		}
 		if ( bReturnedMarines )
