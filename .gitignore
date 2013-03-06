@@ -1,0 +1,12 @@
+*.lib
+*.obj
+*.dll
+*.htm
+*.ncb
+*.suo
+*.exp
+*.map
+*.pch
+*.pdb
+*.user
+*.idb
