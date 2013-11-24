@@ -996,6 +996,10 @@ void CAlienSwarm::AutoselectMarines(CASW_Player *pPlayer)
 					}
 					//if (!bWounded)
 					RosterSelect(pPlayer, i);
+					// riflemod: we want only one marine to be selected for 
+					// each player, bots must be skipped 
+					return;
+					// 
 				}
 			}
 		}
@@ -1619,6 +1623,40 @@ void CAlienSwarm::StartMission()
 
 	// store our current leader (so we can keep the same leader after a map load)
 	pGameResource->RememberLeaderID();
+
+	// riflemod: add bots for missing slots 
+	// find out the actual number of marines, if the number is less than 4 then
+	// add marines for leader player 
+	
+	/* // skip this code, stupidly add 4 bots to leader 
+	int num_selected_marines = 0;
+	for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; ++i)
+	{
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+		if (pMR)
+			++num_selected_marines;
+	}
+	int num_bots_to_add = 4 - num_selected_marines;
+	//*/
+
+	CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
+	int nPreferredSlot = -1; // we don't care which slot will it take 
+	for (int i = 0; i < 4; ++i)
+	{
+		if ( RosterSelect( pLeader, i, nPreferredSlot ) )
+		{
+			// 0 is Sarge, select fire mines(11) for him
+			if (0 == i)
+				LoadoutSelect(pLeader, i, 2, 11);	// Sarge has asw_weapon_mines
+			if (1 == i)
+				LoadoutSelect(pLeader, i, 2,  6);   // Wildcat has asw_weapon_hornet_barrage
+			if (2 == i)
+				LoadoutSelect(pLeader, i, 2,  7);   // Faith has asw_weapon_freeze_grenades
+			if (3 == i)
+				LoadoutSelect(pLeader, i, 2, 10);   // Tech has asw_weapon_electrified_armor
+		}
+	}
+	// end of riflemod code
 
 	// activate the level's ambient sounds
 	StartAllAmbientSounds();
@@ -2380,10 +2418,10 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 		//	GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
 
 		int sentry_id = 5;
-		if (pMR->m_iWeaponsInSlots.Get( 2 ) == 17 ||
-			pMR->m_iWeaponsInSlots.Get( 2 ) == 14 ||
-			pMR->m_iWeaponsInSlots.Get( 2 ) == 19)
-			sentry_id = pMR->m_iWeaponsInSlots.Get( 2 );
+		if (pMR->m_iWeaponsInSlots.Get( 1 ) == 17 ||
+			pMR->m_iWeaponsInSlots.Get( 1 ) == 14 ||
+			pMR->m_iWeaponsInSlots.Get( 1 ) == 19)
+			sentry_id = pMR->m_iWeaponsInSlots.Get( 1 );
 		// commented old giving, and giving mine here:
 		switch (pMR->m_MarineProfileIndex)
 		{
@@ -2553,8 +2591,35 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 	GameTimescale()->SetDesiredTimescale( 1.0f, 1.5f, CGameTimescale::INTERPOLATOR_EASE_IN_OUT, asw_time_scale_delay.GetFloat() );
 }
 
+ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. Rifles only, infinite ammo, harder aliens, HP regeneration, smarter bots", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
+	if (!pPlayer)
+		return;
+
+	if (!pPlayer->IsConnected())
+		return;
+	
+	CASW_Player *pAswPlayer = ToASW_Player(pPlayer);
+	if (!pAswPlayer)
+		return;
+	
+	
+	if ( pAswPlayer->HasFullyJoined() ) 
+	{
+		if ( !pAswPlayer->m_bWelcomed ) 
+		{
+			if (gpGlobals->curtime >= m_fBriefingStartedTime + 3) 
+			{
+				pAswPlayer->m_bWelcomed = true;
+
+				char buffer[256];
+				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
+				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+			}
+		}
+	}
 }
 
 // --------------------------------------------------------------------------------------------------- //

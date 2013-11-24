@@ -345,6 +345,8 @@ CASW_Player::CASW_Player()
 	m_bHasAwardedXP = false;
 	m_bSentPromotedMessage = false;
 
+	m_bWelcomed = false; 
+
 	m_nChangingSlot = 0;
 
 	if (ASWGameRules())

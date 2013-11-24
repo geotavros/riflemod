@@ -236,6 +236,8 @@ public:
 	float m_flPendingSteamStatsStart;
 	bool m_bSentPromotedMessage;
 
+	bool m_bWelcomed;
+
 #if !defined(NO_STEAM)
 	CCallResult< CASW_Player, GSStatsReceived_t > m_CallbackGSStatsReceived;
 	void Steam_OnGSStatsReceived( GSStatsReceived_t *pGSStatsReceived, bool bError );
