@@ -20,6 +20,9 @@ public:
 
 	CASW_Sentry_Base();
 	virtual ~CASW_Sentry_Base();
+    CBaseEntity *bait1_, *bait2_, *bait3_, *bait4_;
+    void    SetBait(CBaseEntity *bait1, CBaseEntity *bait2,
+                    CBaseEntity *bait3, CBaseEntity *bait4) { bait1_ = bait1; bait2_ = bait2; bait3_ = bait3; bait4_ = bait4;}
 	void	Spawn( void );
 	void	AnimThink( void );
 	virtual int				ShouldTransmit( const CCheckTransmitInfo *pInfo );

@@ -237,6 +237,62 @@ void ASW_DropTest_f()
 }
 ConCommand ASW_Drop( "ASW_Drop", ASW_DropTest_f, "Makes your marine drop his current weapon", 0 );
 
+// riflemod: allow dropping exra item 
+void ASW_DropExtraf()
+{
+    CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+
+    if (pPlayer && pPlayer->GetMarine())
+    {
+        CASW_Marine *pMarine = pPlayer->GetMarine();
+        if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+            return;
+        if (pPlayer->GetFlags() & FL_FROZEN)
+            return;
+
+        pMarine->DropWeapon(2, true);
+
+        IGameEvent * event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
+        if ( event )
+        {
+            event->SetInt( "userid", pPlayer->GetUserID() );
+
+            gameeventmanager->FireEvent( event );
+        }
+    }
+}
+ConCommand ASW_DropExtra( "ASW_DropExtra", ASW_DropExtraf, "Makes your marine drop his current extra item", 0 );
+
+// riflemod: allow leaving marine to go afk and leave a bot for you 
+void asw_afkf()
+{
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && pPlayer->GetMarine() && ASWGameResource() && ASWGameRules())
+	{
+		//pPlayer->LeaveMarines();
+		
+		for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
+		{
+			CASW_Marine_Resource *pMR = ASWGameResource()->GetMarineResource( i );
+			if ( !pMR )
+				continue;
+
+			if ( pMR->GetCommander() == pPlayer )
+			{
+				pMR->SetInhabited( false );
+			}
+		}
+		ASWGameRules()->RosterDeselectAll(pPlayer);
+		ASWGameRules()->SetMaxMarines(pPlayer);
+		// reassign marines owned by this player to someone else
+		ASWGameRules()->ReassignMarines(pPlayer);
+		pPlayer->SpectateNextMarine();
+		//*/
+	}
+}
+ConCommand asw_afk( "asw_afk", asw_afkf, "Leave current marine", 0 );
+
 void ASW_AllowBriefing_f()
 {
 	ASWGameRules()->AllowBriefing();

@@ -440,7 +440,7 @@ bool CASW_Alien::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC
 
 	if ( pEntity && pEntity->Classify() == CLASS_ASW_BAIT )
 	{
-		return GetAbsOrigin().DistToSqr( pEntity->GetAbsOrigin() ) < 90000.0f;	// only see bait within 300 units
+		return GetAbsOrigin().DistToSqr( pEntity->GetAbsOrigin() ) < 10000.0f;	// only see bait within 100 units // riflemod: changed from 90000 to 10000
 	}
 	return true;
 }

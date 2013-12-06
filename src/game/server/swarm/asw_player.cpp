@@ -326,6 +326,7 @@ CASW_Player::CASW_Player()
 	m_vecLastMarineOrigin = vec3_origin;
 
 	m_bLastAttackButton= false;
+	m_bLastAttack2Button= false;
 	m_fLastAICountTime = 0;
 	m_bAutoReload = true;	
 	m_bRequestedSpectator = false;
@@ -419,9 +420,47 @@ void CASW_Player::PostThink()
 	{
 		//Msg("m_nButtons & IN_ATTACK = %d (m_Local.m_nOldButtons & IN_ATTACK) = %d\n", (m_nButtons & IN_ATTACK), (m_Local.m_nOldButtons & IN_ATTACK));
 		bool bClicked = (!m_bLastAttackButton && (m_nButtons & IN_ATTACK));
+		bool bRightClicked = (!m_bLastAttack2Button && (m_nButtons & IN_ALT1));
 
 		if ( bClicked || ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f ) )
 		{
+			// riflemod: allow drop in 
+			CASW_Game_Resource *pGameResource = ASWGameResource();
+			if ( !this->HasLiveMarines() && pGameResource )
+			{
+				bool found_available_marine = false;
+
+				for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+				{
+					CASW_Marine_Resource* pMR = pGameResource->GetMarineResource( i );
+					if ( !pMR )
+						continue;
+					CASW_Marine *pMarine = pMR->GetMarineEntity();
+
+					if ( pMarine && !pMarine->IsInhabited() )
+					{
+						pMarine->SetCommander( this );
+						pMR->SetCommander( this );
+						found_available_marine = true;
+						break;
+					}
+				}
+				if (found_available_marine)
+				{
+					Msg(" Riflemod Drop-In. Switching player to marine 0\n");
+					SetSpectatingMarine(NULL);
+					SwitchMarine(0, false);
+				}
+				else 
+				{
+					SpectateNextMarine();
+					m_fLastControlledMarineTime = gpGlobals->curtime;		// set this again so we don't spam SpectateNextMarine
+				}
+			}
+		}
+		else if (bRightClicked || ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f ) )
+		{
+			// riflemod: right click when spectating cycles through marines 
 			SpectateNextMarine();
 			m_fLastControlledMarineTime = gpGlobals->curtime;		// set this again so we don't spam SpectateNextMarine
 		}
@@ -432,6 +471,7 @@ void CASW_Player::PostThink()
 	}
 
 	m_bLastAttackButton = (m_nButtons & IN_ATTACK);
+	m_bLastAttack2Button= (m_nButtons & IN_ALT1);
 
 	RagdollBlendTest();
 
@@ -1670,13 +1710,6 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 						pTempCommander->SwitchMarine(0);
 					}
 				}
-				// riflemod: allow drop in 
-				else if ( pMarine &&  !pMarine->IsInhabited() )
-				{
-					pMarine->SetCommander( this );
-					pMR->SetCommander( this );
-					bReturnedMarines = true;
-				}
 			}
 		}
 		if ( bReturnedMarines )
@@ -1684,6 +1717,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 			Msg(" Fully joined player switching to marine 0\n");
 			SwitchMarine(0);
 		}
+
 		ASWGameRules()->OnPlayerFullyJoined( this );
 		return true;
 	}
@@ -1963,7 +1997,7 @@ bool CASW_Player::CanSwitchToMarine(int num)
 }
 
 // select the nth marine in the marine info list owned by this player
-void CASW_Player::SwitchMarine(int num)
+void CASW_Player::SwitchMarine(int num, bool set_squad_leader/* = true*/)
 {	
 	if (!ASWGameResource())
 		return;
@@ -2018,7 +2052,7 @@ void CASW_Player::SwitchMarine(int num)
 					}
 
 					CASW_SquadFormation *pSquad = pNewMarine->GetSquadFormation();
-					if ( pSquad )
+					if ( pSquad && set_squad_leader )
 					{
 						pSquad->ChangeLeader( pNewMarine, false );
 					}

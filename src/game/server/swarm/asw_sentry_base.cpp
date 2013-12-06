@@ -51,6 +51,10 @@ END_DATADESC()
 
 
 CASW_Sentry_Base::CASW_Sentry_Base()
+: bait1_(NULL),
+bait2_(NULL),
+bait3_(NULL),
+bait4_(NULL)
 {
 	m_iAmmo = -1;
 	m_fSkillMarineHelping = 0;
@@ -63,7 +67,22 @@ CASW_Sentry_Base::CASW_Sentry_Base()
 
 CASW_Sentry_Base::~CASW_Sentry_Base()
 {
-
+    if (bait1_)
+    {
+        UTIL_Remove(bait1_);
+    }
+    if (bait2_)
+    {
+        UTIL_Remove(bait2_);
+    }
+    if (bait3_)
+    {
+        UTIL_Remove(bait3_);
+    }
+    if (bait4_)
+    {
+        UTIL_Remove(bait4_);
+    }
 }
 
 //-----------------------------------------------------------------------------

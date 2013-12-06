@@ -84,6 +84,7 @@ public:
 	CASW_Marine* GetSpectatingMarine();
 	CNetworkHandle (CASW_Marine, m_hSpectatingMarine);
 	bool m_bLastAttackButton;	// used to detect left clicks for cycling through marines
+	bool m_bLastAttack2Button;	// used to detect right clicks for cycling through marines
 	bool m_bRequestedSpectator;	// this player requested to be a spectator since the start of a match (won't be considered for leader, campaign votes, etc.)
 	float m_fLastControlledMarineTime;
 
@@ -94,7 +95,7 @@ public:
 	CASW_Marine* GetMarine() const;
 	void SelectNextMarine( bool bReverse );
 	bool CanSwitchToMarine( int num );
-	void SwitchMarine( int num );
+	void SwitchMarine( int num, bool set_squad_leader = true );
 	void OrderMarineFace( int iMarine, float fYaw, Vector &vecOrderPos );
 	void LeaveMarines();
 	bool HasLiveMarines();

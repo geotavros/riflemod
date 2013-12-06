@@ -41,7 +41,7 @@ void CASW_Drone_Uber::Spawn( void )
 	SetHullType(HULL_LARGE);
 	SetHullSizeNormal();
 
-	UTIL_SetSize(this, Vector(-40,-40,0), Vector(40,40,130));
+	UTIL_SetSize(this, Vector(-17,-17,0), Vector(17,17,69));	// riflemod: decreased drone uber size, was Vector(-40,-40,0), Vector(40,40,130));
 
 	// make sure uber drones are green
 	m_nSkin = 0;

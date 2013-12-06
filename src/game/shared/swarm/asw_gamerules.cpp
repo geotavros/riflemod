@@ -2591,10 +2591,11 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 	GameTimescale()->SetDesiredTimescale( 1.0f, 1.5f, CGameTimescale::INTERPOLATOR_EASE_IN_OUT, asw_time_scale_delay.GetFloat() );
 }
 
-ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. Rifles only, infinite ammo, harder aliens, HP regeneration, smarter bots", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. Rifles only, infinite ammo, harder aliens, HP and extra item regeneration, smarter bots. ", FCVAR_NONE, "This message is displayed to a player after they join the game" );
 
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
+	// riflemod: added welcome message to the player. This function was empty 
 	if (!pPlayer)
 		return;
 
@@ -2610,12 +2611,15 @@ void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 	{
 		if ( !pAswPlayer->m_bWelcomed ) 
 		{
-			if (gpGlobals->curtime >= m_fBriefingStartedTime + 3) 
+			if (gpGlobals->curtime >= m_fBriefingStartedTime + 10) 
 			{
 				pAswPlayer->m_bWelcomed = true;
 
-				char buffer[256];
+				char buffer[512];
 				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
+				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
+
+				Q_snprintf(buffer, sizeof(buffer), "Medic gets flamer on Residential map. Console commands: Asw_DropExtra, asw_afk");
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 			}
 		}
@@ -4322,7 +4326,7 @@ void CAlienSwarm::CreateStandardEntities( void )
 	CBaseEntity::Create( "asw_gamerules", vec3_origin, vec3_angle );
 	Assert( pEnt );
 
-	// riflemod: create health regeneration entity
+	// riflemod: create health and extra item regeneration entities 
 	CBaseEntity::Create("asw_health_regen", vec3_origin, vec3_angle);
 	CBaseEntity::Create("asw_item_regen", vec3_origin, vec3_angle);
 #endif

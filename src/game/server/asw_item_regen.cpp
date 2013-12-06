@@ -31,33 +31,38 @@ void CASW_Item_Regen::Spawn()
 	SetNextThink( gpGlobals->curtime ); // Think now
 }
 
+extern ConVar asw_horde_override;
+
 void CASW_Item_Regen::Think()
 {
 	BaseClass::Think();
 	CBaseEntity* pEntity = NULL;
-	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_marine" )) != NULL)
+	if (asw_horde_override.GetBool())
 	{
-		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(pEntity);
-		if (pMarine)
+		while ((pEntity = gEntList.FindEntityByClassname( pEntity, "asw_marine" )) != NULL)
 		{
-			for (int k=0;k<ASW_MAX_MARINE_WEAPONS;k++)
+			CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(pEntity);
+			if (pMarine)
 			{
-				CASW_Weapon *pWeapon = pMarine->GetASWWeapon(k);
-				if (!pWeapon)
-					continue;
+				for (int k=0;k<ASW_MAX_MARINE_WEAPONS;k++)
+				{
+					CASW_Weapon *pWeapon = pMarine->GetASWWeapon(k);
+					if (!pWeapon)
+						continue;
 
-				const CASW_WeaponInfo *info = pWeapon->GetWeaponInfo();
-				if (info && info->m_bExtra)
-				{
-					pWeapon->m_iClip1 = pWeapon->m_iClip1 + 1;
-					if ( pWeapon->m_iClip1 > pWeapon->GetMaxClip1())
-						pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
-				}
-				else
-				{
-					pWeapon->m_iClip2 = pWeapon->m_iClip2 + 1;
-					if ( pWeapon->m_iClip2 > pWeapon->GetMaxClip2())
-						pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+					const CASW_WeaponInfo *info = pWeapon->GetWeaponInfo();
+					if (info && info->m_bExtra)
+					{
+						pWeapon->m_iClip1 = pWeapon->m_iClip1 + 1;
+						if ( pWeapon->m_iClip1 > pWeapon->GetMaxClip1())
+							pWeapon->m_iClip1 = pWeapon->GetMaxClip1();
+					}
+					else
+					{
+						pWeapon->m_iClip2 = pWeapon->m_iClip2 + 1;
+						if ( pWeapon->m_iClip2 > pWeapon->GetMaxClip2())
+							pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+					}
 				}
 			}
 		}
