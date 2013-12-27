@@ -635,8 +635,8 @@ void CASW_Marine::Spawn( void )
 	m_nAITraceMask = MASK_PLAYERSOLID;
 
 	CapabilitiesRemove( bits_CAP_FRIENDLY_DMG_IMMUNE | bits_CAP_NO_HIT_PLAYER );
-
-	SetCollisionGroup( COLLISION_GROUP_PLAYER );
+	// riflemod: changed COLLISION_GROUP_PLAYER to ASW_COLLISION_GROUP_GRUBS, ASW_COLLISION_GROUP_GRUBS is used by bots. Setting it here also, because otherwise bots get COLLISION_GROUP_PLAYER
+	SetCollisionGroup( ASW_COLLISION_GROUP_GRUBS );
 
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
 
@@ -959,6 +959,16 @@ void CASW_Marine::SetInhabited(bool bInhabited)
 	if (!GetMarineResource())
 		return;
 	GetMarineResource()->SetInhabited(bInhabited);
+	// riflemod: bots shouldn't collide which aliens. TODO: this code can break vehicle support 
+	if (bInhabited)
+	{
+		SetCollisionGroup( COLLISION_GROUP_PLAYER );
+	}
+	else 
+	{
+		SetCollisionGroup( ASW_COLLISION_GROUP_GRUBS );	// seems like grubs are the most suitable collision group for bots
+	}
+	// end of riflemod code
 }
 
 void CASW_Marine::SetMarineResource(CASW_Marine_Resource *pMR)

@@ -282,17 +282,17 @@ bool CASW_Spawner::ApplyCarnageMode( float fScaler, float fInvScaler )
 	
 	if ( m_AlienClassNum == g_nDroneClassEntry ||  m_AlienClassNum == g_nDroneJumperClassEntry )
 	{
-		Msg( "[%d] Found a spawner set to spawn drones or drone jumpers\n", entindex());
-		Msg( "  previous numaliens is %d max live is %d interval %f\n", m_nNumAliens, m_nMaxLiveAliens, m_flSpawnInterval );
+		DevMsg( "[%d] Found a spawner set to spawn drones or drone jumpers\n", entindex());
+		DevMsg( "  previous numaliens is %d max live is %d interval %f\n", m_nNumAliens, m_nMaxLiveAliens, m_flSpawnInterval );
 		m_nNumAliens *= fScaler;
 		m_nMaxLiveAliens *= fScaler;
 		m_flSpawnInterval *= fInvScaler;
-		Msg( "  Set its numaliens to %d max live to %d interval %f\n", m_nNumAliens, m_nMaxLiveAliens, m_flSpawnInterval );
+		DevMsg( "  Set its numaliens to %d max live to %d interval %f\n", m_nNumAliens, m_nMaxLiveAliens, m_flSpawnInterval );
 
 		return true;
 	}	
 	
-	Msg( "[%d] Found a spawner but it's not set to spawn drones or drone jumpers\n", entindex() );
+	DevMsg( "[%d] Found a spawner but it's not set to spawn drones or drone jumpers\n", entindex() );
 	return false;
 }
 
@@ -319,8 +319,8 @@ void ASW_ApplyCarnage_f(float fScaler)
 
 	float fInvScaler = 1.0f / fScaler;
 
-	int iNewHealth = fInvScaler * 80.0f;	// note: boosted health a bit here so this mode is harder than normal
-	asw_drone_health.SetValue(iNewHealth);
+	//int iNewHealth = fInvScaler * 80.0f;	// note: boosted health a bit here so this mode is harder than normal
+	//asw_drone_health.SetValue(iNewHealth);
 
 	CBaseEntity* pEntity = NULL;
 	int iSpawnersChanged = 0;

@@ -755,7 +755,8 @@ bool CASW_Weapon::Reload( void )
 			}
 		}
 
-		if ( !stricmp(this->GetPickupClass(), "asw_pickup_rifle")  ||
+		// riflemod: infinite ammo for rifle, protorifle and flamer
+		/*if ( !stricmp(this->GetPickupClass(), "asw_pickup_rifle")  ||
 			 !stricmp(this->GetPickupClass(), "asw_pickup_prifle") ||
 			 !stricmp(this->GetPickupClass(), "asw_pickup_flamer") )
 		{
@@ -764,7 +765,7 @@ bool CASW_Weapon::Reload( void )
 			{
 				m->GiveAmmo( 1000, this->GetPrimaryAmmoType() );
 			}
-		}
+		}//*/
 #endif
 	}
 	return bReloaded;

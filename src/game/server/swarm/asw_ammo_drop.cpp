@@ -126,6 +126,12 @@ void CASW_Ammo_Drop::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 		int iClipsToGive = CASW_Ammo_Drop_Shared::GetAmmoClipsToGive( iAmmoType );
 
 		pMarine->SetAmmoCount( MIN( iBullets + pWeapon->GetMaxClip1() * iClipsToGive, iMaxAmmoCount ), iAmmoType );
+
+		// riflemod: picking ammo adds secondary ammo as well 
+		pWeapon->m_iClip2 = pWeapon->m_iClip2 + 1;
+		if ( pWeapon->m_iClip2 > pWeapon->GetMaxClip2())
+			pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
+
 		m_iAmmoUnitsRemaining -= iAmmoCost;
 
 		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);

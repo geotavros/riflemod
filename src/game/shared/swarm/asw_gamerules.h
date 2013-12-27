@@ -332,6 +332,8 @@ public:
 
 	float m_fObjectiveSlowDownEndTime;
 
+	int  m_iCarnageScale;   // the factor used to scale the amount of aliens in each drone spawner
+
 #endif
 
 	// stim music

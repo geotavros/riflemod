@@ -723,7 +723,7 @@ CAlienSwarm::CAlienSwarm()
 
 	// riflemod: keep health regen entity all the time 
 	m_MapResetFilter.AddKeepEntity("asw_health_regen");
-	m_MapResetFilter.AddKeepEntity("asw_item_regen");
+	//m_MapResetFilter.AddKeepEntity("asw_item_regen");
 
 	m_iMissionRestartCount = 0;
 	m_bDoneCrashShieldbugConv = false;
@@ -776,6 +776,8 @@ CAlienSwarm::CAlienSwarm()
 
 	m_fLastPowerupDropTime = 0;
 	m_flTechFailureRestartTime = 0.0f;
+
+	m_iCarnageScale = 1;
 }
 
 CAlienSwarm::~CAlienSwarm()
@@ -1666,6 +1668,9 @@ void CAlienSwarm::StartMission()
 	{
 		ASW_ApplyCarnage_f(2);
 	}
+	// riflemod: carnage support. The above method doesn't work well for our needs.
+	// we need carnage to be disabled each time the map loads 
+	ASW_ApplyCarnage_f(m_iCarnageScale);
 
 	// increase num retries
 	if (IsCampaignGame() && GetCampaignSave())
@@ -2417,10 +2422,11 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 		//for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
 		//	GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
 
-		int sentry_id = 5;
-		if (pMR->m_iWeaponsInSlots.Get( 1 ) == 17 ||
-			pMR->m_iWeaponsInSlots.Get( 1 ) == 14 ||
-			pMR->m_iWeaponsInSlots.Get( 1 ) == 19)
+		int sentry_id = 7;		// 7 is the id of ammo satchel. We're giving it by default 
+		if (pMR->m_iWeaponsInSlots.Get( 1 ) == 5 ||			// sentry gun
+			pMR->m_iWeaponsInSlots.Get( 1 ) == 17 ||		// sentry flame
+			pMR->m_iWeaponsInSlots.Get( 1 ) == 14 ||		// sentry freeze
+			pMR->m_iWeaponsInSlots.Get( 1 ) == 19)			// sentry cannon 
 			sentry_id = pMR->m_iWeaponsInSlots.Get( 1 );
 		// commented old giving, and giving mine here:
 		switch (pMR->m_MarineProfileIndex)
@@ -2591,7 +2597,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 	GameTimescale()->SetDesiredTimescale( 1.0f, 1.5f, CGameTimescale::INTERPOLATOR_EASE_IN_OUT, asw_time_scale_delay.GetFloat() );
 }
 
-ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. Rifles only, infinite ammo, harder aliens, HP and extra item regeneration, smarter bots. ", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. Rifles only, increased ammo satchels, harder aliens, HP regeneration, smarter bots. ", FCVAR_NONE, "This message is displayed to a player after they join the game" );
 
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
@@ -2619,7 +2625,7 @@ void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 
-				Q_snprintf(buffer, sizeof(buffer), "Medic gets flamer on Residential map. Console commands: Asw_DropExtra, asw_afk");
+				Q_snprintf(buffer, sizeof(buffer), "Medic gets flamer on Residential map. Console commands: Asw_DropExtra, asw_afk, rm_carnage");
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 			}
 		}
@@ -3008,6 +3014,8 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 	return false;
 }
 
+ConVar asw_ammo_satchel_bonus( "asw_ammo_satchel_bonus", "13", FCVAR_NONE, "Additional Ammo Satchels" );
+
 void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipIndex, int iSlot)
 {
 	if ( !pMarine || iEquipIndex == -1 || iSlot < 0 || iSlot >= ASW_MAX_EQUIP_SLOTS )
@@ -3064,6 +3072,12 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 	{
 		iPrimaryAmmo += asw_bonus_charges.GetInt();
 	}
+
+	if ( !stricmp(szWeaponClass, "asw_weapon_ammo_satchel" ) ) 
+	{
+		iPrimaryAmmo += asw_ammo_satchel_bonus.GetInt() * m_iCarnageScale;
+	}
+
 	pWeapon->SetClip1( iPrimaryAmmo );
 	// set secondary bullets in the gun
 	//Msg("Setting secondary bullets for %s to %d\n", szWeaponClass, iSecondaryAmmo);
@@ -3974,6 +3988,12 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	pEvent->SetInt( "weapon", pWeapon ? pWeapon->Classify() : 0 );
 
 	gameeventmanager->FireEvent( pEvent );
+
+	// riflemod: added frags counter
+	if (pMarine && pMarine->IsInhabited() && pMarine->GetCommander()) 
+	{
+		pMarine->GetCommander()->IncrementFragCount(1);
+	}
 }
 
 #endif /* not CLIENT_DLL */
@@ -4328,7 +4348,7 @@ void CAlienSwarm::CreateStandardEntities( void )
 
 	// riflemod: create health and extra item regeneration entities 
 	CBaseEntity::Create("asw_health_regen", vec3_origin, vec3_angle);
-	CBaseEntity::Create("asw_item_regen", vec3_origin, vec3_angle);
+	//CBaseEntity::Create("asw_item_regen", vec3_origin, vec3_angle);
 #endif
 }
 
@@ -6184,7 +6204,7 @@ void CAlienSwarm::SetCarnageMode(bool bCarnageMode)
 	else
 		m_iSpecialMode &= ~ASW_SM_CARNAGE;
 
-	Msg("Changed carnage mode to %d\n", bCarnageMode);
+	Msg("Changed carnage mode to %d\n", m_iSpecialMode & ASW_SM_CARNAGE);
 }
 
 void CAlienSwarm::SetUberMode(bool bUberMode)
