@@ -230,6 +230,37 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 			pMarine->HurtAlien(this, info);
 	}
 
+	// riflemod: goo takes blast damage, e.g. from explosions. But they only ignite it
+	if ( info.GetDamageType() & DMG_BLAST )
+	{
+		Ignite( 30.0f );
+
+		// notify the marine that he's hurting this, so his accuracy doesn't drop
+		if (info.GetAttacker() && info.GetAttacker()->Classify() == CLASS_ASW_MARINE)
+		{
+			if ( pMarine )
+			{
+				pMarine->HurtJunkItem( this, info );
+			}
+		}
+
+		CASW_Player *pPlayerAttacer = NULL;
+		if ( pMarine )
+		{
+			pPlayerAttacer = pMarine->GetCommander();
+		}
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "alien_ignited" );
+		if ( event )
+		{
+			event->SetInt( "userid", ( pPlayerAttacer ? pPlayerAttacer->GetUserID() : 0 ) );
+			event->SetInt( "entindex", entindex() );
+			gameeventmanager->FireEventClientSide( event );
+		}
+		return 0;
+	}
+	// end of riflemod code 
+
 	// goo is only damaged by fire!
 	if ( !( info.GetDamageType() & DMG_BURN ) && !( info.GetDamageType() & DMG_ENERGYBEAM ) )
 		return 0;

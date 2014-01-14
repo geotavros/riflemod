@@ -2442,15 +2442,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 			// GiveStartingWeaponToMarine( pMarine, 5, 2 );
 			break;
 		case 2:		// Faith
-			if (m_hEquipReq.Get())	// don't bother with checkings for now, just give flamer :)
-			{
-				GiveStartingWeaponToMarine( pMarine, 13, 0 );
-			}
-			else
-			{
-				GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			}
-			
+			GiveStartingWeaponToMarine( pMarine, 0, 0 );
 			GiveStartingWeaponToMarine( pMarine, 6, 1 );	// heal
 			//GiveStartingWeaponToMarine( pMarine, 7, 2 );	// freeze
 			break;	
@@ -2470,14 +2462,7 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 			//GiveStartingWeaponToMarine( pMarine, 5, 2 );
 			break;
 		case 6:		// Bastile
-			if (m_hEquipReq.Get())	// don't bother with checkings for now, just give flamer :)
-			{
-				GiveStartingWeaponToMarine( pMarine, 13, 0 );
-			}
-			else
-			{
-				GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			}
+			GiveStartingWeaponToMarine( pMarine, 0, 0 );
 			GiveStartingWeaponToMarine( pMarine, 6, 1 );
 			//GiveStartingWeaponToMarine( pMarine, 8, 2 );
 			break;
@@ -2625,7 +2610,7 @@ void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 
-				Q_snprintf(buffer, sizeof(buffer), "Medic gets flamer on Residential map. Console commands: Asw_DropExtra, asw_afk, rm_carnage");
+				Q_snprintf(buffer, sizeof(buffer), "Console commands: Asw_DropExtra, asw_afk, rm_carnage");
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 			}
 		}

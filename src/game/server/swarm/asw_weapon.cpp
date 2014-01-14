@@ -295,6 +295,8 @@ bool CASW_Weapon::WeaponLOSCondition( const Vector &ownerPos, const Vector &targ
 	return bHasLOS;
 }
 
+ConVar rm_destroy_empty_weapon( "rm_destroy_empty_weapon", "1", FCVAR_NONE, "If 1 the weapon with 0 clips will be destroyed, e.g. medkit" );
+
 bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryAmmo )
 {
 	CASW_Marine *pMarine = GetMarine();
@@ -309,19 +311,19 @@ bool CASW_Weapon::DestroyIfEmpty( bool bDestroyWhenActive, bool bCheckSecondaryA
 		return false;
 
 	// riflemod: commented weapon destruction on empty
-//	if ( !m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
-//	{
-//#ifndef CLIENT_DLL
-//		if (pMarine)
-//		{
-//			pMarine->Weapon_Detach(this);
-//			if (bActive)
-//				pMarine->SwitchToNextBestWeapon(NULL);
-//		}
-//		Kill();
-//		return true;
-//#endif
-//	}
+	if ( rm_destroy_empty_weapon.GetBool() && !m_iClip1 && pMarine->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+#ifndef CLIENT_DLL
+		if (pMarine)
+		{
+			pMarine->Weapon_Detach(this);
+			if (bActive)
+				pMarine->SwitchToNextBestWeapon(NULL);
+		}
+		Kill();
+		return true;
+#endif
+	}
 	return false;
 }
 
