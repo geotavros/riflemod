@@ -178,6 +178,7 @@ public:
 	virtual int				NumFactions() const	{ return NUM_ASW_FACTIONS; }
 
 	virtual void			MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &info );
+	virtual void			MarineKnockedOut( CASW_Marine *pMarine );
 	virtual void			AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info);
 
 	// mission
@@ -332,7 +333,19 @@ public:
 
 	float m_fObjectiveSlowDownEndTime;
 
-	int  m_iCarnageScale;   // the factor used to scale the amount of aliens in each drone spawner
+	enum WeaponTypes 
+	{
+		DEFAULT = 0,	// all weapons are allowed
+		RIFLE_MOD,		// only rifles are allowed 
+		BULLET_ONLY 	// allowed rifles, shotguns
+	};
+	
+	WeaponTypes m_iWeaponType;// 
+	int	   m_iCarnageScale;   // the factor used to scale the amount of aliens in each drone spawner
+	float  m_fHeavyScale;	  // the factor used to scale aliens' health 
+	float  m_fAlienSpeedScale;// the factor used to scale aliens' speed 
+	int	   m_iRefillSecondary;// 0 = false, 1 = true. If true the secondary ammo is picked up too.
+	int	   m_iAllowRevive;	  // 1 by default 
 
 #endif
 

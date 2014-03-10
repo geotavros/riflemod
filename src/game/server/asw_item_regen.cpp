@@ -12,8 +12,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_item_regen_interval("asw_item_regen_interval", "60", FCVAR_NONE, "Interval between item regeneration", true, 1.0f, false, 0.0f);
-//ConVar asw_item_regen_amount("asw_item_regen_amount", "1", FCVAR_CHEAT, "Adjusts the amount that is healed every <asw_marine_item_regen_speed> seconds.");
+ConVar rm_item_regen_interval("rm_item_regen_interval", "60", FCVAR_NONE, "Interval between item regeneration", true, 1.0f, false, 0.0f);
 
 LINK_ENTITY_TO_CLASS( asw_item_regen, CASW_Item_Regen );
 
@@ -68,5 +67,5 @@ void CASW_Item_Regen::Think()
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + asw_item_regen_interval.GetFloat());
+	SetNextThink( gpGlobals->curtime + rm_item_regen_interval.GetFloat());
 }

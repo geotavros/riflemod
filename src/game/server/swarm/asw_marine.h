@@ -7,6 +7,7 @@
 #include "asw_shareddefs.h"
 #include "asw_playeranimstate.h"
 #include "asw_lag_compensation.h"
+#include "iasw_server_usable_entity.h"
 
 class CASW_Player;
 class CASW_Marine_Resource;
@@ -58,7 +59,8 @@ class CBaseTrigger;
 #define ASW_MOB_VICTIM_SIZE 3
 #define ASW_MARINE_HISTORY_POSITIONS 6
 
-class CASW_Marine : public CASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers
+// riflemod: making marine a usable entity to allow reviving 
+class CASW_Marine : public CASW_VPhysics_NPC, public IASWPlayerAnimStateHelpers, public IASW_Server_Usable_Entity
 {
 public:
 	DECLARE_CLASS( CASW_Marine, CASW_VPhysics_NPC );
@@ -68,6 +70,19 @@ public:
 
 	CASW_Marine();
 	virtual ~CASW_Marine();
+
+	// reactivedrop: usable marine for reviving ability 
+	// IASW_Server_Usable_Entity implementation
+	virtual CBaseEntity* GetEntity() { return this; }
+	virtual bool IsUsable(CBaseEntity *pUser);
+	virtual bool RequirementsMet( CBaseEntity *pUser ) { return true; }
+	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType );
+	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime);
+	virtual void MarineStartedUsing(CASW_Marine* pMarine);
+	virtual void MarineStoppedUsing(CASW_Marine* pMarine);
+	virtual bool NeedsLOSCheck() { return true; }
+
+	float m_fLastMessageTime; /// used to display a message about reviving 
 
 	// Use this in preference to CASW_Marine::AsMarine( pEnt ) :
 	static inline CASW_Marine *AsMarine( CBaseEntity *pEnt );
@@ -573,7 +588,9 @@ public:
 	virtual bool BecomeRagdollOnClient( const Vector &force );
 	void Suicide();
 	bool IsWounded() const;	// less than 60% health
-	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	// riflemod: redefine this method to allow knockout instead of death for marines 
+	virtual int OnTakeDamage( const CTakeDamageInfo &info );
+	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info );
 	virtual bool CorpseGib( const CTakeDamageInfo &info );
 	virtual bool ShouldGib( const CTakeDamageInfo &info );
 	virtual bool Event_Gibbed( const CTakeDamageInfo &info );

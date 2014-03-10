@@ -442,6 +442,13 @@ bool CASW_Alien::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC
 	{
 		return GetAbsOrigin().DistToSqr( pEntity->GetAbsOrigin() ) < 10000.0f;	// only see bait within 100 units // riflemod: changed from 90000 to 10000
 	}
+	// riflemod: aliens shouldn't attack knocked out marines 
+	if (pEntity && pEntity->Classify() == CLASS_ASW_MARINE)
+	{
+		CASW_Marine *m = static_cast<CASW_Marine*>(pEntity);
+		if (m->m_bKnockedOut)
+			return false;
+	}
 	return true;
 }
 
@@ -932,7 +939,9 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	// if we take fire damage, catch on fire
 	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) )
 	{
-		//ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, info.GetAttacker(), info.GetWeapon() );
+		// riflemod: ignite aliens for default mode 
+		if (ASWGameRules()->m_iWeaponType == CAlienSwarm::DEFAULT)
+			ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, info.GetAttacker(), info.GetWeapon() );
 	}
 
 	// make the alien move slower for 0.5 seconds

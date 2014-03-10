@@ -9,8 +9,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar asw_health_regen_interval("asw_health_regen_interval", "5", FCVAR_NONE, "Interval between health regeneration", true, 0.01f, false, 0.0f);
-ConVar asw_health_regen_amount("asw_health_regen_amount", "5", FCVAR_NONE, "amount of health regenerating");
+ConVar rm_health_regen_interval("rm_health_regen_interval", "5", FCVAR_NONE, "Interval between health regeneration", true, 0.01f, false, 0.0f);
+ConVar rm_health_regen_amount("rm_health_regen_amount", "5", FCVAR_NONE, "Amount of health regenerating");
 
 LINK_ENTITY_TO_CLASS( asw_health_regen, CASW_Health_Regen );
 
@@ -39,7 +39,7 @@ void CASW_Health_Regen::Think()
 		{
 			int cur_health = pMarine->GetHealth();
 			int max_health = pMarine->GetMaxHealth();
-			int regen_ammount = asw_health_regen_amount.GetInt();
+			int regen_ammount = rm_health_regen_amount.GetInt();
 
 			if (cur_health < max_health)
 			{
@@ -51,10 +51,33 @@ void CASW_Health_Regen::Think()
 				if (result_health > max_health)
 					result_health = max_health;
 				
-				pMarine->SetHealth(result_health);
+// 				if (pMarine->m_bKnockedOut)
+// 				{
+// 					result_health = cur_health - 3;
+// 					if (result_health <= 0)
+// 					{
+// 						CTakeDamageInfo info(
+// 							pMarine, 
+// 							pMarine, 
+// 							Vector(0,0,0), 
+// 							GetAbsOrigin(), 
+// 							100, 
+// 							DMG_NEVERGIB);
+// 						pMarine->TakeDamage(info);
+// 					}
+// 					else
+// 					{
+// 						pMarine->SetHealth(result_health);
+// 					}
+// 				}
+// 				else
+// 				{
+					if (!pMarine->m_bKnockedOut)
+						pMarine->SetHealth(result_health);
+//				}
 			}
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + asw_health_regen_interval.GetFloat());
+	SetNextThink( gpGlobals->curtime + rm_health_regen_interval.GetFloat());
 }

@@ -416,13 +416,13 @@ void CASW_Player::PostThink()
 
 	// clicking while ingame on mission with no marine makes us spectate the next marine
 	if ((!GetMarine() || GetMarine()->GetHealth()<=0)
-		&& !HasLiveMarines() && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
+		/*&& !HasLiveMarines()*/ && ASWGameRules() && ASWGameRules()->GetGameState() == ASW_GS_INGAME)
 	{
 		//Msg("m_nButtons & IN_ATTACK = %d (m_Local.m_nOldButtons & IN_ATTACK) = %d\n", (m_nButtons & IN_ATTACK), (m_Local.m_nOldButtons & IN_ATTACK));
 		bool bClicked = (!m_bLastAttackButton && (m_nButtons & IN_ATTACK));
 		bool bRightClicked = (!m_bLastAttack2Button && (m_nButtons & IN_ALT1));
 
-		if ( bClicked || ( !GetSpectatingMarine() && gpGlobals->curtime > m_fLastControlledMarineTime + 6.0f ) )
+		if ( bClicked )
 		{
 			// riflemod: allow drop in 
 			CASW_Game_Resource *pGameResource = ASWGameResource();

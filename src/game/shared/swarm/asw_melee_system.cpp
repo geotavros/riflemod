@@ -227,6 +227,9 @@ void CASW_Melee_System::ProcessMovement( CASW_Marine *pMarine, CMoveData *pMoveD
 		return;
 	}
 
+	if (pMarine->GetFlags() & FL_FROZEN)
+		return;
+
 	CASW_MoveData *pASWMove = static_cast<CASW_MoveData*>( pMoveData );
 
 	if ( !m_bAttacksValidated )
@@ -411,6 +414,9 @@ void CASW_Melee_System::OnMeleePressed( CASW_Marine *pMarine, CMoveData *pMoveDa
 	if ( !pMarine || !pMoveData || !pMarine->GetMarineProfile() )
 		return;
 
+	if (pMarine->GetFlags() & FL_FROZEN)
+		return;
+
 	CASW_Melee_Attack *pCurrentAttack = pMarine->GetCurrentMeleeAttack();
 	if ( pCurrentAttack )
 	{
@@ -463,6 +469,9 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 		return;
 
 	if ( !asw_marine_rolls.GetBool() )
+		return;
+
+	if (pMarine->GetFlags() & FL_FROZEN)	// no jumping when frozen
 		return;
 
 	// no rolling if in the middle of an attack

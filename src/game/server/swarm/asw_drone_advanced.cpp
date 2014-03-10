@@ -316,7 +316,7 @@ float CASW_Drone_Advanced::GetIdealSpeed() const
 	float flFreezeSpeedScale = 1.0f - m_flFrozen;
 	flFreezeSpeedScale = clamp<float>( flFreezeSpeedScale, 0.0f, 1.0f );
 
-	return boost * BaseClass::GetIdealSpeed() * m_flPlaybackRate * flFreezeSpeedScale;
+	return boost * BaseClass::GetIdealSpeed() * m_flPlaybackRate * flFreezeSpeedScale * ASWGameRules()->m_fAlienSpeedScale;
 }
 
 float CASW_Drone_Advanced::GetIdealAccel( ) const

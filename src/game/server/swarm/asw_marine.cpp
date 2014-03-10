@@ -81,12 +81,17 @@
 #include "asw_objective_escape.h"
 #include "sendprop_priorities.h"
 #include "asw_marine_gamemovement.h"
+#include "IEffects.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 #define ASW_DEFAULT_MARINE_MODEL "models/swarm/marine/marine.mdl"
 
+// riflemod
+#define MAX_USERMESSAGE_RATE 0.5f;
+#define ASW_MARINE_REVIVE_RADIUS 100.0f
+//
 //#define ASW_MARINE_ALWAYS_VPHYSICS
 
 //=========================================================
@@ -569,6 +574,89 @@ CASW_Marine::~CASW_Marine()
 	delete m_MarineSpeech;
 }
 
+// riflemod: methods used for reviving 
+void CASW_Marine::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+{
+	if ( nHoldType == ASW_USE_HOLD_START )
+	{
+		pMarine->StartUsing(this);
+		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+	}
+	else if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
+	{
+		//pMarine->StopUsing();
+
+		if ( m_bKnockedOut )
+		{	
+			SetHealth(10);
+			SetKnockedOut(false);
+			
+			//EmitSound( "ASW_Sentry.Dismantled" );
+		}
+	}
+	else if ( nHoldType == ASW_USE_RELEASE_QUICK )
+	{
+		pMarine->StopUsing();
+
+		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+
+	}
+}
+
+bool CASW_Marine::IsUsable(CBaseEntity *pUser)
+{
+	bool result = false;
+
+	if (pUser == this)
+		return false;	// immediately return to prevent any printing 
+
+	CASW_Marine *pOtherMarine = dynamic_cast<CASW_Marine*>(pUser);
+	CASW_Player *pOtherPlayer = NULL;
+	if (pOtherMarine)
+		pOtherPlayer = pOtherMarine->GetCommander();
+
+	if (m_bKnockedOut &&
+		pOtherPlayer &&
+		pUser && 
+		pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_REVIVE_RADIUS && // near enough?
+		!pOtherMarine->m_bKnockedOut)	
+	{
+		if (gpGlobals->curtime > m_fLastMessageTime)
+		{
+			ClientPrint(pOtherPlayer, HUD_PRINTCENTER, "Hold <use> (e) to revive.");
+			m_fLastMessageTime = gpGlobals->curtime + MAX_USERMESSAGE_RATE;
+		}
+		result = true;
+	}
+
+// 	if (false == result && 
+// 		pOtherPlayer && 
+// 		gpGlobals->curtime > m_fLastMessageTime)
+// 	{
+// 		Msg("NOT USABLE m_bKnockedOut=%d, pOtherPlayer=%d, pUser=%d, pOtherMarine->m_bKnockedOut=%d\n", m_bKnockedOut, pOtherPlayer, pUser, pOtherMarine->m_bKnockedOut);
+// 		ClientPrint(pOtherPlayer, HUD_PRINTCENTER, "");
+// 		m_fLastMessageTime = gpGlobals->curtime + MAX_USERMESSAGE_RATE;
+// 	}
+
+	return result;
+}
+
+void CASW_Marine::MarineUsing(CASW_Marine* pMarine, float deltatime)
+{
+
+}
+
+void CASW_Marine::MarineStartedUsing(CASW_Marine* pMarine)
+{
+
+}
+
+void CASW_Marine::MarineStoppedUsing(CASW_Marine* pMarine)
+{
+
+}
+
+
 // create our custom senses class
 CAI_Senses *CASW_Marine::CreateSenses()
 {
@@ -613,6 +701,8 @@ void CASW_Marine::Spawn( void )
 	Precache();
 
 	BaseClass::Spawn();
+
+	m_fLastMessageTime = gpGlobals->curtime;
 
 	SelectModel();
 	SetModel( STRING( GetModelName() ) );
@@ -800,7 +890,8 @@ void CASW_Marine::PhysicsSimulate( void )
 // this is because we're not calling BaseClass::PhysicsSimulate
 void CASW_Marine::Think( void )
 {			
-	if (!IsInhabited())
+	// riflemod: prevent thinking if knocked out, because bots move when knocked out
+	if (!IsInhabited() && !m_bKnockedOut)
 	{
 		BaseClass::Think();
 
@@ -1008,6 +1099,80 @@ void CASW_Marine::DoMuzzleFlash()
 	}
 }
 
+int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
+{
+	int retVal = 0;
+
+	if (!m_takedamage)
+		return 0;
+
+	m_iDamageCount++;
+
+	if ( info.GetDamageType() & DMG_SHOCK )
+	{
+		g_pEffects->Sparks( info.GetDamagePosition(), 2, 2 );
+		UTIL_Smoke( info.GetDamagePosition(), random->RandomInt( 10, 15 ), 10 );
+	}
+
+	switch( m_lifeState )
+	{
+	case LIFE_ALIVE:
+		retVal = OnTakeDamage_Alive( info );
+		if ( m_iHealth <= 0 )
+		{
+			if (ASWGameRules()->m_iAllowRevive)
+			{
+				if (!m_bKnockedOut)
+				{
+					SetHealth(GetMaxHealth() - 10);
+					SetKnockedOut(true);
+					return retVal;
+				}
+				else 
+				{
+					SetKnockedOut(false);
+				}
+			}
+
+			IPhysicsObject *pPhysics = VPhysicsGetObject();
+			if ( pPhysics )
+			{
+				pPhysics->EnableCollisions( false );
+			}
+
+			bool bGibbed = false;
+
+			Event_Killed( info );
+
+			// Only classes that specifically request it are gibbed
+			if ( ShouldGib( info ) )
+			{
+				bGibbed = Event_Gibbed( info );
+			}
+
+			if ( bGibbed == false )
+			{
+				Event_Dying();
+			}
+		}
+		return retVal;
+		break;
+
+	case LIFE_DYING:
+		return OnTakeDamage_Dying( info );
+
+	default:
+	case LIFE_DEAD:
+		retVal = OnTakeDamage_Dead( info );
+		if ( m_iHealth <= 0 && g_pGameRules->Damage_ShouldGibCorpse( info.GetDamageType() ) && ShouldGib( info ) )
+		{
+			Event_Gibbed( info );
+			retVal = 0;
+		}
+		return retVal;
+	}
+}
+
 int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	// make marines immune to crush damage
@@ -1015,6 +1180,10 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	{
 		return 0;
 	}
+	
+	// riflemod: knocked out marines doesn't take damage 
+	if (m_bKnockedOut)
+		return 0;
 
 	CTakeDamageInfo newInfo(info);
 
@@ -1475,7 +1644,9 @@ int CASW_Marine::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		// short stumbles on damage
 		if ( !(newInfo.GetDamageType() & (DMG_BURN | DMG_DIRECT | DMG_RADIATION) ) && asw_marine_stumble_on_damage.GetBool() )
 		{
-			Stumble( newInfo.GetAttacker(), newInfo.GetDamageForce(), true );
+			// riflemod: probably unused now TODO check this out and remove 
+			if (!(m_bKnockedOut || (GetFlags() & FL_FROZEN)))
+				Stumble( newInfo.GetAttacker(), newInfo.GetDamageForce(), true );
 		}
 
 		// flinch
@@ -3788,6 +3959,8 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 	m_bKnockedOut = bKnockedOut;
 	if (m_bKnockedOut)		// make the marine fall over
 	{
+		SetAbsVelocity( vec3_origin );
+		SetLocalAngularVelocity(vec3_angle);
 		FlashlightTurnOff();
 		InvalidateBoneCache();
 		AddSolidFlags( FSOLID_NOT_SOLID );			
@@ -3795,7 +3968,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		info.SetDamageType( DMG_GENERIC );
 		info.SetDamageForce( vec3_origin );
 		info.SetDamagePosition( WorldSpaceCenter() );
-		m_hKnockedOutRagdoll = (CRagdollProp*) CreateServerRagdoll( this, 0, info, COLLISION_GROUP_NONE );
+		m_hKnockedOutRagdoll = (CRagdollProp*) CreateServerRagdoll( this, 0, info, COLLISION_GROUP_DEBRIS );
 		if ( GetRagdollProp() )
 		{
 			GetRagdollProp()->DisableAutoFade();
@@ -3803,35 +3976,46 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 			GetRagdollProp()->SetUnragdoll( this );
 		}			
 		AddEffects( EF_NODRAW );
-		AddFlag( FL_FROZEN );		
+		AddFlag( FL_FROZEN );	
+		
 
 		Msg("%s has been knocked unconcious!\n", GetMarineProfile() ? GetMarineProfile()->m_ShortName : "UnknownMarine");
+		if (ASWGameRules())
+			ASWGameRules()->MarineKnockedOut(this);
 	}
 	else		// marine is already knocked out, let's make him get up again
 	{
 		Assert(IsEffectActive(EF_NODRAW));
 		Assert(GetRagdollProp());
 
-		SetStopTime(gpGlobals->curtime + 2.0f);	// make sure he can't move for a while
+		SetStopTime(gpGlobals->curtime + 0.5f);	// make sure he can't move for a while
 		DoAnimationEvent(PLAYERANIMEVENT_GETUP);	// animate him standing up
 
 		//Calcs the diff between ragdoll worldspace center and victim worldspace center, moves the victim by this diff.
 		//Sets the victim's angles to 0, ragdoll yaw, 0
-		QAngle newAngles( 0, GetRagdollProp()->GetAbsAngles()[YAW], 0 );
-
-		Vector centerDelta = GetRagdollProp()->WorldSpaceCenter() - WorldSpaceCenter();
-		centerDelta.z = 0;	// don't put us in the floor
-		Vector newOrigin = GetAbsOrigin() + centerDelta;
-		SetAbsOrigin( newOrigin );
-		SetAbsAngles( newAngles );		
+// 		QAngle newAngles( 0, GetRagdollProp()->GetAbsAngles()[YAW], 0 );
+// 
+// 		Vector centerDelta = GetRagdollProp()->WorldSpaceCenter() - WorldSpaceCenter();
+// 		centerDelta.z = 0;	// don't put us in the floor
+// 		Vector newOrigin = GetAbsOrigin() + centerDelta;
+// 		SetAbsOrigin( newOrigin );
+// 		SetAbsAngles( newAngles );		
 		//GetRagdollProp()->AddEffects( EF_NODRAW );
 		RemoveEffects( EF_NODRAW );
+		RemoveFlag( FL_FROZEN );
 		RemoveSolidFlags( FSOLID_NOT_SOLID );		
 		if (HasFlashlight())
 			FlashlightTurnOn();
-		m_fUnfreezeTime = gpGlobals->curtime + 3.0f;
+		//m_fUnfreezeTime = gpGlobals->curtime + 1.0f;
 		UTIL_Remove( GetRagdollProp() );
-		m_hKnockedOutRagdoll = NULL;
+		m_hKnockedOutRagdoll = NULL; 
+
+		// think! to make bots listen orders 
+		if (GetHealth() > 0)
+		{
+			SetThink ( &CAI_BaseNPC::CallNPCThink );
+			SetNextThink( gpGlobals->curtime );
+		}
 
 		Msg("%s has got back up.\n", GetMarineProfile() ? GetMarineProfile()->m_ShortName : "UnknownMarine");
 	}
@@ -4412,7 +4596,7 @@ bool CASW_Marine::IsOutOfAmmo()
 
 void CASW_Marine::OnWeaponOutOfAmmo(bool bChatter)
 {
-	CASW_Weapon *cur_weapon = GetActiveASWWeapon();
+//	CASW_Weapon *cur_weapon = GetActiveASWWeapon();
 // 	if ( cur_weapon )
 // 	{
 // 		if ( !stricmp(cur_weapon->GetPickupClass(), "asw_pickup_rifle") ||

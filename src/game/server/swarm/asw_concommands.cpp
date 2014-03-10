@@ -330,11 +330,200 @@ void rm_carnagef(const CCommand &args)
 }
 ConCommand rm_carnage( "rm_carnage", rm_carnagef, "Scales the amount of aliens for all drone spawners", 0 );
 
+void rm_heavyf(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the scale factor from 0.1 to 15\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Heavy mode can only be enabled during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can enable heavy mode\n" );
+			return;
+		}
+
+		float multiplier = clamp(atof(args[1]), 0.1f, 15.0f);
+		ASWGameRules()->m_fHeavyScale = multiplier;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		Q_snprintf(buffer, sizeof(buffer), "Heavy mode activated with multiplier: %f", ASWGameRules()->m_fHeavyScale);
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_heavy( "rm_heavy", rm_heavyf, "Increases aliens' health", 0 );
+
+void rm_weaponsf(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the number 0 = all weapons, 1 = rifles only \n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Weapons can only be enabled during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can change weapons mode\n" );
+			return;
+		}
+
+		int weapons_id = clamp(atoi(args[1]), 0, 10);
+		ASWGameRules()->m_iWeaponType = CAlienSwarm::WeaponTypes(weapons_id);
+		//ASW_ApplyCarnage_f(multiplier);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (0 == weapons_id)
+			Q_snprintf(buffer, sizeof(buffer), "All weapons are now allowed");
+		else
+			Q_snprintf(buffer, sizeof(buffer), "Rifles only enabled");
+		
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_weapons( "rm_weapons", rm_weaponsf, "Used to change weapons mode", 0 ); 
+
+void rm_alienspeedf(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the scale factor from 0.1 to 3\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Alien speed mode can only be enabled during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can enable alien speed mode\n" );
+			return;
+		}
+
+		float multiplier = clamp(atof(args[1]), 0.1f, 3.0f);
+		ASWGameRules()->m_fAlienSpeedScale = multiplier;
+		//ASW_ApplyCarnage_f(multiplier);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		Q_snprintf(buffer, sizeof(buffer), "Alien speed mode activated with "
+			"multiplier: %f", ASWGameRules()->m_fAlienSpeedScale);
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_alienspeed( "rm_alienspeed", rm_alienspeedf, "Scales aliens' speed", 0 );
+
+void rm_refill_secondaryf(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply value 0 or 1\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Refill mode can only be enabled during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can enable refill_secondary mode\n" );
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+		ASWGameRules()->m_iRefillSecondary = multiplier;
+		//ASW_ApplyCarnage_f(multiplier);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		Q_snprintf(buffer, sizeof(buffer), "Refill secondary ammo = %i", 
+			ASWGameRules()->m_iRefillSecondary);
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_refill_secondary("rm_refill_secondary", rm_refill_secondaryf, 
+  "If 1 the secondary ammo get refilled with primary", 0 );
+
+void rm_revivef(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the value of 0 or 1\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Revive mode can only be enabled during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can enable revive mode\n" );
+			return;
+		}
+
+		int allow_revive = clamp(atoi(args[1]), 0, 1);
+		ASWGameRules()->m_iAllowRevive = allow_revive;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (!ASWGameRules()->m_iAllowRevive)
+			Q_snprintf(buffer, sizeof(buffer), "Reviving disabled");
+		else 
+			Q_snprintf(buffer, sizeof(buffer), "Reviving enabled");
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_revive( "rm_revive", rm_revivef, "Enables or disables reviving", 0 );
+
 void ASW_AllowBriefing_f()
 {
 	ASWGameRules()->AllowBriefing();
 }
-ConCommand ASW_AllowBriefing( "ASW_AllowBriefing", ASW_AllowBriefing_f, "Let's you restart the briefing", 0 );
+ConCommand ASW_AllowBriefing( "ASW_AllowBriefing", ASW_AllowBriefing_f, "Let's "
+							  "you restart the briefing", 0 );
 
 void ASW_PhysicsShove_f()
 {
@@ -645,7 +834,7 @@ void asw_ragdoll_marine_f()
 		}
 	}
 }
-//ConCommand asw_ragdoll_marine( "asw_ragdoll_marine", asw_ragdoll_marine_f, "Toggle ragdolling of the current marine", FCVAR_CHEAT );
+ConCommand asw_ragdoll_marine( "asw_ragdoll_marine", asw_ragdoll_marine_f, "Toggle ragdolling of the current marine", FCVAR_CHEAT );
 
 void asw_ragdoll_blend_test_f()
 {

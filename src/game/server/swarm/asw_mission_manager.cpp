@@ -26,6 +26,7 @@ CASW_Mission_Manager::CASW_Mission_Manager()
 	m_bDoneLeavingChatter = false;
 	m_flLastMarineDeathTime = 0.0f;
 	m_bAllMarinesDead = false;
+	m_bAllMarinesKnockedOut = false;
 }
 
 
@@ -43,7 +44,7 @@ void CASW_Mission_Manager::Spawn()
 
 void CASW_Mission_Manager::ManagerThink()
 {
-	if ( m_bAllMarinesDead )	// once all marines are dead, we need to check for mission complete periodically to see if the marine_dead_delay time has passed
+	if ( m_bAllMarinesDead || m_bAllMarinesKnockedOut )	// once all marines are dead, we need to check for mission complete periodically to see if the marine_dead_delay time has passed
 	{
 		CheckMissionComplete();
 	}
@@ -89,11 +90,15 @@ bool CASW_Mission_Manager::CheckMissionComplete()
 	}
 
 	m_bAllMarinesDead = AllMarinesDead();
+
 	if ( m_bAllMarinesDead && ( gpGlobals->curtime > m_flLastMarineDeathTime + asw_last_marine_dead_delay.GetFloat() || GameTimescale()->GetCurrentTimescale() < 1.0f ) )
 	{
 		bFailed = true;
 	}
 	
+	m_bAllMarinesKnockedOut = AllMarinesKnockedOut();
+	if (m_bAllMarinesKnockedOut)
+		bFailed = true;
 
 	if (bSuccess && bAtLeastOneObjective)
 	{
@@ -277,6 +282,34 @@ bool CASW_Mission_Manager::AllMarinesDead()
 		}
 	}
 	return true;  // arg all dead!
+}
+
+bool CASW_Mission_Manager::AllMarinesKnockedOut()
+{
+	if (!ASWGameRules() || !ASWGameResource())
+		return false;
+
+	// can't be all dead if we haven't left briefing yet!
+	if (ASWGameRules()->GetGameState() < ASW_GS_INGAME)
+		return false;
+
+	int iMax = ASWGameResource()->GetMaxMarineResources();
+	for (int i=0;i<iMax;i++)
+	{
+		CASW_Marine_Resource *pMarineResource = ASWGameResource()->GetMarineResource(i);
+		if (pMarineResource)
+		{
+			CASW_Marine *m = pMarineResource->GetMarineEntity();
+			if (m)
+			{
+				if (!m->m_bKnockedOut)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	return true;
 }
 
 void CASW_Mission_Manager::CheatCompleteMission()

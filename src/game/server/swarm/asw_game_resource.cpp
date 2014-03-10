@@ -316,6 +316,7 @@ void CASW_Game_Resource::RemoveAMarineFor(CASW_Player *pPlayer)
 
 bool CASW_Game_Resource::AddMarineResource( CASW_Marine_Resource *m, int nPreferredSlot )
 {
+	const int max_resources = 4; // limit number of marines to 4 to prevent crashes 
 	if ( nPreferredSlot != -1 )
 	{
 		CASW_Marine_Resource *pExisting = static_cast<CASW_Marine_Resource*>( m_MarineResources[ nPreferredSlot ].Get() );
@@ -333,14 +334,14 @@ bool CASW_Game_Resource::AddMarineResource( CASW_Marine_Resource *m, int nPrefer
 
 		// the above causes strange cases where the client copy of this networked array is incorrect
 		// so we flag each element dirty to cause a complete update, which seems to fix the problem
-		for (int k=0;k<ASW_MAX_MARINE_RESOURCES;k++)
+		for (int k=0;k<max_resources;k++)
 		{
 			m_MarineResources.GetForModify(k);
 		}
 		return true;
 	}
 
-	for (int i=0;i<ASW_MAX_MARINE_RESOURCES;i++)
+	for (int i=0;i<max_resources;i++)
 	{
 		if (m_MarineResources[i] == NULL)	// found a free slot
 		{
@@ -348,14 +349,14 @@ bool CASW_Game_Resource::AddMarineResource( CASW_Marine_Resource *m, int nPrefer
 
 			// the above causes strange cases where the client copy of this networked array is incorrect
 			// so we flag each element dirty to cause a complete update, which seems to fix the problem
-			for (int k=0;k<ASW_MAX_MARINE_RESOURCES;k++)
+			for (int k=0;k<max_resources;k++)
 			{
 				m_MarineResources.GetForModify(k);
 			}
 			return true;
 		}
 	}
-	Msg("Couldn't add new marine resource to list as no free slots\n");
+	//Msg("Couldn't add new marine resource to list as no free slots\n");
 	return false;
 }
 

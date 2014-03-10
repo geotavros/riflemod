@@ -777,7 +777,12 @@ CAlienSwarm::CAlienSwarm()
 	m_fLastPowerupDropTime = 0;
 	m_flTechFailureRestartTime = 0.0f;
 
-	m_iCarnageScale = 1;
+	m_iCarnageScale		= 1;
+	m_fHeavyScale		= 1.0f;
+	m_iWeaponType		= RIFLE_MOD;
+	m_fAlienSpeedScale  = 1.0f;
+	m_iRefillSecondary  = 1;
+	m_iAllowRevive		= 1;
 }
 
 CAlienSwarm::~CAlienSwarm()
@@ -2418,66 +2423,75 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 	}
 	else
 	{
-		// give the pMarine the equipment selected on the briefing screen
-		//for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-		//	GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
-
-		int sentry_id = 7;		// 7 is the id of ammo satchel. We're giving it by default 
-		if (pMR->m_iWeaponsInSlots.Get( 1 ) == 5 ||			// sentry gun
-			pMR->m_iWeaponsInSlots.Get( 1 ) == 17 ||		// sentry flame
-			pMR->m_iWeaponsInSlots.Get( 1 ) == 14 ||		// sentry freeze
-			pMR->m_iWeaponsInSlots.Get( 1 ) == 19)			// sentry cannon 
-			sentry_id = pMR->m_iWeaponsInSlots.Get( 1 );
-		// commented old giving, and giving mine here:
-		switch (pMR->m_MarineProfileIndex)
+		switch (m_iWeaponType)
 		{
-		case 0:		// Sarge
-			GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
-			// GiveStartingWeaponToMarine( pMarine, 6, 2 );
-			break;
-		case 1:		// Wildcat
-			GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
-			// GiveStartingWeaponToMarine( pMarine, 5, 2 );
-			break;
-		case 2:		// Faith
-			GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			GiveStartingWeaponToMarine( pMarine, 6, 1 );	// heal
-			//GiveStartingWeaponToMarine( pMarine, 7, 2 );	// freeze
-			break;	
-		case 3:		// Crash
-			GiveStartingWeaponToMarine( pMarine, 1, 0 );	
-			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
-			//GiveStartingWeaponToMarine( pMarine, 1, 2 );
-			break;
-		case 4:		// Jaeger
-			GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
-			//GiveStartingWeaponToMarine( pMarine, 3, 2 );
-			break;
-		case 5:		// Wolfe
-			GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
-			//GiveStartingWeaponToMarine( pMarine, 5, 2 );
-			break;
-		case 6:		// Bastile
-			GiveStartingWeaponToMarine( pMarine, 0, 0 );
-			GiveStartingWeaponToMarine( pMarine, 6, 1 );
-			//GiveStartingWeaponToMarine( pMarine, 8, 2 );
-			break;
-		case 7:		// Vegas
-			GiveStartingWeaponToMarine( pMarine, 1, 0 );
-			GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
-			//GiveStartingWeaponToMarine( pMarine, 9, 2 );
-			break;
-		default:
-			Warning("Unknown marine profile index found\n");
-		}
+			case DEFAULT:
+				// give the pMarine the equipment selected on the briefing screen
+				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+					GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
+				break;
+			case RIFLE_MOD:
+			default:
+			{
+				int sentry_id = 7;		// 7 is the id of ammo satchel. We're giving it by default 
+				if (pMR->m_iWeaponsInSlots.Get( 1 ) == 5 ||			// sentry gun
+					pMR->m_iWeaponsInSlots.Get( 1 ) == 17 ||		// sentry flame
+					pMR->m_iWeaponsInSlots.Get( 1 ) == 14 ||		// sentry freeze
+					pMR->m_iWeaponsInSlots.Get( 1 ) == 19)			// sentry cannon 
+					sentry_id = pMR->m_iWeaponsInSlots.Get( 1 );
+				// commented old giving, and giving mine here:
+				switch (pMR->m_MarineProfileIndex)
+				{
+				case 0:		// Sarge
+					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+					// GiveStartingWeaponToMarine( pMarine, 6, 2 );
+					break;
+				case 1:		// Wildcat
+					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+					// GiveStartingWeaponToMarine( pMarine, 5, 2 );
+					break;
+				case 2:		// Faith
+					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, 6, 1 );	// heal
+					//GiveStartingWeaponToMarine( pMarine, 7, 2 );	// freeze
+					break;	
+				case 3:		// Crash
+					GiveStartingWeaponToMarine( pMarine, 1, 0 );	
+					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+					//GiveStartingWeaponToMarine( pMarine, 1, 2 );
+					break;
+				case 4:		// Jaeger
+					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+					//GiveStartingWeaponToMarine( pMarine, 3, 2 );
+					break;
+				case 5:		// Wolfe
+					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+					//GiveStartingWeaponToMarine( pMarine, 5, 2 );
+					break;
+				case 6:		// Bastile
+					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, 6, 1 );
+					//GiveStartingWeaponToMarine( pMarine, 8, 2 );
+					break;
+				case 7:		// Vegas
+					GiveStartingWeaponToMarine( pMarine, 1, 0 );
+					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
+					//GiveStartingWeaponToMarine( pMarine, 9, 2 );
+					break;
+				default:
+					Warning("Unknown marine profile index found\n");
+				}
 
-		// give extra item the one the player have selected 
-		GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( 2 ), 2);
-		// end of mine code
+				// give extra item the one the player have selected 
+				GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( 2 ), 2);
+				// end of mine code
+				break;
+			}
+		}
 
 		// store off his initial equip selection for stats tracking
 		for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
@@ -2582,7 +2596,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 	GameTimescale()->SetDesiredTimescale( 1.0f, 1.5f, CGameTimescale::INTERPOLATOR_EASE_IN_OUT, asw_time_scale_delay.GetFloat() );
 }
 
-ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. Rifles only, increased ammo satchels, harder aliens, HP regeneration, smarter bots. ", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. bit.ly/riflemod ", FCVAR_NONE, "This message is displayed to a player after they join the game" );
 
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
@@ -2610,7 +2624,7 @@ void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 
-				Q_snprintf(buffer, sizeof(buffer), "Console commands: Asw_DropExtra, asw_afk, rm_carnage");
+				Q_snprintf(buffer, sizeof(buffer), "Console commands: asw_dropExtra, asw_afk, rm_carnage, rm_heavy, rm_alienspeed, rm_weapons, rm_revive");
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 			}
 		}
@@ -3060,7 +3074,13 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 
 	if ( !stricmp(szWeaponClass, "asw_weapon_ammo_satchel" ) ) 
 	{
-		iPrimaryAmmo += asw_ammo_satchel_bonus.GetInt() * m_iCarnageScale;
+		int riflemod_ammo_scale = asw_ammo_satchel_bonus.GetInt();
+		if (m_iWeaponType == DEFAULT) 
+			riflemod_ammo_scale = 0;
+		iPrimaryAmmo = float(iPrimaryAmmo + riflemod_ammo_scale) * 
+					   float(m_iCarnageScale) * m_fHeavyScale; 
+		if (iPrimaryAmmo < 3)
+			iPrimaryAmmo = 3;
 	}
 
 	pWeapon->SetClip1( iPrimaryAmmo );
@@ -3699,6 +3719,12 @@ void CAlienSwarm::MarineKilled( CASW_Marine *pMarine, const CTakeDamageInfo &inf
 		CASW_Marines_Past_Area *pArea = static_cast< CASW_Marines_Past_Area* >( IASW_Marines_Past_Area_List::AutoList()[ i ] );
 		pArea->OnMarineKilled( pMarine );
 	}
+}
+
+void CAlienSwarm::MarineKnockedOut( CASW_Marine *pMarine )
+{
+	if (GetMissionManager())
+		GetMissionManager()->CheckMissionComplete();
 }
 
 void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
@@ -5529,7 +5555,7 @@ float CAlienSwarm::ModifyAlienHealthBySkillLevel(float health)
 	}
 	// end of mine code
 
-	return f * health;
+	return f * health * m_fHeavyScale;
 }
 
 // alters damage by 20% per notch away from 8
