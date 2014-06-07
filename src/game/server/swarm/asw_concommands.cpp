@@ -397,6 +397,8 @@ void rm_weaponsf(const CCommand &args)
 		char buffer[512];
 		if (0 == weapons_id)
 			Q_snprintf(buffer, sizeof(buffer), "All weapons are now allowed");
+		else if (2 == weapons_id)
+			Q_snprintf(buffer, sizeof(buffer), "Allowed weapons: Rifle, Vindicator, Autogun, Pistols, Sentry, Ammo, Heal");
 		else
 			Q_snprintf(buffer, sizeof(buffer), "Rifles only enabled");
 		
@@ -517,6 +519,181 @@ void rm_revivef(const CCommand &args)
 	}
 }
 ConCommand rm_revive( "rm_revive", rm_revivef, "Enables or disables reviving", 0 );
+
+void rm_hpregenf(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the value 0 or 1\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "HP regen can only be enabled or disabled during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can enable or disable HP regen mode\n" );
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+		ASWGameRules()->m_iHpRegen = multiplier;
+		//ASW_ApplyCarnage_f(multiplier);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if ( ASWGameRules()->m_iHpRegen )
+		{
+			Q_snprintf(buffer, sizeof(buffer), "HP regeneration is enabled");
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "HP regeneration is disabled");
+		}
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_hpregen( "rm_hpregen", rm_hpregenf, "Enables or disabled health regeneration", 0 );
+
+void rm_botsf(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the value 0 or 1\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Bots can only be enabled or disabled during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can enable or disable bots\n" );
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+		ASWGameRules()->m_iAddBots = multiplier;
+		//ASW_ApplyCarnage_f(multiplier);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if ( ASWGameRules()->m_iAddBots )
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Bots are enabled");
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Bots are disabled");
+		}
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_bots( "rm_bots", rm_botsf, "Enables or disabled bots to fill free slots", 0 );
+
+void rm_weaponf(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the value from 0 to 20\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Default weapon can only be changed during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can set default weapon \n" );
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 20);
+		ASWGameRules()->m_iWeapon = multiplier;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		Q_snprintf(buffer, sizeof(buffer), "Default weapon is set to ID %d", ASWGameRules()->m_iWeapon );
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_weapon( "rm_weapon", rm_weaponf, "Sets the default weapon for weapon restricted mode, values from 0 to 20 are accepted", 0 );
+
+void rm_challengef(const CCommand &args)
+{
+	if ( args.ArgC() < 2 )
+	{
+		Msg( "Please supply the value from 0 to 20\n" );
+		return;
+	}
+
+	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
+	{
+		Msg( "Challenge can only be changed during briefing \n" );
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg( "Only leader can enable challenge \n" );
+			return;
+		}
+
+		int challenge_id = clamp(atoi(args[1]), 0, 20);
+		char challenge_name[512];
+
+		switch (challenge_id)
+		{
+			case 0:
+				ASWGameRules()->ResetModsToDefault();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "No Challenge" );
+				break;
+			case 1:
+				ASWGameRules()->ResetModsRiflemodClassic();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Rifle Mod Classic" );
+				break;
+			case 2:
+				ASWGameRules()->ResetModsLevelOne();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Level One" );
+				break;
+			default:
+				break;
+		}
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		
+		Q_snprintf(buffer, sizeof(buffer), "Challenge activated %s", challenge_name );
+		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+	}
+}
+ConCommand rm_challenge( "rm_challenge", rm_challengef, "Activates a challenge which is a modification of game rules, like Rifle Mod, ASBI or Ch1ckensCoop", 0 );
 
 void ASW_AllowBriefing_f()
 {

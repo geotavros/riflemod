@@ -783,6 +783,11 @@ CAlienSwarm::CAlienSwarm()
 	m_fAlienSpeedScale  = 1.0f;
 	m_iRefillSecondary  = 1;
 	m_iAllowRevive		= 1;
+	m_iHpRegen			= 1;
+	m_iAddBots			= 1;
+	m_iWeapon			= 0;	
+
+	ResetModsRiflemodClassic();
 }
 
 CAlienSwarm::~CAlienSwarm()
@@ -1631,39 +1636,41 @@ void CAlienSwarm::StartMission()
 	// store our current leader (so we can keep the same leader after a map load)
 	pGameResource->RememberLeaderID();
 
-	// riflemod: add bots for missing slots 
-	// find out the actual number of marines, if the number is less than 4 then
-	// add marines for leader player 
-	
-	/* // skip this code, stupidly add 4 bots to leader 
-	int num_selected_marines = 0;
-	for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; ++i)
+	if (m_iAddBots)
 	{
-		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
-		if (pMR)
-			++num_selected_marines;
-	}
-	int num_bots_to_add = 4 - num_selected_marines;
-	//*/
-
-	CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
-	int nPreferredSlot = -1; // we don't care which slot will it take 
-	for (int i = 0; i < 4; ++i)
-	{
-		if ( RosterSelect( pLeader, i, nPreferredSlot ) )
+		// riflemod: add bots for missing slots 
+		// find out the actual number of marines, if the number is less than 4 then
+		// add marines for leader player 
+		
+		/* // skip this code, stupidly add 4 bots to leader 
+		int num_selected_marines = 0;
+		for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; ++i)
 		{
-			// 0 is Sarge, select fire mines(11) for him
-			if (0 == i)
-				LoadoutSelect(pLeader, i, 2, 11);	// Sarge has asw_weapon_mines
-			if (1 == i)
-				LoadoutSelect(pLeader, i, 2,  6);   // Wildcat has asw_weapon_hornet_barrage
-			if (2 == i)
-				LoadoutSelect(pLeader, i, 2,  7);   // Faith has asw_weapon_freeze_grenades
-			if (3 == i)
-				LoadoutSelect(pLeader, i, 2, 10);   // Tech has asw_weapon_electrified_armor
+			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+			if (pMR)
+				++num_selected_marines;
 		}
+		int num_bots_to_add = 4 - num_selected_marines;
+		//*/
+		CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
+		int nPreferredSlot = -1; // we don't care which slot will it take 
+		for (int i = 0; i < 4; ++i)
+		{
+			if ( RosterSelect( pLeader, i, nPreferredSlot ) )
+			{
+				// 0 is Sarge, select fire mines(11) for him
+				if (0 == i)
+					LoadoutSelect(pLeader, i, 2, 11);	// Sarge has asw_weapon_mines
+				if (1 == i)
+					LoadoutSelect(pLeader, i, 2,  6);   // Wildcat has asw_weapon_hornet_barrage
+				if (2 == i)
+					LoadoutSelect(pLeader, i, 2,  7);   // Faith has asw_weapon_freeze_grenades
+				if (3 == i)
+					LoadoutSelect(pLeader, i, 2, 10);   // Tech has asw_weapon_electrified_armor
+			}
+		}
+		// end of riflemod code
 	}
-	// end of riflemod code
 
 	// activate the level's ambient sounds
 	StartAllAmbientSounds();
@@ -2430,6 +2437,21 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
 					GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
 				break;
+			case LEVEL_ONE:
+				// level one weapons IDs range from 0 to 7
+				// we allow only these IDs and replace other IDs with 0
+				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
+				{
+					int weapon_id = pMR->m_iWeaponsInSlots.Get( iWpnSlot );
+					// skip 3rd item 
+					if (iWpnSlot < 2) 
+					{
+						if (weapon_id < 0 || weapon_id > 7)
+							weapon_id = 0;
+					}
+					GiveStartingWeaponToMarine( pMarine, weapon_id, iWpnSlot );
+				}
+				break;
 			case RIFLE_MOD:
 			default:
 			{
@@ -2443,42 +2465,48 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 				switch (pMR->m_MarineProfileIndex)
 				{
 				case 0:		// Sarge
-					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );
 					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
 					// GiveStartingWeaponToMarine( pMarine, 6, 2 );
 					break;
 				case 1:		// Wildcat
-					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );
 					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
 					// GiveStartingWeaponToMarine( pMarine, 5, 2 );
 					break;
 				case 2:		// Faith
-					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );
 					GiveStartingWeaponToMarine( pMarine, 6, 1 );	// heal
 					//GiveStartingWeaponToMarine( pMarine, 7, 2 );	// freeze
 					break;	
 				case 3:		// Crash
-					GiveStartingWeaponToMarine( pMarine, 1, 0 );	
+					if (m_iWeapon == 0)
+						GiveStartingWeaponToMarine( pMarine, 1, 0 );	
+					else 
+						GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );	
 					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
 					//GiveStartingWeaponToMarine( pMarine, 1, 2 );
 					break;
 				case 4:		// Jaeger
-					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );
 					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
 					//GiveStartingWeaponToMarine( pMarine, 3, 2 );
 					break;
 				case 5:		// Wolfe
-					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );
 					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
 					//GiveStartingWeaponToMarine( pMarine, 5, 2 );
 					break;
 				case 6:		// Bastile
-					GiveStartingWeaponToMarine( pMarine, 0, 0 );
+					GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );
 					GiveStartingWeaponToMarine( pMarine, 6, 1 );
 					//GiveStartingWeaponToMarine( pMarine, 8, 2 );
 					break;
 				case 7:		// Vegas
-					GiveStartingWeaponToMarine( pMarine, 1, 0 );
+					if (m_iWeapon == 0)
+						GiveStartingWeaponToMarine( pMarine, 1, 0 );	
+					else 
+						GiveStartingWeaponToMarine( pMarine, m_iWeapon, 0 );	
 					GiveStartingWeaponToMarine( pMarine, sentry_id, 1 );
 					//GiveStartingWeaponToMarine( pMarine, 9, 2 );
 					break;
@@ -3013,7 +3041,7 @@ bool CAlienSwarm::CanHaveAmmo( CBaseCombatCharacter *pPlayer, int iAmmoIndex )
 	return false;
 }
 
-ConVar asw_ammo_satchel_bonus( "asw_ammo_satchel_bonus", "13", FCVAR_NONE, "Additional Ammo Satchels" );
+ConVar asw_ammo_satchel_bonus( "asw_ammo_satchel_bonus", "3", FCVAR_NONE, "Additional Ammo Satchels" );
 
 void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipIndex, int iSlot)
 {
@@ -5528,11 +5556,11 @@ ConVar asw_alien_health_scale_brutal(	"asw_alien_health_scale_brutal",	"4.0", 0,
 // alters alien health by 20% per notch away from 8
 float CAlienSwarm::ModifyAlienHealthBySkillLevel(float health)
 {
-	/*float fDiff = GetMissionDifficulty() - 5;
+	float fDiff = GetMissionDifficulty() - 5;
 	float f = 1.0 + fDiff * asw_difficulty_alien_health_step.GetFloat();
-	*/
+	
 	// commented and added mine scale factors
-	float f = 1.0f; 
+	/*float f = 1.0f; 
 	switch (m_iSkillLevel)
 	{
 	case 1:
@@ -5553,7 +5581,7 @@ float CAlienSwarm::ModifyAlienHealthBySkillLevel(float health)
 	default:
 		Assert(false && "m_iSkillLevel unknown value found in ModifyAlienHealthBySkillLevel()");
 	}
-	// end of mine code
+	// end of mine code //*/
 
 	return f * health * m_fHeavyScale;
 }

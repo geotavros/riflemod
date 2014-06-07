@@ -5,6 +5,7 @@
 #include "asw_marine.h"
 #include "asw_health_regen.h"
 #include "asw_marine_profile.h"
+#include "asw_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -72,7 +73,7 @@ void CASW_Health_Regen::Think()
 // 				}
 // 				else
 // 				{
-					if (!pMarine->m_bKnockedOut)
+					if (!pMarine->m_bKnockedOut && ASWGameRules()->m_iHpRegen)
 						pMarine->SetHealth(result_health);
 //				}
 			}

@@ -872,7 +872,7 @@ void CASW_Drone_Advanced::StartTouch( CBaseEntity *pOther )
 	BaseClass::StartTouch( pOther );
 
 	CASW_Marine *pMarine = CASW_Marine::AsMarine( pOther );
-	if (pMarine)
+	if (pMarine && !pMarine->m_bKnockedOut)
 	{
 		int iTouchDamage = asw_drone_touch_damage.GetInt();
 		if (GetActivity() == ACT_CLIMB_UP || GetActivity() == ACT_CLIMB_DISMOUNT)
@@ -1558,7 +1558,7 @@ void CASW_Drone_Advanced::StartTask( const Task_t *pTask )
 			if (!m_bDoneAlienCloseChatter && gpGlobals->curtime > s_fNextTooCloseChatterTime)
 			{
 				CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(GetEnemy());
-				if (pMarine)
+				if (pMarine && !pMarine->m_bKnockedOut)
 				{
 					pMarine->GetMarineSpeech()->Chatter(CHATTER_ALIEN_TOO_CLOSE);
 					m_bDoneAlienCloseChatter = true;

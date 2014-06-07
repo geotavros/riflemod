@@ -127,7 +127,9 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 				if (tr.fraction < 1.0f && tr.DidHitNonWorldEntity())
 				{
 					// some non-world entity is blocking the spawn point, so don't spawn
-					if (tr.m_pEnt)
+					// riflemod: Cargo Elevator railing spawn fix for carnage
+					// added && tr.m_pEnt->Classify() != CLASS_ASW_DRONE
+					if (tr.m_pEnt && tr.m_pEnt->Classify() != CLASS_ASW_DRONE)
 					{
 						if ( m_iMoveAsideCount < 6 )	// don't send 'move aside' commands more than 5 times in a row, else you'll stop blocked NPCs going to sleep.
 						{

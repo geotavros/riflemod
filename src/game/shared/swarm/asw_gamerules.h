@@ -335,10 +335,51 @@ public:
 
 	enum WeaponTypes 
 	{
-		DEFAULT = 0,	// all weapons are allowed
+		DEFAULT = 0,	// all weapons are allowed 
 		RIFLE_MOD,		// only rifles are allowed 
-		BULLET_ONLY 	// allowed rifles, shotguns
+		LEVEL_ONE, 		// allowed rifle, vindicator, autogun 
+
+		WEAPON_TYPES_MAX
 	};
+
+	void ResetModsToDefault() 
+	{
+		m_iWeaponType		= DEFAULT;
+		m_iCarnageScale		= 1;
+		m_fHeavyScale		= 1.0f;
+		m_fAlienSpeedScale	= 1.0f;
+		m_iRefillSecondary	= 0;
+		m_iAllowRevive		= 0;
+		m_iHpRegen			= 0;
+		m_iAddBots			= 1;
+		m_iWeapon			= 0;
+	}
+
+	void ResetModsRiflemodClassic()
+	{
+		m_iWeaponType		= RIFLE_MOD;
+		m_iCarnageScale		= 1;
+		m_fHeavyScale		= 1.0f;
+		m_fAlienSpeedScale	= 1.0f;
+		m_iRefillSecondary	= 1;
+		m_iAllowRevive		= 1;
+		m_iHpRegen			= 1;
+		m_iAddBots			= 1;
+		m_iWeapon			= 0;
+	}
+
+	void ResetModsLevelOne()
+	{
+		m_iWeaponType		= LEVEL_ONE;
+		m_iCarnageScale		= 1;
+		m_fHeavyScale		= 1.0f;
+		m_fAlienSpeedScale	= 1.0f;
+		m_iRefillSecondary	= 0;
+		m_iAllowRevive		= 0;
+		m_iHpRegen			= 0;
+		m_iAddBots			= 1;
+		m_iWeapon			= 0;
+	}
 	
 	WeaponTypes m_iWeaponType;// 
 	int	   m_iCarnageScale;   // the factor used to scale the amount of aliens in each drone spawner
@@ -346,6 +387,9 @@ public:
 	float  m_fAlienSpeedScale;// the factor used to scale aliens' speed 
 	int	   m_iRefillSecondary;// 0 = false, 1 = true. If true the secondary ammo is picked up too.
 	int	   m_iAllowRevive;	  // 1 by default 
+	int	   m_iHpRegen;		  // 0 disable marines' health regeneration 
+	int	   m_iAddBots;		  // 1 add bots to fill free slots, 0 don't add
+	int	   m_iWeapon;		  // Default weapon to give during weapon restricted mode 
 
 #endif
 

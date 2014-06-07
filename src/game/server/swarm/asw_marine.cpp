@@ -1126,6 +1126,48 @@ int CASW_Marine::OnTakeDamage( const CTakeDamageInfo &info )
 				{
 					SetHealth(GetMaxHealth() - 10);
 					SetKnockedOut(true);
+
+					// riflemod: print a message that marine was incapacitated 
+					CASW_Marine *pOtherMarine = dynamic_cast< CASW_Marine* >( info.GetAttacker() );
+					if ( pOtherMarine && GetMarineProfile() && pOtherMarine->GetMarineProfile() )
+					{
+						CASW_Marine_Resource *pMR = GetMarineResource();
+						if ( pMR )
+						{
+							char szName[ 256 ];
+							pMR->GetDisplayName( szName, sizeof( szName ) );
+
+							if ( pOtherMarine == this )
+							{
+								if ( GetMarineProfile()->m_bFemale )
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 incapacitated herself", szName );
+								else
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 incapacitated himself", GetMarineProfile()->m_ShortName );
+							}
+							else
+							{
+								CASW_Marine_Resource *pMROther = pOtherMarine->GetMarineResource();
+								if ( pMROther )
+								{
+									char szNameOther[ 256 ];
+									pMROther->GetDisplayName( szNameOther, sizeof( szNameOther ) );
+
+									UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 was incapacitated by %s2", szName, szNameOther );
+								}
+							}
+						}
+					}
+					else 
+					{
+						CASW_Marine_Resource *pMR = GetMarineResource();
+						if ( pMR )
+						{
+							char szName[ 256 ];
+							pMR->GetDisplayName( szName, sizeof( szName ) );
+							UTIL_ClientPrintAll( ASW_HUD_PRINTTALKANDCONSOLE, "%s1 is incapacitated", szName );
+						}
+					}
+
 					return retVal;
 				}
 				else 

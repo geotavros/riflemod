@@ -716,10 +716,11 @@ float CASW_Weapon::GetReloadTime()
 		float fSpeedScale = MarineSkills()->GetSkillBasedValueByMarine(GetMarine(), ASW_MARINE_SKILL_RELOADING, ASW_MARINE_SUBSKILL_RELOADING_SPEED_SCALE);
 		fReloadTime *= fSpeedScale;
 
-		// bots reload very fast because they are stupid to die during long reloads
+		// riflemod: bots reload very fast because they are stupid to die 
+		// during long reloads
 		if ( !GetMarine()->IsInhabited() )
 		{
-			fReloadTime = 0.5f; 
+			fReloadTime = 1.0f; 
 		}
 	}
 

@@ -620,7 +620,7 @@ bool CASW_Alien::MarineNearby(float radius, bool bCheck3D)
 			continue;
 
 		CASW_Marine* pMarine = pMarineResource->GetMarineEntity();
-		if (!pMarine)
+		if (!pMarine || pMarine->m_bKnockedOut)
 			continue;
 		
 		Vector diff = pMarine->GetAbsOrigin() - GetAbsOrigin();
@@ -939,8 +939,8 @@ int CASW_Alien::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	// if we take fire damage, catch on fire
 	if ( result > 0 && ( info.GetDamageType() & DMG_BURN ) )
 	{
-		// riflemod: ignite aliens for default mode 
-		if (ASWGameRules()->m_iWeaponType == CAlienSwarm::DEFAULT)
+		// riflemod: prevent aliens' igniting for riflemod 
+		//if (ASWGameRules()->m_iWeaponType != CAlienSwarm::RIFLE_MOD)
 			ASW_Ignite( asw_alien_burn_duration.GetFloat(), 0, info.GetAttacker(), info.GetWeapon() );
 	}
 
@@ -1612,7 +1612,7 @@ void CASW_Alien::SetupPushawayVector()
 			continue;
 
 		CASW_Marine *pMarine = pMR->GetMarineEntity();
-		if ( !pMarine )
+		if ( !pMarine || pMarine->m_bKnockedOut )
 			continue;
 
 		Vector diff = m_vecLastPushAwayOrigin - pMarine->GetAbsOrigin();
