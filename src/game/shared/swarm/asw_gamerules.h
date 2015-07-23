@@ -102,7 +102,41 @@ public:
 	
 	virtual void			Precache( void );
 	virtual void			Think( void );
-	virtual const char *GetGameDescription( void ) { return "Rifle Mod"; }
+	virtual const char *GetGameDescription( void ) 
+	{ 
+		int weapon_type = clamp(m_iWeaponType, 0, 20);
+
+		switch (weapon_type)
+		{
+		case DEFAULT:
+			if (
+				m_iCarnageScale			== 1 &&
+				int(m_fHeavyScale)		== 1 &&
+				int(m_fAlienSpeedScale)	== 1 &&
+				m_iRefillSecondary	== 0 &&
+				m_iAllowRevive		== 0 &&
+				m_iHpRegen			== 0 &&
+				m_iAddBots			== 0 &&
+				m_iWeapon			== 0 )
+			{
+				return "Alien Swarm"; 
+			}
+			else
+			{
+				return "Alien Swarm: Custom"; 
+			}
+			break;
+		case RIFLE_MOD:
+			return "Rifle Mod"; 
+			break;
+		case LEVEL_ONE:
+			return "Level One"; 
+			break;
+		default:
+			return "Rifle Mod"; 
+			break;
+		}
+	}
 	virtual void			OnServerHibernating();
 	
 	// briefing roster functions
@@ -351,7 +385,7 @@ public:
 		m_iRefillSecondary	= 0;
 		m_iAllowRevive		= 0;
 		m_iHpRegen			= 0;
-		m_iAddBots			= 1;
+		m_iAddBots			= 0;
 		m_iWeapon			= 0;
 	}
 
@@ -368,6 +402,19 @@ public:
 		m_iWeapon			= 0;
 	}
 
+	void ResetModsRifleRun()
+	{
+		m_iWeaponType		= RIFLE_MOD;
+		m_iCarnageScale		= 1;
+		m_fHeavyScale		= 1.0f;
+		m_fAlienSpeedScale	= 1.0f;
+		m_iRefillSecondary	= 0;
+		m_iAllowRevive		= 0;
+		m_iHpRegen			= 0;
+		m_iAddBots			= 1;
+		m_iWeapon			= 0;
+	}
+
 	void ResetModsLevelOne()
 	{
 		m_iWeaponType		= LEVEL_ONE;
@@ -377,7 +424,7 @@ public:
 		m_iRefillSecondary	= 0;
 		m_iAllowRevive		= 0;
 		m_iHpRegen			= 0;
-		m_iAddBots			= 1;
+		m_iAddBots			= 0;
 		m_iWeapon			= 0;
 	}
 	

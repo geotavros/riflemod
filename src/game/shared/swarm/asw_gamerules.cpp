@@ -666,6 +666,14 @@ const char * GenerateNewSaveGameName()
 	return NULL;
 }
 
+ConVar rm_default_game_mode("rm_default_game_mode", "1", 0, 
+							"The server will be hosting this game mode as "
+							"default. "
+							"0 = default Alien Swarm, "
+							"1 = Rifle Mod Casual, "
+							"2 = Level One Challenge, "
+							"3 = Rifle Run");
+
 CAlienSwarm::CAlienSwarm()
 {
 	Msg("CAlienSwarm created\n");
@@ -787,7 +795,26 @@ CAlienSwarm::CAlienSwarm()
 	m_iAddBots			= 1;
 	m_iWeapon			= 0;	
 
-	ResetModsRiflemodClassic();
+	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
+
+	switch (challenge_id)
+	{
+	case 0:
+		ASWGameRules()->ResetModsToDefault();
+		break;
+	case 1:
+		ASWGameRules()->ResetModsRiflemodClassic();
+		break;
+	case 2:
+		ASWGameRules()->ResetModsLevelOne();
+		break;
+	case 3:
+		ASWGameRules()->ResetModsRifleRun();
+		break;
+	default:
+		ASWGameRules()->ResetModsToDefault();
+		break;
+	}
 }
 
 CAlienSwarm::~CAlienSwarm()

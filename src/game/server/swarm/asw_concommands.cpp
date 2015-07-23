@@ -682,6 +682,10 @@ void rm_challengef(const CCommand &args)
 				ASWGameRules()->ResetModsLevelOne();
 				Q_snprintf(challenge_name, sizeof(challenge_name), "Level One" );
 				break;
+			case 3:
+				ASWGameRules()->ResetModsRifleRun();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Rifle Run" );
+				break;
 			default:
 				break;
 		}
