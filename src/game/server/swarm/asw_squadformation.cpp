@@ -345,7 +345,7 @@ float GetClosestBoomerBlobDistSqr( const Vector &vecPosition )
 {
 	float flClosestBoomerBlobDistSqr = OUT_OF_BOOMER_BOMB_RANGE;
 
-	for( int iBoomerBlob = 0; iBoomerBlob < g_aExplosiveProjectiles.Count(); iBoomerBlob++ )
+/*	for( int iBoomerBlob = 0; iBoomerBlob < g_aExplosiveProjectiles.Count(); iBoomerBlob++ )
 	{
  		CBaseEntity *pExplosive = g_aExplosiveProjectiles[ iBoomerBlob ];
 		const float flExplosiveRadius = 240.0f;	// bad hardcoded to match boomer blob radius
@@ -355,7 +355,7 @@ float GetClosestBoomerBlobDistSqr( const Vector &vecPosition )
 		{
 			flClosestBoomerBlobDistSqr = flDistSqr;
 		}
-	}
+	} //*/
 
 	return flClosestBoomerBlobDistSqr;
 }
@@ -418,7 +418,7 @@ void CASW_SquadFormation::UpdateFollowPositions()
 			m_vFollowPositions[i] = pBeaconToStandIn->GetAbsOrigin() + s_MarineBeaconOffset[i];
 			m_bStandingInBeacon[i] = true;
 		}
-		else if( g_aExplosiveProjectiles.Count() )
+		else if( false/*g_aExplosiveProjectiles.Count()*/ )
 		{
 			bool bSafeNodeFound = false;
 			bool bUnsafeNodeFound = false;
@@ -885,7 +885,7 @@ bool CASW_SquadFormation::ShouldUpdateFollowPositions() const
 	if ( m_iLastHealBeaconCount != IHealGrenadeAutoList::AutoList().Count() )
 		return true;
 
-	bool bBoomerBombs = g_aExplosiveProjectiles.Count() > 0;
+	bool bBoomerBombs = false/*g_aExplosiveProjectiles.Count() > 0*/;
 
 	// leader's more than epsilon from previous position, 
 	// and we haven't updated in a quarter second.
