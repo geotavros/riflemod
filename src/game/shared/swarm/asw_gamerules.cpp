@@ -674,6 +674,104 @@ ConVar rm_default_game_mode("rm_default_game_mode", "1", 0,
 							"2 = Level One Challenge, "
 							"3 = Rifle Run");
 
+ConVar rm_add_bots_by_default("rm_add_bots_by_default", "1", 0, 
+							  "If 1 bot marines will be added to fill "
+							  "empty slots");
+
+void CAlienSwarm::ResetModsToDefault() 
+{
+	m_iWeaponType		= DEFAULT;
+	m_iCarnageScale		= 1;
+	m_fHeavyScale		= 1.0f;
+	m_fAlienSpeedScale	= 1.0f;
+	m_iRefillSecondary	= 0;
+	m_iAllowRevive		= 0;
+	m_iHpRegen			= 0;
+	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iWeapon			= 0;
+	m_iFlamer			= 1;
+}
+
+void CAlienSwarm::ResetModsRiflemodClassic() 
+{
+	m_iWeaponType		= RIFLE_MOD;
+	m_iCarnageScale		= 1;
+	m_fHeavyScale		= 1.0f;
+	m_fAlienSpeedScale	= 1.0f;
+	m_iRefillSecondary	= 1;
+	m_iAllowRevive		= 1;
+	m_iHpRegen			= 1;
+	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iWeapon			= 0;
+	m_iFlamer			= 1;
+}
+
+void CAlienSwarm::ResetModsRifleRun() 
+{
+	m_iWeaponType		= RIFLE_MOD;
+	m_iCarnageScale		= 1;
+	m_fHeavyScale		= 1.0f;
+	m_fAlienSpeedScale	= 1.0f;
+	m_iRefillSecondary	= 0;
+	m_iAllowRevive		= 0;
+	m_iHpRegen			= 0;
+	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iWeapon			= 0;
+	m_iFlamer			= 1;
+}
+
+void CAlienSwarm::ResetModsLevelOne() 
+{
+	m_iWeaponType		= LEVEL_ONE;
+	m_iCarnageScale		= 1;
+	m_fHeavyScale		= 1.0f;
+	m_fAlienSpeedScale	= 1.0f;
+	m_iRefillSecondary	= 0;
+	m_iAllowRevive		= 0;
+	m_iHpRegen			= 0;
+	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iWeapon			= 0;
+	m_iFlamer			= 1;
+}
+
+const char * CAlienSwarm::GetGameDescription(void) 
+{
+	int weapon_type = clamp(m_iWeaponType, 0, 20);
+
+	switch (weapon_type)
+	{
+	case DEFAULT:
+		if (
+			m_iCarnageScale					== 1 &&
+			fabs(m_fHeavyScale - 1.f)		< 0.0001 &&
+			fabs(m_fAlienSpeedScale - 1.f)	< 0.0001 &&
+			m_iRefillSecondary				== 0 &&
+			m_iAllowRevive					== 0 &&
+			m_iHpRegen						== 0 &&
+			m_iAddBots						== 0 &&
+			m_iWeapon						== 0 &&
+			m_iFlamer						== 1 )
+		{
+			return "Alien Swarm"; 
+		}
+		else
+		{
+			return "Alien Swarm: Custom"; 
+		}
+		break;
+	case RIFLE_MOD:
+		return "Rifle Mod"; 
+		break;
+	case LEVEL_ONE:
+		return "Level One"; 
+		break;
+	default:
+		return "Rifle Mod"; 
+		break;
+	}
+}
+
+
 CAlienSwarm::CAlienSwarm()
 {
 	Msg("CAlienSwarm created\n");
@@ -794,6 +892,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iHpRegen			= 1;
 	m_iAddBots			= 1;
 	m_iWeapon			= 0;	
+	m_iFlamer			= 1;
 
 	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
 
@@ -2460,9 +2559,28 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 		switch (m_iWeaponType)
 		{
 			case DEFAULT:
-				// give the pMarine the equipment selected on the briefing screen
-				for ( int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++ iWpnSlot )
-					GiveStartingWeaponToMarine( pMarine, pMR->m_iWeaponsInSlots.Get( iWpnSlot ), iWpnSlot );
+				
+				if (ASWGameRules()->m_iFlamer == 0)
+				{
+					for (int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot)
+					{
+						int weapon_id = pMR->m_iWeaponsInSlots.Get(iWpnSlot);
+						// skip 3rd item 
+						if (iWpnSlot < 2)
+						{
+							// if flamer, replace with rifle
+							if (weapon_id == 13)
+								weapon_id = 0;
+						}
+						GiveStartingWeaponToMarine(pMarine, weapon_id, iWpnSlot);
+					}
+				}
+				else
+				{
+					// give the pMarine the equipment selected on the briefing screen
+					for (int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot)
+						GiveStartingWeaponToMarine(pMarine, pMR->m_iWeaponsInSlots.Get(iWpnSlot), iWpnSlot);
+				}
 				break;
 			case LEVEL_ONE:
 				// level one weapons IDs range from 0 to 7

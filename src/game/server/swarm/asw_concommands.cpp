@@ -293,7 +293,7 @@ void asw_afkf()
 }
 ConCommand asw_afk( "asw_afk", asw_afkf, "Leave current marine", 0 );
 
-// riflemod: enabling carnage mode during breifing
+// riflemod: enabling carnage mode during briefing
 void rm_carnagef(const CCommand &args)
 {
 	if ( args.ArgC() < 2 )
@@ -698,6 +698,49 @@ void rm_challengef(const CCommand &args)
 	}
 }
 ConCommand rm_challenge( "rm_challenge", rm_challengef, "Activates a challenge which is a modification of game rules, like Rifle Mod, ASBI or Ch1ckensCoop", 0 );
+
+void rm_flamerf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Flamer setting can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can set flamer setting \n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+		ASWGameRules()->m_iFlamer = multiplier;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (ASWGameRules()->m_iFlamer == 0)
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Flamers are not allowed");
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Flamers are allowed");
+		}
+		
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_flamer("rm_flamer", rm_flamerf, "If 0 players' flamers will be replaced with rifles", 0);
 
 void ASW_AllowBriefing_f()
 {
