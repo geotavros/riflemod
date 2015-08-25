@@ -102,41 +102,7 @@ public:
 	
 	virtual void			Precache( void );
 	virtual void			Think( void );
-	virtual const char *GetGameDescription( void ) 
-	{ 
-		int weapon_type = clamp(m_iWeaponType, 0, 20);
-
-		switch (weapon_type)
-		{
-		case DEFAULT:
-			if (
-				m_iCarnageScale			== 1 &&
-				int(m_fHeavyScale)		== 1 &&
-				int(m_fAlienSpeedScale)	== 1 &&
-				m_iRefillSecondary	== 0 &&
-				m_iAllowRevive		== 0 &&
-				m_iHpRegen			== 0 &&
-				m_iAddBots			== 0 &&
-				m_iWeapon			== 0 )
-			{
-				return "Alien Swarm"; 
-			}
-			else
-			{
-				return "Alien Swarm: Custom"; 
-			}
-			break;
-		case RIFLE_MOD:
-			return "Rifle Mod"; 
-			break;
-		case LEVEL_ONE:
-			return "Level One"; 
-			break;
-		default:
-			return "Rifle Mod"; 
-			break;
-		}
-	}
+	virtual const char *GetGameDescription( void );
 	virtual void			OnServerHibernating();
 	
 	// briefing roster functions
@@ -376,57 +342,10 @@ public:
 		WEAPON_TYPES_MAX
 	};
 
-	void ResetModsToDefault() 
-	{
-		m_iWeaponType		= DEFAULT;
-		m_iCarnageScale		= 1;
-		m_fHeavyScale		= 1.0f;
-		m_fAlienSpeedScale	= 1.0f;
-		m_iRefillSecondary	= 0;
-		m_iAllowRevive		= 0;
-		m_iHpRegen			= 0;
-		m_iAddBots			= 0;
-		m_iWeapon			= 0;
-	}
-
-	void ResetModsRiflemodClassic()
-	{
-		m_iWeaponType		= RIFLE_MOD;
-		m_iCarnageScale		= 1;
-		m_fHeavyScale		= 1.0f;
-		m_fAlienSpeedScale	= 1.0f;
-		m_iRefillSecondary	= 1;
-		m_iAllowRevive		= 1;
-		m_iHpRegen			= 1;
-		m_iAddBots			= 1;
-		m_iWeapon			= 0;
-	}
-
-	void ResetModsRifleRun()
-	{
-		m_iWeaponType		= RIFLE_MOD;
-		m_iCarnageScale		= 1;
-		m_fHeavyScale		= 1.0f;
-		m_fAlienSpeedScale	= 1.0f;
-		m_iRefillSecondary	= 0;
-		m_iAllowRevive		= 0;
-		m_iHpRegen			= 0;
-		m_iAddBots			= 1;
-		m_iWeapon			= 0;
-	}
-
-	void ResetModsLevelOne()
-	{
-		m_iWeaponType		= LEVEL_ONE;
-		m_iCarnageScale		= 1;
-		m_fHeavyScale		= 1.0f;
-		m_fAlienSpeedScale	= 1.0f;
-		m_iRefillSecondary	= 0;
-		m_iAllowRevive		= 0;
-		m_iHpRegen			= 0;
-		m_iAddBots			= 0;
-		m_iWeapon			= 0;
-	}
+	void ResetModsToDefault();
+	void ResetModsRiflemodClassic();
+	void ResetModsRifleRun();
+	void ResetModsLevelOne();
 	
 	WeaponTypes m_iWeaponType;// 
 	int	   m_iCarnageScale;   // the factor used to scale the amount of aliens in each drone spawner
@@ -437,6 +356,7 @@ public:
 	int	   m_iHpRegen;		  // 0 disable marines' health regeneration 
 	int	   m_iAddBots;		  // 1 add bots to fill free slots, 0 don't add
 	int	   m_iWeapon;		  // Default weapon to give during weapon restricted mode 
+	int	   m_iFlamer;		  // If 0 flamers will be replaced with rifles, 1 does nothing and is default 
 
 #endif
 
