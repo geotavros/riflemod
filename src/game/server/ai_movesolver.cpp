@@ -15,10 +15,14 @@
 
 //-----------------------------------------------------------------------------
 
-inline float round( float f )
+// reactivedrop: added _MSC_VER check because this function 
+// doesn't compile on VS2013
+#if (_MSC_VER != 1800)
+inline float round(float f)
 {
-	return (float)( (int)( f + 0.5 ) );
+	return (float)((int)(f + 0.5));
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // CAI_MoveSolver
