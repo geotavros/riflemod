@@ -288,7 +288,8 @@ void CASW_Director::UpdateHorde()
 	{
 		if ( ASWSpawnManager()->GetAwakeDrones() < 25 )
 		{
-			int iNumAliens = RandomInt( asw_horde_size_min.GetInt(), asw_horde_size_max.GetInt() );
+			int iNumCarnage = MAX(1, ASWGameRules()->m_iCarnageScale);
+			int iNumAliens = RandomInt(asw_horde_size_min.GetInt() * iNumCarnage, asw_horde_size_max.GetInt() * iNumCarnage);
 
 			if ( ASWSpawnManager()->AddHorde( iNumAliens ) )
 			{
