@@ -296,11 +296,22 @@ int CASW_Marine::SelectSchedule()
 
 	ClearCondition( COND_ASW_NEW_ORDERS );
 
-	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) || HasCondition( COND_COMPLETELY_OUT_OF_AMMO ) )
+	// reactivedrop: commented || HasCondition( COND_COMPLETELY_OUT_OF_AMMO )
+	// we prevent melee schedule if out of ammo because 
+	// AI marines run away and die there swarmed by aliens 
+	// on high difficulties 
+	if ( HasCondition( COND_PATH_BLOCKED_BY_PHYSICS_PROP ) )
 	{
 		int iMeleeSchedule = SelectMeleeSchedule();
 		if( iMeleeSchedule != -1 )
 			return iMeleeSchedule;
+	}
+
+	// reactivedrop: added this check to make bots 
+	// follow leader when out of ammo 
+	if (HasCondition(COND_COMPLETELY_OUT_OF_AMMO))
+	{
+		return SCHED_ASW_FOLLOW_MOVE;
 	}
 
 	int iOffhandSchedule = SelectOffhandItemSchedule();
@@ -1493,7 +1504,8 @@ bool CASW_Marine::NeedToFollowMove()
 		return false;
 
 	if( IsOutOfAmmo() && GetEnemy() )
-		return false;
+		return true;	// reactivedrop: return true instead of false 
+						// to make bots without ammo follow leader, not melee
 
 	// only move if we're not near our saved follow point
 	float dist = ( GetAbsOrigin() - GetFollowPos() ).Length2DSqr();
@@ -1579,9 +1591,14 @@ int CASW_Marine::SelectFollowSchedule()
 	{
 		SetCondition( COND_COMPLETELY_OUT_OF_AMMO );
 
-		int iMeleeSchedule = SelectMeleeSchedule();
-		if( iMeleeSchedule != -1 )
-			return iMeleeSchedule;
+		// reactivedrop: commented 
+		// we prevent melee schedule if out of ammo because 
+		// AI marines run away and die there swarmed by aliens 
+		// on high difficulties 
+		//int iMeleeSchedule = SelectMeleeSchedule();
+		//if( iMeleeSchedule != -1 )
+		//	return iMeleeSchedule;
+		return SCHED_ASW_FOLLOW_MOVE; // reactivedrop: make bots follow leader when out of ammo 
 	}
 
 	// check if we're too near another marine
@@ -2451,6 +2468,10 @@ void CASW_Marine::CheckForAIWeaponSwitch()
 	if ( pWeapon && pWeapon->IsOffensiveWeapon() && pWeapon->HasPrimaryAmmo() )
 		return;
 
+	// reactivedrop: don't switch weapons while healing 
+	if (pWeapon && pWeapon->Classify() == CLASS_ASW_HEAL_GUN && IsCurSchedule(SCHED_ASW_HEAL_MARINE))
+		return;
+
 	// see if any of our other inventory items are valid weapons
 	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
@@ -2463,7 +2484,9 @@ void CASW_Marine::CheckForAIWeaponSwitch()
 		}
 	}
 
-	// if we have no guns with primary ammo, search for one with secondary ammo
+	// reactivedrop: commented, not needed to panic here and constantly
+	// switch weapons 
+/*	// if we have no guns with primary ammo, search for one with secondary ammo
 	for ( int i = 0; i < ASW_NUM_INVENTORY_SLOTS; i++ )
 	{
 		CASW_Weapon *pOtherWeapon = GetASWWeapon( i );
@@ -2474,6 +2497,7 @@ void CASW_Marine::CheckForAIWeaponSwitch()
 			return;
 		}
 	}
+//*/
 }
 
 #define ASW_OVERKILL_TIME random->RandomFloat(0.5f,1.0f)
@@ -2713,6 +2737,23 @@ void CASW_Marine::UpdateFacing()
 		float flAimYaw = UTIL_VecToYaw( m_vecFacingPointFromServer.Get() - GetAbsOrigin() );
 		GetMotor()->SetIdealYawAndUpdate( flAimYaw );
 	}
+	else if (IsCurSchedule(SCHED_ASW_HEAL_MARINE))		// face the marine that we want to heal
+	{
+		if (m_hHealTarget.Get())
+		{
+			float flAimYaw = CalcIdealYaw(m_hHealTarget.Get()->GetAbsOrigin());
+			GetMotor()->SetIdealYawAndUpdate(flAimYaw);
+
+			if (asw_debug_marine_aim.GetBool())
+			{
+				Vector vecAim;
+				QAngle angAim = QAngle(0, flAimYaw, 0);
+				AngleVectors(angAim, &vecAim);
+
+				NDebugOverlay::Line(GetAbsOrigin(), GetAbsOrigin() + vecAim * 50, 0, 255, 0, false, 0.2f);
+			}
+		}
+	}
 	else if ( GetEnemy() )
 	{
 		Vector vecEnemyLKP = GetEnemyLKP();
@@ -2751,26 +2792,18 @@ void CASW_Marine::UpdateFacing()
 			Msg( "aim error = %f fAimYaw = %f\n", m_fMarineAimError, flAimYaw );
 		}
 	}
-	else if ( IsCurSchedule( SCHED_ASW_HEAL_MARINE ) )		// face the marine that we want to heal
-	{
-		if ( m_hHealTarget.Get() )
-		{
-			float flAimYaw = CalcIdealYaw( m_hHealTarget.Get()->GetAbsOrigin() );
-			GetMotor()->SetIdealYawAndUpdate( flAimYaw );
-
-			if ( asw_debug_marine_aim.GetBool() )
-			{
-				Vector vecAim;
-				QAngle angAim = QAngle( 0, flAimYaw, 0 );
-				AngleVectors( angAim, &vecAim );
-
-				NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + vecAim * 50, 0, 255, 0, false, 0.2f );
-			}
-		}
-	}
 	else if ( GetASWOrders() == ASW_ORDER_FOLLOW )
 	{
-		float flAimYaw = GetSquadFormation()->GetYaw( GetSquadFormation()->Find(this) );
+		unsigned int slot_num = GetSquadFormation()->Find(this);
+		if (CASW_SquadFormation::INVALID_SQUADDIE == slot_num) 
+		{
+			// TODO check this and fix it
+			//AssertOnce( slot_num != CASW_SquadFormation::INVALID_SQUADDIE );
+			DevWarning("GetSquadFormation()->Find(this) returned INVALID_SQUADDIE \n");
+			return;
+		}
+
+		float flAimYaw = GetSquadFormation()->GetYaw( slot_num );
 		if ( gpGlobals->curtime < m_flLastEnemyYawTime + asw_marine_face_last_enemy_time.GetFloat() )
 		{
 			flAimYaw = m_flLastEnemyYaw;
@@ -2845,6 +2878,10 @@ bool CASW_Marine::CheckAutoWeaponSwitch()
 	CASW_Weapon *pWeapon = GetActiveASWWeapon();
 	if (pWeapon && pWeapon->IsOffensiveWeapon())
 		return true;
+
+	// reactivedrop: don't switch weapons while healing 
+	if (pWeapon && pWeapon->Classify() == CLASS_ASW_HEAL_GUN && IsCurSchedule(SCHED_ASW_HEAL_MARINE))
+		return false;
 
 	// marine doesn't auto switch weapons the first two times he's hurt
 	m_iHurtWithoutOffensiveWeapon++;
