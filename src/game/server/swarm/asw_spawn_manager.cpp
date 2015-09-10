@@ -698,7 +698,6 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 	angles.z = 0.0;	
 	pEntity->SetAbsOrigin( vecPos );	
 	pEntity->SetAbsAngles( angles );
-	UTIL_DropToFloor( pEntity, MASK_SOLID );
 
 	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
 	ASSERT(pSpawnable);	
@@ -722,6 +721,10 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 
 	// give our aliens the orders
 	pSpawnable->SetAlienOrders(AOT_MoveToNearestMarine, vec3_origin, NULL);
+
+	// reactivedrop: fixed horde aliens falling through floor and stuck in walls
+	// by moving this function call to the bottom of SpawnAlienAt()
+	UTIL_DropToFloor(pEntity, MASK_SOLID);
 
 	return pEntity;
 }
