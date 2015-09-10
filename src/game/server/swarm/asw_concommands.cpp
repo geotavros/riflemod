@@ -18,6 +18,7 @@
 #include "datacache/imdlcache.h"
 #include "asw_spawn_manager.h"
 #include "fmtstr.h"
+#include "asw_equip_req.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -741,6 +742,56 @@ void rm_flamerf(const CCommand &args)
 	}
 }
 ConCommand rm_flamer("rm_flamer", rm_flamerf, "If 0 players' flamers will be replaced with rifles", 0);
+
+void rm_weaponreqf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Weapon requirement setting can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can set weapon requirement setting \n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (multiplier == 0)
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Weapon requirement was deleted");
+			if (ASWGameRules())
+			{
+				if (ASWGameRules()->m_hEquipReq.Get() != NULL)
+				{
+					UTIL_Remove(static_cast<CASW_Equip_Req*>(ASWGameRules()->m_hEquipReq));
+				}
+				ASWGameRules()->m_hEquipReq = NULL;
+			}
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Weapon requirement cannot be enabled until mission is restarted");
+		}
+
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_weaponreq("rm_weaponreq", rm_weaponreqf, "If 0 all weapon requirements are disabled", 0);
 
 void ASW_AllowBriefing_f()
 {
