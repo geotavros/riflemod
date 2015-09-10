@@ -38,6 +38,9 @@ void CASW_Path_Utils_NPC::Spawn()
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetMoveType( MOVETYPE_STEP );
 	m_takedamage = DAMAGE_NO;
+
+	// reactivedrop: making the drone at (0, 0, 0) invisible
+	AddEffects(EF_NODRAW);
 }
 
 void CASW_Path_Utils_NPC::Precache()
