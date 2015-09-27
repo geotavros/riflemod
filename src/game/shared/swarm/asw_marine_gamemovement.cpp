@@ -3605,6 +3605,10 @@ int CASW_MarineGameMovement::CheckStuck( void )
 	//int i;
 	trace_t traceresult;
 
+	// riflemod: don't unstuck knocked out marines because it leads to bugs
+	if (marine->m_bKnockedOut)
+		return 0;
+
 	CreateMarineStuckTable();
 
 	hitent = TestPlayerPosition( mv->GetAbsOrigin(), COLLISION_GROUP_PLAYER_MOVEMENT, traceresult );
