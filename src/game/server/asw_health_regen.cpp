@@ -12,6 +12,7 @@
 
 ConVar rm_health_regen_interval("rm_health_regen_interval", "5", FCVAR_NONE, "Interval between health regeneration", true, 0.01f, false, 0.0f);
 ConVar rm_health_regen_amount("rm_health_regen_amount", "5", FCVAR_NONE, "Amount of health regenerating");
+ConVar rm_health_decrease_amount("rm_health_decrease_amount", "7", FCVAR_NONE, "Amount of health decreasing during incapacitated");
 
 LINK_ENTITY_TO_CLASS( asw_health_regen, CASW_Health_Regen );
 
@@ -75,6 +76,27 @@ void CASW_Health_Regen::Think()
 // 				{
 					if (!pMarine->m_bKnockedOut && ASWGameRules()->m_iHpRegen)
 						pMarine->SetHealth(result_health);
+
+					// riflemod: incapacitated marines have decreasing hp
+					if (pMarine->m_bKnockedOut)
+					{
+						int decreased_hp = pMarine->GetHealth() - rm_health_decrease_amount.GetInt();
+						if (decreased_hp <= 0)
+						{
+							pMarine->SetKnockedOut(false);
+							pMarine->SetHealth(1);
+							// HACK
+							int allow_revive = ASWGameRules()->m_iAllowRevive;
+							ASWGameRules()->m_iAllowRevive = 0;
+							CTakeDamageInfo info(this, this, Vector(0, 0, 0), GetAbsOrigin(), 100,
+								DMG_NEVERGIB);
+							pMarine->TakeDamage(info);
+							ASWGameRules()->m_iAllowRevive = allow_revive;
+						}
+						else
+							pMarine->SetHealth(decreased_hp);
+
+					}
 //				}
 			}
 		}
