@@ -221,7 +221,7 @@ float CASW_Shieldbug::MaxYawSpeed( void )
 		return 0.1f;
 
 	if ( m_bElectroStunned.Get() )
-		return 0.1f;
+		return 5.0f;
 
 	switch( eActivity )
 	{
