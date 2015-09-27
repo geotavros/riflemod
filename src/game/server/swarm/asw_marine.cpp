@@ -4005,7 +4005,11 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		SetLocalAngularVelocity(vec3_angle);
 		FlashlightTurnOff();
 		InvalidateBoneCache();
-		AddSolidFlags( FSOLID_NOT_SOLID );			
+		AddSolidFlags( FSOLID_NOT_SOLID );
+		// riflemod: setting it to no solid still collides it with aliens 
+		// will try changing collision group
+		SetCollisionGroup( ASW_COLLISION_GROUP_GRUBS );
+		ChangeFaction( FACTION_NONE );
 		CTakeDamageInfo	info;
 		info.SetDamageType( DMG_GENERIC );
 		info.SetDamageForce( vec3_origin );
@@ -4021,7 +4025,7 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		AddFlag( FL_FROZEN );	
 		
 
-		Msg("%s has been knocked unconcious!\n", GetMarineProfile() ? GetMarineProfile()->m_ShortName : "UnknownMarine");
+		Msg("%s has been knocked unconscious!\n", GetMarineProfile() ? GetMarineProfile()->m_ShortName : "UnknownMarine");
 		if (ASWGameRules())
 			ASWGameRules()->MarineKnockedOut(this);
 	}
@@ -4045,7 +4049,13 @@ void CASW_Marine::SetKnockedOut(bool bKnockedOut)
 		//GetRagdollProp()->AddEffects( EF_NODRAW );
 		RemoveEffects( EF_NODRAW );
 		RemoveFlag( FL_FROZEN );
-		RemoveSolidFlags( FSOLID_NOT_SOLID );		
+		RemoveSolidFlags( FSOLID_NOT_SOLID );	
+		// riflemod: restoring collision group, but bots still use ASW_COLLISION_GROUP_GRUBS
+ 		if (IsInhabited())
+ 			SetCollisionGroup( COLLISION_GROUP_PLAYER );
+ 		else
+ 			SetCollisionGroup( ASW_COLLISION_GROUP_GRUBS );
+		ChangeFaction( FACTION_MARINES );
 		if (HasFlashlight())
 			FlashlightTurnOn();
 		//m_fUnfreezeTime = gpGlobals->curtime + 1.0f;
