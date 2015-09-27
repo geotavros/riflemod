@@ -2770,6 +2770,7 @@ void CAlienSwarm::ThinkUpdateTimescale() RESTRICT
 }
 
 ConVar rm_welcome_message( "rm_welcome_message", "Welcome to Rifle Mod. bit.ly/riflemod ", FCVAR_NONE, "This message is displayed to a player after they join the game" );
+ConVar rm_welcome_message2("rm_welcome_message2", "Console commands: asw_dropExtra, asw_afk, rm_carnage, rm_heavy, rm_alienspeed, rm_weapons, rm_revive", FCVAR_NONE, "This message is displayed to a player after they join the game");
 
 void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 {
@@ -2797,7 +2798,7 @@ void CAlienSwarm::PlayerThink( CBasePlayer *pPlayer )
 				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message.GetString());
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 
-				Q_snprintf(buffer, sizeof(buffer), "Console commands: asw_dropExtra, asw_afk, rm_carnage, rm_heavy, rm_alienspeed, rm_weapons, rm_revive");
+				Q_snprintf(buffer, sizeof(buffer), rm_welcome_message2.GetString());
 				ClientPrint(pPlayer, HUD_PRINTTALK, buffer);
 			}
 		}
@@ -5075,7 +5076,7 @@ void CAlienSwarm::ShockNearbyAliens( CASW_Marine *pMarine, CASW_Weapon *pWeaponS
 		CRecipientFilter filter;
 		filter.AddAllPlayers();
 		UserMessageBegin( filter, "ASWEnemyZappedByThorns" );
-		WRITE_FLOAT( pMarine->entindex() );
+		WRITE_SHORT( pMarine->entindex() );
 		WRITE_SHORT( pNPC->entindex() );
 		MessageEnd();
 
