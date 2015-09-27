@@ -111,7 +111,7 @@ float CASW_Mortarbug::GetIdealAccel( ) const
 float CASW_Mortarbug::MaxYawSpeed( void )
 {
 	if ( m_bElectroStunned.Get() )
-		return 0.1f;
+		return 5.0f;
 
 	return 16.0f * asw_mortarbug_speedboost.GetFloat();
 }
