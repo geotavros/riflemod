@@ -296,6 +296,11 @@ bool CASW_Spawner::ApplyCarnageMode( float fScaler, float fInvScaler )
 	return false;
 }
 
+void CASW_Spawner::SetInfinitelySpawnAliens(bool spawn_infinitely /*= true */)
+{
+	m_bInfiniteAliens = spawn_infinitely;
+}
+
 int	CASW_Spawner::DrawDebugTextOverlays()
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
@@ -336,6 +341,23 @@ void ASW_ApplyCarnage_f(float fScaler)
 		}
 	}
 }
+
+void ASW_ApplyInfiniteSpawners_f(void)
+{
+	CBaseEntity* pEntity = NULL;
+	int iSpawnersChanged = 0;
+	while ((pEntity = gEntList.FindEntityByClassname(pEntity, "asw_spawner")) != NULL)
+	{
+		CASW_Spawner* pSpawner = dynamic_cast<CASW_Spawner*>(pEntity);
+		if (pSpawner)
+		{
+			pSpawner->SetInfinitelySpawnAliens();
+			iSpawnersChanged++;
+		}
+	}
+}
+
+
 
 void asw_carnage_f(const CCommand &args)
 {

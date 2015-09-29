@@ -690,6 +690,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iInfiniteSpawners = 0;
 }
 
 void CAlienSwarm::ResetModsRiflemodClassic() 
@@ -704,6 +705,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iInfiniteSpawners = 0;
 }
 
 void CAlienSwarm::ResetModsRifleRun() 
@@ -718,6 +720,7 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iInfiniteSpawners = 0;
 }
 
 void CAlienSwarm::ResetModsLevelOne() 
@@ -732,6 +735,7 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iInfiniteSpawners = 0;
 }
 
 const char * CAlienSwarm::GetGameDescription(void) 
@@ -893,6 +897,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iAddBots			= 1;
 	m_iWeapon			= 0;	
 	m_iFlamer			= 1;
+	m_iInfiniteSpawners = 0;
 
 	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
 
@@ -1809,6 +1814,10 @@ void CAlienSwarm::StartMission()
 	// riflemod: carnage support. The above method doesn't work well for our needs.
 	// we need carnage to be disabled each time the map loads 
 	ASW_ApplyCarnage_f(m_iCarnageScale);
+
+	if (m_iInfiniteSpawners)
+		ASW_ApplyInfiniteSpawners_f();
+
 
 	// increase num retries
 	if (IsCampaignGame() && GetCampaignSave())

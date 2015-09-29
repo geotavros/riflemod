@@ -793,6 +793,106 @@ void rm_weaponreqf(const CCommand &args)
 }
 ConCommand rm_weaponreq("rm_weaponreq", rm_weaponreqf, "If 0 all weapon requirements are disabled", 0);
 
+void rm_spawners_infinitef(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value 0 or 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Infinite spawners can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can enable infinite spawners \n");
+			return;
+		}
+
+		int infinite_spawners = clamp(atoi(args[1]), 0, 1);
+
+		ASWGameRules()->m_iInfiniteSpawners = infinite_spawners;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (ASWGameRules()->m_iInfiniteSpawners)
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Infinite spawners are enabled");
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Infinite spawners are disabled");
+		}
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_spawners_infinite("rm_spawners_infinite", rm_spawners_infinitef, "Makes all spawners infinitely spawn aliens", 0);
+
+
+void rm_slowmof(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Slow motion setting can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can set slow motion setting \n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (multiplier == 0)
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Slow motion was deleted");
+			// Otherwise remove based on name or classname
+			int iCount = 0;
+			CBaseEntity *ent = NULL;
+			while ((ent = gEntList.NextEnt(ent)) != NULL)
+			{
+				if ((ent->GetEntityName() != NULL_STRING	&& FStrEq("env_slomo", STRING(ent->GetEntityName()))) ||
+					(ent->m_iClassname != NULL_STRING	&& FStrEq("env_slomo", STRING(ent->m_iClassname))) ||
+					(ent->GetClassname() != NULL && FStrEq("env_slomo", ent->GetClassname())))
+				{
+					UTIL_Remove(ent);
+					iCount++;
+				}
+			}
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Slow motion cannot be enabled until mission is restarted");
+		}
+
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_slowmo("rm_slowmo", rm_slowmof, "If 0 disables slow motion on maps if present", 0);
+
+
 void ASW_AllowBriefing_f()
 {
 	ASWGameRules()->AllowBriefing();

@@ -357,6 +357,7 @@ public:
 	int	   m_iAddBots;		  // 1 add bots to fill free slots, 0 don't add
 	int	   m_iWeapon;		  // Default weapon to give during weapon restricted mode 
 	int	   m_iFlamer;		  // If 0 flamers will be replaced with rifles, 1 does nothing and is default 
+	int	   m_iInfiniteSpawners; // If 1 all spawners will be set to infinitely spawn aliens 
 
 #endif
 
