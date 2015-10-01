@@ -691,6 +691,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus		= 0;
 }
 
 void CAlienSwarm::ResetModsRiflemodClassic() 
@@ -706,6 +707,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus		= 0;
 }
 
 void CAlienSwarm::ResetModsRifleRun() 
@@ -721,6 +723,7 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus		= 0;
 }
 
 void CAlienSwarm::ResetModsLevelOne() 
@@ -736,6 +739,23 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus		= 0;
+}
+
+void CAlienSwarm::ResetModsBulletStorm()
+{
+	m_iWeaponType = BULLET_STORM;
+	m_iCarnageScale = 1;
+	m_fHeavyScale = 1.0f;
+	m_fAlienSpeedScale = 1.0f;
+	m_iRefillSecondary = 0;
+	m_iAllowRevive = 0;
+	m_iHpRegen = 0;
+	m_iAddBots = rm_add_bots_by_default.GetInt();
+	m_iWeapon = 0;
+	m_iFlamer = 1;
+	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus = 0;
 }
 
 const char * CAlienSwarm::GetGameDescription(void) 
@@ -768,6 +788,9 @@ const char * CAlienSwarm::GetGameDescription(void)
 		break;
 	case LEVEL_ONE:
 		return "Level One"; 
+		break;
+	case BULLET_STORM:
+		return "Bullet Storm";
 		break;
 	default:
 		return "Rifle Mod"; 
@@ -898,6 +921,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iWeapon			= 0;	
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus		= 0;
 
 	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
 
@@ -2606,6 +2630,34 @@ bool CAlienSwarm::SpawnMarineAt( CASW_Marine_Resource * RESTRICT pMR, const Vect
 					GiveStartingWeaponToMarine( pMarine, weapon_id, iWpnSlot );
 				}
 				break;
+			case BULLET_STORM:
+			{
+				// allowed rifles, autogun, shotgun, sniper, pdw, sentries, medgun
+				// we allow only these IDs and replace other IDs with 0
+				const int allowed_guns[] = { 0, 1, 2, 5, 6, 7, 8, 11, 12, 14, 16, 17, 19 };
+				const size_t allowed_guns_size = sizeof(allowed_guns) / sizeof(allowed_guns[0]);
+				for (int iWpnSlot = 0; iWpnSlot < ASW_MAX_EQUIP_SLOTS; ++iWpnSlot)
+				{
+					int weapon_id = pMR->m_iWeaponsInSlots.Get(iWpnSlot);
+					// skip 3rd item 
+					if (iWpnSlot < 2)
+					{
+						bool id_found = false;
+						for (int i = 0; i < allowed_guns_size; ++i)
+						{
+							if (weapon_id == allowed_guns[i])
+							{
+								id_found = true;
+								break;
+							}
+						}
+						if (!id_found)
+							weapon_id = 0;
+					}
+					GiveStartingWeaponToMarine(pMarine, weapon_id, iWpnSlot);
+				}
+				break;
+			}
 			case RIFLE_MOD:
 			default:
 			{
@@ -3255,15 +3307,9 @@ void CAlienSwarm::GiveStartingWeaponToMarine(CASW_Marine* pMarine, int iEquipInd
 		iPrimaryAmmo += asw_bonus_charges.GetInt();
 	}
 
-	if ( !stricmp(szWeaponClass, "asw_weapon_ammo_satchel" ) ) 
+	if (!stricmp(szWeaponClass, "asw_weapon_ammo_satchel") && m_iAmmoBonus)
 	{
-		int riflemod_ammo_scale = asw_ammo_satchel_bonus.GetInt();
-		if (m_iWeaponType == DEFAULT) 
-			riflemod_ammo_scale = 0;
-		iPrimaryAmmo = float(iPrimaryAmmo + riflemod_ammo_scale) * 
-					   float(m_iCarnageScale) * m_fHeavyScale; 
-		if (iPrimaryAmmo < 3)
-			iPrimaryAmmo = 3;
+		iPrimaryAmmo += m_iAmmoBonus;
 	}
 
 	pWeapon->SetClip1( iPrimaryAmmo );

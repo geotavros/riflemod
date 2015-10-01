@@ -338,6 +338,7 @@ public:
 		DEFAULT = 0,	// all weapons are allowed 
 		RIFLE_MOD,		// only rifles are allowed 
 		LEVEL_ONE, 		// allowed rifle, vindicator, autogun 
+		BULLET_STORM,	// allowed rifles, autogun, shotgun, sniper, pdw, sentries, medgun
 
 		WEAPON_TYPES_MAX
 	};
@@ -346,6 +347,7 @@ public:
 	void ResetModsRiflemodClassic();
 	void ResetModsRifleRun();
 	void ResetModsLevelOne();
+	void ResetModsBulletStorm();
 	
 	WeaponTypes m_iWeaponType;// 
 	int	   m_iCarnageScale;   // the factor used to scale the amount of aliens in each drone spawner
@@ -358,6 +360,7 @@ public:
 	int	   m_iWeapon;		  // Default weapon to give during weapon restricted mode 
 	int	   m_iFlamer;		  // If 0 flamers will be replaced with rifles, 1 does nothing and is default 
 	int	   m_iInfiniteSpawners; // If 1 all spawners will be set to infinitely spawn aliens 
+	int	   m_iAmmoBonus;	  // the amount of bonus ammo satchels to add 
 
 #endif
 

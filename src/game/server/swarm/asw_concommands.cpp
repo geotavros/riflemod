@@ -687,6 +687,10 @@ void rm_challengef(const CCommand &args)
 				ASWGameRules()->ResetModsRifleRun();
 				Q_snprintf(challenge_name, sizeof(challenge_name), "Rifle Run" );
 				break;
+			case 4:
+				ASWGameRules()->ResetModsBulletStorm();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Bullet Storm");
+				break;
 			default:
 				break;
 		}
@@ -891,6 +895,46 @@ void rm_slowmof(const CCommand &args)
 	}
 }
 ConCommand rm_slowmo("rm_slowmo", rm_slowmof, "If 0 disables slow motion on maps if present", 0);
+
+
+
+void rm_ammo_bonusf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 20\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Ammo bonus can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can enable ammo bonus \n");
+			return;
+		}
+
+		int ammo_count = clamp(atoi(args[1]), 0, 20);
+
+		ASWGameRules()->m_iAmmoBonus = ammo_count;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+
+		Q_snprintf(buffer, sizeof(buffer), "Ammo bonus %i", ammo_count);
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_ammo_bonus("rm_ammo_bonus", rm_ammo_bonusf, "Gives additional ammo satchels", 0);
+
 
 
 void ASW_AllowBriefing_f()
