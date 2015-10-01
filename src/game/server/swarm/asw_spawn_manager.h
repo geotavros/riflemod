@@ -104,7 +104,18 @@ private:
 };
 
 extern const int g_nDroneClassEntry;
+extern const int g_nBuzzerClassEntry;
+extern const int g_nParasiteClassEntry;
+extern const int g_nShieldbugClassEntry;
+extern const int g_nGrubClassEntry;
 extern const int g_nDroneJumperClassEntry;
+extern const int g_nHarvesterClassEntry;
+extern const int g_nParasiteDefangedClassEntry;
+extern const int g_nQueenClassEntry;
+extern const int g_nBoomerClassEntry;
+extern const int g_nRangerClassEntry;
+extern const int g_nMortarbugClassEntry;
+extern const int g_nShamanClassEntry;
 
 CASW_Spawn_Manager* ASWSpawnManager();
 

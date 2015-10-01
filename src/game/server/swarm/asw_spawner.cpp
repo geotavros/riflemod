@@ -280,7 +280,12 @@ const Vector& CASW_Spawner::GetAlienMaxs()
 bool CASW_Spawner::ApplyCarnageMode( float fScaler, float fInvScaler )
 {
 	
-	if ( m_AlienClassNum == g_nDroneClassEntry ||  m_AlienClassNum == g_nDroneJumperClassEntry )
+	if (m_AlienClassNum == g_nDroneClassEntry ||
+		m_AlienClassNum == g_nDroneJumperClassEntry ||
+		m_AlienClassNum == g_nRangerClassEntry ||
+		m_AlienClassNum == g_nParasiteClassEntry ||
+		m_AlienClassNum == g_nParasiteDefangedClassEntry ||
+		m_AlienClassNum == g_nBoomerClassEntry)
 	{
 		DevMsg( "[%d] Found a spawner set to spawn drones or drone jumpers\n", entindex());
 		DevMsg( "  previous numaliens is %d max live is %d interval %f\n", m_nNumAliens, m_nMaxLiveAliens, m_flSpawnInterval );
@@ -298,7 +303,15 @@ bool CASW_Spawner::ApplyCarnageMode( float fScaler, float fInvScaler )
 
 void CASW_Spawner::SetInfinitelySpawnAliens(bool spawn_infinitely /*= true */)
 {
-	m_bInfiniteAliens = spawn_infinitely;
+	if (m_AlienClassNum == g_nDroneClassEntry || 
+		m_AlienClassNum == g_nDroneJumperClassEntry || 
+		m_AlienClassNum == g_nRangerClassEntry || 
+		m_AlienClassNum == g_nParasiteClassEntry || 
+		m_AlienClassNum == g_nParasiteDefangedClassEntry || 
+		m_AlienClassNum == g_nBoomerClassEntry )
+	{
+		m_bInfiniteAliens = spawn_infinitely;
+	}
 }
 
 int	CASW_Spawner::DrawDebugTextOverlays()

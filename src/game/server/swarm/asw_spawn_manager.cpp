@@ -72,7 +72,19 @@ ASW_Alien_Class_Entry g_Aliens[]=
 
 // Array indices of drones.  Used by carnage mode.
 const int g_nDroneClassEntry = 0;
+const int g_nBuzzerClassEntry = 1;
+const int g_nParasiteClassEntry = 2;
+const int g_nShieldbugClassEntry = 3;
+const int g_nGrubClassEntry = 4;
 const int g_nDroneJumperClassEntry = 5;
+const int g_nHarvesterClassEntry = 6;
+const int g_nParasiteDefangedClassEntry = 7;
+const int g_nQueenClassEntry = 8;
+const int g_nBoomerClassEntry = 9;
+const int g_nRangerClassEntry = 10;
+const int g_nMortarbugClassEntry = 11;
+const int g_nShamanClassEntry = 11;
+
 
 int CASW_Spawn_Manager::GetNumAlienClasses()
 {
