@@ -78,6 +78,7 @@ ConVar asw_drone_zig_zagging("asw_drone_zig_zagging", "0", FCVAR_CHEAT, "If set,
 ConVar asw_drone_melee_force("asw_drone_melee_force", "1.67", FCVAR_CHEAT, "Force of the drone's melee attack");
 ConVar asw_drone_touch_damage( "asw_drone_touch_damage", "0",FCVAR_CHEAT , "Damage caused by drones on touch" );
 ConVar asw_new_drone("asw_new_drone", "1", FCVAR_CHEAT, "Set to 1 to use the new drone model");
+ConVar rd_drone_suicide_time("rd_drone_suicide_time", "15", FCVAR_NONE, "Time in seconds after drone spawned, if drone have no enemy it will die");
 extern ConVar asw_debug_alien_damage;
 extern ConVar asw_alien_hurt_speed;
 extern ConVar asw_alien_stunned_speed;
@@ -119,7 +120,8 @@ static CASW_Drone_Movement g_DroneGameMovement;
 CASW_Drone_Movement *g_pDroneMovement = &g_DroneGameMovement;
 
 CASW_Drone_Advanced::CASW_Drone_Advanced( void )
-	: m_DurationDoorBash( 2)
+	: m_DurationDoorBash( 2),
+	  m_fDroneSuicideTime(0.0f)
 	   // : CASW_Alien()
 {
 	g_DroneList.AddToTail(this);
@@ -234,6 +236,8 @@ void CASW_Drone_Advanced::Spawn( void )
 	m_iDoorPos = 0;
 	m_bUsingSmallDoorBashHull = false;
 	SetPoseParameter( "idle_move", 0 );
+
+	m_fDroneSuicideTime = gpGlobals->curtime + rd_drone_suicide_time.GetFloat();
 }
 
 void CASW_Drone_Advanced::Precache( void )
@@ -656,6 +660,15 @@ void CASW_Drone_Advanced::NPCThink()
 	}
 
 	m_hAimTarget = GetEnemy();
+
+	// reactivedrop: for testing suicidal drones 
+// 	if (ASWGameRules()->m_iInfiniteSpawners &&
+// 		ASWGameRules()->GetGameState() == ASW_GS_INGAME && 
+// 		m_fDroneSuicideTime && 
+// 		m_fDroneSuicideTime < gpGlobals->curtime && GetEnemy() == NULL)
+// 	{
+// 		UTIL_Remove(this);
+// 	}
 }
 
 bool CASW_Drone_Advanced::IsMeleeAttacking()

@@ -150,6 +150,8 @@ private:
 
 	Vector m_vecEnemyStandoffPosition;
 
+	float m_fDroneSuicideTime;
+
 	DEFINE_CUSTOM_AI;	
 };
 
