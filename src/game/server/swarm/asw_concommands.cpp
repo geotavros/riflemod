@@ -667,7 +667,9 @@ void rm_challengef(const CCommand &args)
 		}
 
 		int challenge_id = clamp(atoi(args[1]), 0, 20);
-		char challenge_name[512];
+		char challenge_name[255];
+		char additional_message[255];
+		additional_message[0] = 0;
 
 		switch (challenge_id)
 		{
@@ -690,16 +692,22 @@ void rm_challengef(const CCommand &args)
 			case 4:
 				ASWGameRules()->ResetModsBulletStorm();
 				Q_snprintf(challenge_name, sizeof(challenge_name), "Bullet Storm");
+				Q_snprintf(additional_message, sizeof(additional_message), "Allowed guns: Rifles, Autogun, Shotgun, Sniper, PDW, Sentries, Medguns");
 				break;
 			default:
 				break;
 		}
 
 		CReliableBroadcastRecipientFilter filter;
-		char buffer[512];
+		char buffer[255];
 		
 		Q_snprintf(buffer, sizeof(buffer), "Challenge activated %s", challenge_name );
 		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
+
+		if (additional_message[0] != 0)
+		{
+			UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, additional_message);
+		}
 	}
 }
 ConCommand rm_challenge( "rm_challenge", rm_challengef, "Activates a challenge which is a modification of game rules, like Rifle Mod, ASBI or Ch1ckensCoop", 0 );
