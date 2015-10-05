@@ -678,20 +678,32 @@ ConVar rm_add_bots_by_default("rm_add_bots_by_default", "1", 0,
 							  "If 1 bot marines will be added to fill "
 							  "empty slots");
 
+ConVar rm_default_weapontype("rm_default_weapontype", "0", FCVAR_NONE, "0(default) all weapons, 1 restrict to one weapon(rifle by default), 2 Level One only, 3 Bullet Storm only");
+ConVar rm_default_weapon("rm_default_weapon", "0", FCVAR_NONE, "An ID of weapon marines will be given. If weapon type is set to Restrict to one weapon then this weapon will be given");
+ConVar rm_default_carnage("rm_default_carnage", "1.0", FCVAR_NONE, "Default carnage");
+ConVar rm_default_heavy("rm_default_heavy", "1.0", FCVAR_NONE, "Default alien hp scale");
+ConVar rm_default_alienspeed("rm_default_alienspeed", "1.0", FCVAR_NONE, "Default alien speed scale");
+ConVar rm_default_refillsecondary("rm_default_refillsecondary", "0", FCVAR_NONE, "Default refill secondary ammo");
+ConVar rm_default_allowrevive("rm_default_allowrevive", "0", FCVAR_NONE, "Default allow reviving of fallen marines");
+ConVar rm_default_hpregen("rm_default_hpregen", "0", FCVAR_NONE, "Default health regeneration");
+ConVar rm_default_flamer("rm_default_flamer", "0", FCVAR_NONE, "Default flamer allowed, if 0 flamers will be replaced with rifles");
+ConVar rm_default_infinitespawners("rm_default_infinitespawners", "0", FCVAR_NONE, "If 1 all spawners will be set to infinitely spawn aliens");
+ConVar rm_default_ammobonus("rm_default_ammobonus", "0", FCVAR_NONE, "Default ammo bonus");
+
 void CAlienSwarm::ResetModsToDefault() 
 {
-	m_iWeaponType		= DEFAULT;
-	m_iCarnageScale		= 1;
-	m_fHeavyScale		= 1.0f;
-	m_fAlienSpeedScale	= 1.0f;
-	m_iRefillSecondary	= 0;
-	m_iAllowRevive		= 0;
-	m_iHpRegen			= 0;
+	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
+	m_iCarnageScale		= rm_default_carnage.GetFloat();
+	m_fHeavyScale		= rm_default_heavy.GetFloat();
+	m_fAlienSpeedScale	= rm_default_alienspeed.GetFloat();
+	m_iRefillSecondary	= rm_default_refillsecondary.GetInt();
+	m_iAllowRevive		= rm_default_allowrevive.GetInt();
+	m_iHpRegen			= rm_default_hpregen.GetInt();
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
-	m_iWeapon			= 0;
-	m_iFlamer			= 1;
-	m_iInfiniteSpawners = 0;
-	m_iAmmoBonus		= 0;
+	m_iWeapon			= rm_default_weapon.GetInt();
+	m_iFlamer			= rm_default_flamer.GetInt();
+	m_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
+	m_iAmmoBonus		= rm_default_ammobonus.GetInt();
 }
 
 void CAlienSwarm::ResetModsRiflemodClassic() 
