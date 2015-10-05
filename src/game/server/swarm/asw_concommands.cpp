@@ -408,6 +408,9 @@ void rm_weaponsf(const CCommand &args)
 }
 ConCommand rm_weapons( "rm_weapons", rm_weaponsf, "Used to change weapons mode", 0 ); 
 
+ConVar rm_alienspeedmin("rm_alienspeedmin", "0.8", FCVAR_NONE, "The minimum allowed value of rm_alienspeed modifier");
+ConVar rm_alienspeedmax("rm_alienspeedmax", "3.0", FCVAR_NONE, "The maximum allowed value of rm_alienspeed modifier");
+
 void rm_alienspeedf(const CCommand &args)
 {
 	if ( args.ArgC() < 2 )
@@ -432,7 +435,7 @@ void rm_alienspeedf(const CCommand &args)
 			return;
 		}
 
-		float multiplier = clamp(atof(args[1]), 0.1f, 3.0f);
+		float multiplier = clamp(atof(args[1]), rm_alienspeedmin.GetFloat(), rm_alienspeedmax.GetFloat());
 		ASWGameRules()->m_fAlienSpeedScale = multiplier;
 		//ASW_ApplyCarnage_f(multiplier);
 
