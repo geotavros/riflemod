@@ -113,7 +113,8 @@ CASW_Game_Resource::CASW_Game_Resource()
 	m_iElectroStunnedAliens = 0;
 	for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 	{
-		m_bPlayerReady.Set(i, false);
+		extern ConVar rm_ready_mark_override;
+		m_bPlayerReady.Set(i, rm_ready_mark_override.GetBool());
 		m_iKickVotes.Set(i, 0);
 		m_iLeaderVotes.Set(i, 0);
 		m_iCampaignVote[i] = -1;
@@ -402,8 +403,10 @@ CASW_Scanner_Info* CASW_Game_Resource::GetScannerInfo()
 
 void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 {
+	extern ConVar rm_ready_mark_override;
 	// check for auto-readying our old leader
-	if (m_Leader.Get() && m_Leader.Get() != pPlayer && ASWGameRules() && m_Leader->m_bRequestedSpectator)
+	if (m_Leader.Get() && m_Leader.Get() != pPlayer && ASWGameRules() && 
+		(m_Leader->m_bRequestedSpectator || rm_ready_mark_override.GetBool()))
 	{
 		int iPlayerIndex = m_Leader->entindex() - 1;
 		if (ASWGameRules()->GetGameState() == ASW_GS_BRIEFING || ASWGameRules()->GetGameState()==ASW_GS_DEBRIEF)
@@ -411,7 +414,7 @@ void CASW_Game_Resource::SetLeader(CASW_Player *pPlayer)
 			// player index is out of range
 			if (iPlayerIndex >= 0 && iPlayerIndex < ASW_MAX_READY_PLAYERS)
 			{
-				Msg("Autoreadying old leader, who wanted to be a spectator\n");
+				//Msg("Autoreadying old leader, who wanted to be a spectator\n");
 				m_bPlayerReady.Set(iPlayerIndex, true);
 			}
 		}

@@ -692,6 +692,7 @@ ConVar rm_default_ammobonus("rm_default_ammobonus", "0", FCVAR_NONE, "Default am
 
 ConVar rm_default_slowmo( "rm_default_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 ConVar rm_default_weaponreq( "rm_default_weaponreq", "1", FCVAR_NONE, "If 0 weapon requirement(such as flamer) will be deleted from map on round start(if present)" );
+ConVar rm_ready_mark_override("rm_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 
 void CAlienSwarm::ResetModsToDefault() 
 {
@@ -1242,7 +1243,7 @@ bool CAlienSwarm::ClientConnected( edict_t *pEntity, const char *pszName, const 
 		int index = ENTINDEX(pEntity) - 1;
 		if (index >= 0 && index < 8)
 		{
-			ASWGameResource()->m_bPlayerReady.Set(index, false);
+			ASWGameResource()->m_bPlayerReady.Set(index, rm_ready_mark_override.GetBool());
 		}
 
 		// if we have no leader
@@ -2395,7 +2396,7 @@ void CAlienSwarm::CampaignSaveAndShowCampaignMap(CASW_Player* pPlayer, bool bFor
 		{
 			for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 			{
-				ASWGameResource()->m_bPlayerReady.Set(i, false);
+				ASWGameResource()->m_bPlayerReady.Set(i, rm_ready_mark_override.GetBool());
 			}
 		}
 		SetGameState(ASW_GS_CAMPAIGNMAP);
@@ -3557,7 +3558,7 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 		for ( int i = 0; i < ASW_MAX_READY_PLAYERS; i++ )
 		{
 			// make sure all players are marked as not ready to leave debrief
-			pGameResource->m_bPlayerReady.Set(i, false);
+			pGameResource->m_bPlayerReady.Set(i, rm_ready_mark_override.GetBool());
 		}
 
 		if ( bSuccess )
@@ -6706,7 +6707,7 @@ void CAlienSwarm::FinishForceReady()
 				// make sure all players are marked as not ready
 				for (int i=0;i<ASW_MAX_READY_PLAYERS;i++)
 				{
-					pGameResource->m_bPlayerReady.Set(i, false);
+					pGameResource->m_bPlayerReady.Set(i, rm_ready_mark_override.GetBool());
 				}				
 				SetGameState(ASW_GS_CAMPAIGNMAP);
 				GetCampaignSave()->SelectDefaultNextCampaignMission();
@@ -6761,6 +6762,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 		}
 		m_hEquipReq = NULL;
 	}
+	asw_override_max_marines.SetValue(4);
 	// player_join_time_.Insert(pPlayer, gpGlobals->curtime + 5);
 }
 
