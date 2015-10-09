@@ -1967,6 +1967,7 @@ void CAlienSwarm::StartMission()
 	AddBonusChargesToPickups();
 
 	asw_marine_death_cam.SetValue(0);
+	asw_override_max_marines.SetValue(4);
 }
 
 void CAlienSwarm::UpdateLaunching()
