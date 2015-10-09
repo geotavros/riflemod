@@ -690,6 +690,9 @@ ConVar rm_default_flamer("rm_default_flamer", "0", FCVAR_NONE, "Default flamer a
 ConVar rm_default_infinitespawners("rm_default_infinitespawners", "0", FCVAR_NONE, "If 1 all spawners will be set to infinitely spawn aliens");
 ConVar rm_default_ammobonus("rm_default_ammobonus", "0", FCVAR_NONE, "Default ammo bonus");
 
+ConVar rm_default_slowmo( "rm_default_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
+ConVar rm_default_weaponreq( "rm_default_weaponreq", "1", FCVAR_NONE, "If 0 weapon requirement(such as flamer) will be deleted from map on round start(if present)" );
+
 void CAlienSwarm::ResetModsToDefault() 
 {
 	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
@@ -1854,6 +1857,21 @@ void CAlienSwarm::StartMission()
 	if (m_iInfiniteSpawners)
 		ASW_ApplyInfiniteSpawners_f();
 
+	if ( rm_default_slowmo.GetInt() == 0 )
+	{
+		int iCount = 0;
+		CBaseEntity *ent = NULL;
+		while ((ent = gEntList.NextEnt(ent)) != NULL)
+		{
+			if ((ent->GetEntityName() != NULL_STRING	&& FStrEq("env_slomo", STRING(ent->GetEntityName()))) ||
+				(ent->m_iClassname != NULL_STRING	&& FStrEq("env_slomo", STRING(ent->m_iClassname))) ||
+				(ent->GetClassname() != NULL && FStrEq("env_slomo", ent->GetClassname())))
+			{
+				UTIL_Remove(ent);
+				iCount++;
+			}
+		}
+	}
 
 	// increase num retries
 	if (IsCampaignGame() && GetCampaignSave())
@@ -6733,6 +6751,15 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 	// Set briefing start time
 	m_fBriefingStartedTime = gpGlobals->curtime;
 
+	// riflemod: delete weapon requirement if set
+	if ( rm_default_weaponreq.GetInt() == 0 )
+	{
+		if (m_hEquipReq.Get() != NULL)
+		{
+			UTIL_Remove(static_cast<CASW_Equip_Req*>(ASWGameRules()->m_hEquipReq));
+		}
+		m_hEquipReq = NULL;
+	}
 	// player_join_time_.Insert(pPlayer, gpGlobals->curtime + 5);
 }
 
