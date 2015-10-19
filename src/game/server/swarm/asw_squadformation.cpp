@@ -684,6 +684,14 @@ void CASW_SquadFormation::FindFollowHintNodes()
 			bNeedNewNode = !pMarine->FVisible( pLeader );
 		}
 
+		// reactivedrop: if leader is in escape area then bots will follow him
+		// immediately. This fixes a bug when player is at the map finish and 
+		// bots don't follow him
+		CBaseTrigger *pEscapeVolume = pLeader->IsInEscapeVolume();
+		if ( !bNeedNewNode && pEscapeVolume )
+			bNeedNewNode = true;
+
+
 		// find shield bug (if any) nearest each marine
 		const float k_flShieldbugScanRangeSqr = 400.0f * 400.0f;
 		CASW_Shieldbug *pClosestShieldbug = NULL;
@@ -729,7 +737,6 @@ void CASW_SquadFormation::FindFollowHintNodes()
 		int iClosestFlankingNode = INVALID_HINT_INDEX;
 		float flClosestFlankingNodeDistSqr = FLT_MAX;
 
-		CBaseTrigger *pEscapeVolume = pLeader->IsInEscapeVolume();
 		if ( pEscapeVolume && pEscapeVolume->CollisionProp() )
 		{
 			// remove hints that aren't in the escape volume bounds
