@@ -694,6 +694,26 @@ ConVar rm_default_slowmo( "rm_default_slowmo", "1", FCVAR_NONE, "If 0 env_slomo 
 ConVar rm_default_weaponreq( "rm_default_weaponreq", "1", FCVAR_NONE, "If 0 weapon requirement(such as flamer) will be deleted from map on round start(if present)" );
 ConVar rm_ready_mark_override("rm_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 
+void RestoreChangedBySoloPlayerCvars()
+{
+// restore cvars
+	ConVarRef asw_simple_hacking("asw_simple_hacking", false);
+	if (asw_simple_hacking.IsValid())
+		asw_simple_hacking.SetValue(asw_simple_hacking.GetDefault());
+
+	ConVarRef asw_ai_computer_hacking_scale("asw_ai_computer_hacking_scale", false);
+	if (asw_ai_computer_hacking_scale.IsValid())
+		asw_ai_computer_hacking_scale.SetValue(asw_ai_computer_hacking_scale.GetDefault());
+
+	ConVarRef asw_ai_button_hacking_scale("asw_ai_button_hacking_scale", false);
+	if (asw_ai_button_hacking_scale.IsValid())
+		asw_ai_button_hacking_scale.SetValue(asw_ai_button_hacking_scale.GetDefault());
+
+	ConVarRef asw_override_max_marines("asw_override_max_marines", false);
+	if (asw_override_max_marines.IsValid())
+		asw_override_max_marines.SetValue(asw_override_max_marines.GetDefault());
+}
+
 void CAlienSwarm::ResetModsToDefault() 
 {
 	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
@@ -708,6 +728,8 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iFlamer			= rm_default_flamer.GetInt();
 	m_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
 	m_iAmmoBonus		= rm_default_ammobonus.GetInt();
+
+	RestoreChangedBySoloPlayerCvars();
 }
 
 void CAlienSwarm::ResetModsRiflemodClassic() 
@@ -725,6 +747,8 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
+
+	RestoreChangedBySoloPlayerCvars();
 }
 
 void CAlienSwarm::ResetModsRifleRun() 
@@ -742,6 +766,8 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
+
+	RestoreChangedBySoloPlayerCvars();
 }
 
 void CAlienSwarm::ResetModsLevelOne() 
@@ -759,6 +785,8 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
+
+	RestoreChangedBySoloPlayerCvars();
 }
 
 void CAlienSwarm::ResetModsBulletStorm()
@@ -776,6 +804,8 @@ void CAlienSwarm::ResetModsBulletStorm()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus = 0;
 	m_iNumPlayers		= 4;
+
+	RestoreChangedBySoloPlayerCvars();
 }
 
 void CAlienSwarm::ResetModsSoloPlayer()
@@ -1031,22 +1061,7 @@ CAlienSwarm::~CAlienSwarm()
 
 	//delete m_pMissionManager;
 
-	// restore cvars
-	ConVarRef asw_simple_hacking("asw_simple_hacking", false);
-	if (asw_simple_hacking.IsValid())
-		asw_simple_hacking.SetValue(asw_simple_hacking.GetDefault());
-
-	ConVarRef asw_ai_computer_hacking_scale("asw_ai_computer_hacking_scale", false);
-	if (asw_ai_computer_hacking_scale.IsValid())
-		asw_ai_computer_hacking_scale.SetValue(asw_ai_computer_hacking_scale.GetDefault());
-
-	ConVarRef asw_ai_button_hacking_scale("asw_ai_button_hacking_scale", false);
-	if (asw_ai_button_hacking_scale.IsValid())
-		asw_ai_button_hacking_scale.SetValue(asw_ai_button_hacking_scale.GetDefault());
-
-	ConVarRef asw_override_max_marines("asw_override_max_marines", false);
-	if (asw_override_max_marines.IsValid())
-		asw_override_max_marines.SetValue(asw_override_max_marines.GetDefault());
+	RestoreChangedBySoloPlayerCvars();
 }
 
 ConVar asw_reserve_marine_time("asw_reserve_marine_time", "30.0f", 0, "Number of seconds marines are reserved for at briefing start");
