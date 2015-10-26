@@ -1382,18 +1382,20 @@ CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, con
 		}
 	}
 
-	if ( vel.LengthSqr() > 0 )
-	{
-		int numbones = pAnimating->GetModelPtr()->numbones();
-		vel *= dt;
-		for ( int i = 0; i < numbones; i++ )
-		{
-			Vector pos;
-			MatrixGetColumn( pBoneToWorld[i], 3, pos );
-			pos -= vel;
-			MatrixSetColumn( pos, 3, pBoneToWorld[i] );
-		}
-	}
+	// riflemod: commented to prevent marine body to fly away when
+	// incapacitated(knocked down)
+// 	if ( vel.LengthSqr() > 0 )
+// 	{
+// 		int numbones = pAnimating->GetModelPtr()->numbones();
+// 		vel *= dt;
+// 		for ( int i = 0; i < numbones; i++ )
+// 		{
+// 			Vector pos;
+// 			MatrixGetColumn( pBoneToWorld[i], 3, pos );
+// 			pos -= vel;
+// 			MatrixSetColumn( pos, 3, pBoneToWorld[i] );
+// 		}
+// 	}
 
 #if RAGDOLL_VISUALIZE
 	pAnimating->DrawRawSkeleton( pBoneToWorld, BONE_USED_BY_ANYTHING, true, 20, false );
