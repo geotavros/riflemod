@@ -697,6 +697,10 @@ void rm_challengef(const CCommand &args)
 				Q_snprintf(challenge_name, sizeof(challenge_name), "Bullet Storm");
 				Q_snprintf(additional_message, sizeof(additional_message), "Allowed guns: Rifles, Autogun, Shotgun, Sniper, PDW, Sentries, Medguns");
 				break;
+			case 5:
+				ASWGameRules()->ResetModsSoloPlayer();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Solo Player" );
+				break;
 			default:
 				break;
 		}

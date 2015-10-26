@@ -14,6 +14,8 @@
 	#include "soundchars.h"
 #endif
 
+#include "asw_gamerules.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -652,4 +654,9 @@ ASW_Skill CASW_Marine_Profile::GetSkillMapping( int nSkillSlot )
 		return ASW_MARINE_SKILL_SPARE;
 
 	return m_nSkillMapping[ nSkillSlot ];
+}
+
+bool CASW_Marine_Profile::CanHack( void )
+{
+	return GetMarineClass() == MARINE_CLASS_TECH || (ASWGameRules()->m_iNumPlayers == 1);
 }

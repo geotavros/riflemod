@@ -270,11 +270,6 @@ public:
 
 extern CASW_Marine_ProfileList* MarineProfileList();
 
-inline bool CASW_Marine_Profile::CanHack( void )
-{
-	return GetMarineClass() == MARINE_CLASS_TECH;
-}
-
 inline bool CASW_Marine_Profile::HasHackSkill( void )
 {
 	return GetMarineClass() == MARINE_CLASS_TECH;

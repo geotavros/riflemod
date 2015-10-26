@@ -291,6 +291,10 @@ void CASW_Director::UpdateHorde()
 			int iNumCarnage = MAX(1, ASWGameRules()->m_iCarnageScale);
 			int iNumAliens = RandomInt(asw_horde_size_min.GetInt() * iNumCarnage, asw_horde_size_max.GetInt() * iNumCarnage);
 
+			// riflemod: scale down horde size for solo game mode
+			if (ASWGameRules()->m_iNumPlayers == 1)
+				iNumAliens /= 2;
+
 			if ( ASWSpawnManager()->AddHorde( iNumAliens ) )
 			{
 				if ( asw_director_debug.GetBool() )

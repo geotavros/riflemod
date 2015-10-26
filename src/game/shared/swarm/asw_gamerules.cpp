@@ -724,6 +724,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iNumPlayers		= 4;
 }
 
 void CAlienSwarm::ResetModsRifleRun() 
@@ -740,6 +741,7 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iNumPlayers		= 4;
 }
 
 void CAlienSwarm::ResetModsLevelOne() 
@@ -756,6 +758,7 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iNumPlayers		= 4;
 }
 
 void CAlienSwarm::ResetModsBulletStorm()
@@ -772,6 +775,45 @@ void CAlienSwarm::ResetModsBulletStorm()
 	m_iFlamer = 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus = 0;
+	m_iNumPlayers		= 4;
+}
+
+void CAlienSwarm::ResetModsSoloPlayer()
+{
+	m_iWeaponType		= DEFAULT;
+	m_iCarnageScale		= 1;
+	m_fHeavyScale		= 1.0f;
+	m_fAlienSpeedScale	= 1.0f;
+	m_iRefillSecondary	= 0;
+	m_iAllowRevive		= 0;
+	m_iHpRegen			= 0;
+	m_iAddBots			= 0;
+	m_iWeapon			= 0;
+	m_iFlamer			= 1;
+	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus		= 0;
+	m_iNumPlayers		= 1;
+
+	m_bMissionRequiresTech = false;
+
+	// TODO: disable these vars if this mode is disabled
+	ConVarRef asw_simple_hacking("asw_simple_hacking", false);
+	if (asw_simple_hacking.IsValid())
+		asw_simple_hacking.SetValue(1);
+
+	ConVarRef asw_ai_computer_hacking_scale("asw_ai_computer_hacking_scale", false);
+	if (asw_ai_computer_hacking_scale.IsValid())
+		asw_ai_computer_hacking_scale.SetValue(1);
+
+	ConVarRef asw_ai_button_hacking_scale("asw_ai_button_hacking_scale", false);
+	if (asw_ai_button_hacking_scale.IsValid())
+		asw_ai_button_hacking_scale.SetValue(1);
+
+	ConVarRef asw_override_max_marines("asw_override_max_marines", false);
+	if (asw_override_max_marines.IsValid())
+		asw_override_max_marines.SetValue(1);
+
+
 }
 
 const char * CAlienSwarm::GetGameDescription(void) 
@@ -790,9 +832,14 @@ const char * CAlienSwarm::GetGameDescription(void)
 			m_iHpRegen						== 0 &&
 			m_iAddBots						== 0 &&
 			m_iWeapon						== 0 &&
-			m_iFlamer						== 1 )
+			m_iFlamer						== 1 &&
+			m_iNumPlayers					== 4 )
 		{
 			return "Alien Swarm"; 
+		}
+		else if (m_iNumPlayers == 1)
+		{
+			return "Solo Player";
 		}
 		else
 		{
@@ -938,6 +985,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iNumPlayers		= 4;
 
 	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
 
@@ -954,6 +1002,12 @@ CAlienSwarm::CAlienSwarm()
 		break;
 	case 3:
 		ASWGameRules()->ResetModsRifleRun();
+		break;
+	case 4:
+		ASWGameRules()->ResetModsBulletStorm();
+		break;
+	case 5:
+		ASWGameRules()->ResetModsSoloPlayer();
 		break;
 	default:
 		ASWGameRules()->ResetModsToDefault();
@@ -976,6 +1030,23 @@ CAlienSwarm::~CAlienSwarm()
 	//}
 
 	//delete m_pMissionManager;
+
+	// restore cvars
+	ConVarRef asw_simple_hacking("asw_simple_hacking", false);
+	if (asw_simple_hacking.IsValid())
+		asw_simple_hacking.SetValue(asw_simple_hacking.GetDefault());
+
+	ConVarRef asw_ai_computer_hacking_scale("asw_ai_computer_hacking_scale", false);
+	if (asw_ai_computer_hacking_scale.IsValid())
+		asw_ai_computer_hacking_scale.SetValue(asw_ai_computer_hacking_scale.GetDefault());
+
+	ConVarRef asw_ai_button_hacking_scale("asw_ai_button_hacking_scale", false);
+	if (asw_ai_button_hacking_scale.IsValid())
+		asw_ai_button_hacking_scale.SetValue(asw_ai_button_hacking_scale.GetDefault());
+
+	ConVarRef asw_override_max_marines("asw_override_max_marines", false);
+	if (asw_override_max_marines.IsValid())
+		asw_override_max_marines.SetValue(asw_override_max_marines.GetDefault());
 }
 
 ConVar asw_reserve_marine_time("asw_reserve_marine_time", "30.0f", 0, "Number of seconds marines are reserved for at briefing start");
@@ -1851,9 +1922,18 @@ void CAlienSwarm::StartMission()
 	{
 		ASW_ApplyCarnage_f(2);
 	}
+
 	// riflemod: carnage support. The above method doesn't work well for our needs.
 	// we need carnage to be disabled each time the map loads 
 	ASW_ApplyCarnage_f(m_iCarnageScale);
+
+	// riflemod: scale down carnage for solo game mode	
+	if (m_iNumPlayers == 1)
+	{
+		// scale down the amount of aliens
+		ASW_ApplyCarnage_f(0.5f);
+	}
+
 
 	if (m_iInfiniteSpawners)
 		ASW_ApplyInfiniteSpawners_f();
@@ -3988,6 +4068,19 @@ void CAlienSwarm::MarineKnockedOut( CASW_Marine *pMarine )
 		GetMissionManager()->CheckMissionComplete();
 }
 
+class GroundNodeFilter : public INearestNodeFilter
+{
+public:
+	virtual bool IsValid( CAI_Node *pNode ) 
+	{
+		return pNode->GetType() == NODE_GROUND;
+	};
+	virtual bool ShouldContinue() 
+	{
+		return true;
+	}
+};
+
 void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 {
 	if (asw_debug_alien_damage.GetBool())
@@ -4264,7 +4357,52 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	// riflemod: added frags counter
 	if (pMarine && pMarine->IsInhabited() && pMarine->GetCommander()) 
 	{
-		pMarine->GetCommander()->IncrementFragCount(1);
+		CASW_Player *pPlayer = pMarine->GetCommander();
+		pPlayer->IncrementFragCount(1);
+
+		// riflemod: if solo player we spawn medkits every 31 frags
+		// and ammo every 51 frags
+		// 31 and 51 are taken so they don't intersect, because when
+		// ammo spawns on top of medkit it sticks to medkit
+		// possible fix to spawn ammo before medkit
+		if (m_iNumPlayers == 1)
+		{
+			const int iFragsForMedkit = 31;
+			const int iFragsForAmmo = 51;
+			if (pPlayer->FragCount() % iFragsForMedkit == 0 || pPlayer->FragCount() % iFragsForAmmo == 0)
+			{
+				CAI_Network *pNetwork = pMarine->GetNavigator() ? pMarine->GetNavigator()->GetNetwork() : NULL;
+				if (pNetwork)
+				{
+					GroundNodeFilter filter;
+					int nNode = pNetwork->NearestNodeToPoint(NULL, pAlien->GetAbsOrigin(), false, &filter);
+					if (nNode != NO_NODE)
+					{
+						CAI_Node *pNode = pNetwork->GetNode(nNode);
+
+						if (pNode && pNode->GetType() == NODE_GROUND )
+						{
+							Vector vecDest = pNode->GetPosition(HULL_HUMAN);
+							if (pPlayer->FragCount() % iFragsForMedkit == 0)
+							{
+								CBaseEntity *pMedkit = (CBaseEntity *)CreateEntityByName("asw_weapon_medkit");
+								UTIL_SetOrigin( pMedkit, vecDest );
+								DispatchSpawn( pMedkit );
+								//pMedkit->Spawn();
+							}
+
+							if (pPlayer->FragCount() % iFragsForAmmo == 0)
+							{
+								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );	
+								UTIL_SetOrigin( pAmmoDrop, vecDest );
+								DispatchSpawn( pAmmoDrop );
+								//pAmmoDrop->Spawn();
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
