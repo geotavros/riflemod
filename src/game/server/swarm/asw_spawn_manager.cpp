@@ -316,6 +316,13 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode()
 			DeleteRoute( pRoute );
 			continue;
 		}
+
+		// riflemod: preventing wanderers from spawning behind closed airlocks
+		if (UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT))
+		{
+			DeleteRoute(pRoute);
+			continue;
+		}
 		
 		Vector vecSpawnPos = pNode->GetPosition( CANDIDATE_ALIEN_HULL ) + Vector( 0, 0, 32 );
 		if ( ValidSpawnPoint( vecSpawnPos, vecMins, vecMaxs, true, MARINE_NEAR_DISTANCE ) )
@@ -546,6 +553,17 @@ bool CASW_Spawn_Manager::FindHordePosition()
 			DeleteRoute( pRoute );
 			continue;
 		}
+
+		// riflemod: preventing hordes from spawning behind closed airlocks
+		if ( UTIL_ASW_BrushBlockingRoute(pRoute, MASK_PLAYERSOLID_BRUSHONLY, COLLISION_GROUP_PLAYER_MOVEMENT) )
+		{
+			if (asw_director_debug.GetInt() >= 2)
+			{
+				Msg("  Discarding horde node %d as there's a brush in the way.\n", iChosen);
+			}
+			DeleteRoute(pRoute);
+			continue;
+		}
 		
 		m_vecHordePosition = pNode->GetPosition( CANDIDATE_ALIEN_HULL ) + Vector( 0, 0, 32 );
 
@@ -736,7 +754,9 @@ CBaseEntity* CASW_Spawn_Manager::SpawnAlienAt(const char* szAlienClass, const Ve
 
 	// reactivedrop: fixed horde aliens falling through floor and stuck in walls
 	// by moving this function call to the bottom of SpawnAlienAt()
-	UTIL_DropToFloor(pEntity, MASK_SOLID);
+	
+	// riflemod: temporary comment to test whether parasites fall throught floor 
+	//UTIL_DropToFloor(pEntity, MASK_SOLID);
 
 	return pEntity;
 }
@@ -931,7 +951,7 @@ bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
 	{
 		for ( int i = 0; i < nParasites; i++ )
 		{
-			CBaseEntity *pAlien = SpawnAlienAt( "asw_parasite", TraceToGround( pBestArea->m_pNode->GetPosition( nHull ) ), RandomAngle( 0, 360 ) );
+			CBaseEntity *pAlien = SpawnAlienAt( "asw_parasite", pBestArea->m_pNode->GetPosition( nHull ), RandomAngle( 0, 360 ) );
 			IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>( pAlien );
 			if ( pSpawnable )
 			{
