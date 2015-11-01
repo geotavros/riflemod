@@ -66,7 +66,10 @@ void CASW_Ammo_Drop::Spawn( void )
 
 	m_takedamage = DAMAGE_NO;
 
-	// check for attaching to elevators
+	// riflemod: preventing ammo drop attaching to anything
+	// because players abuse this by attaching it to a weapon
+
+	/* // check for attaching to elevators
 	trace_t	tr;
 	UTIL_TraceLine( GetAbsOrigin() + Vector(0, 0, 2),
 					GetAbsOrigin() - Vector(0, 0, 32), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
@@ -74,6 +77,7 @@ void CASW_Ammo_Drop::Spawn( void )
 	{
 		SetParent( tr.m_pEnt );
 	}
+	//*/
 
 	m_iAmmoUnitsRemaining = DEFAULT_AMMO_DROP_UNITS;
 }

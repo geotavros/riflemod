@@ -111,6 +111,10 @@ void CASW_Sentry_Base::Spawn( void )
 	SetThink( &CASW_Sentry_Base::AnimThink );	
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
+	// riflemod: preventing sentry attaching to anything
+	// because players abuse this by attaching it to a weapon
+	
+	/*
 	// check for attaching to elevators
 	trace_t	tr;
 	UTIL_TraceLine( GetAbsOrigin() + Vector(0, 0, 2),
@@ -119,6 +123,7 @@ void CASW_Sentry_Base::Spawn( void )
 	{
 		SetParent( tr.m_pEnt );
 	}
+	//*/
 
 	if ( m_iAmmo == -1 )
 	{
