@@ -709,9 +709,11 @@ void RestoreChangedBySoloPlayerCvars()
 	if (asw_ai_button_hacking_scale.IsValid())
 		asw_ai_button_hacking_scale.SetValue(asw_ai_button_hacking_scale.GetDefault());
 
-	ConVarRef asw_override_max_marines("asw_override_max_marines", false);
-	if (asw_override_max_marines.IsValid())
-		asw_override_max_marines.SetValue(asw_override_max_marines.GetDefault());
+	//ConVarRef asw_override_max_marines("asw_override_max_marines", false);
+	//if (asw_override_max_marines.IsValid())
+		asw_override_max_marines.SetValue(4);
+	ASWGameRules()->SetMaxMarines(NULL);
+
 }
 
 void CAlienSwarm::ResetModsToDefault() 
@@ -839,11 +841,24 @@ void CAlienSwarm::ResetModsSoloPlayer()
 	if (asw_ai_button_hacking_scale.IsValid())
 		asw_ai_button_hacking_scale.SetValue(1);
 
-	ConVarRef asw_override_max_marines("asw_override_max_marines", false);
-	if (asw_override_max_marines.IsValid())
+	//ConVarRef asw_override_max_marines("asw_override_max_marines", false);
+	//if (asw_override_max_marines.IsValid())
 		asw_override_max_marines.SetValue(1);
+	SetMaxMarines(NULL);
 
-
+	for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
+	{
+		for (int RosterIndex = 0; RosterIndex < 8; ++RosterIndex)
+		{
+			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+			if (pMR && pMR->GetProfileIndex() == RosterIndex)
+			{
+				ASWGameResource()->SetRosterSelected(RosterIndex, 0);
+				ASWGameResource()->DeleteMarineResource(pMR);
+				return;
+			}
+		}
+	}
 }
 
 const char * CAlienSwarm::GetGameDescription(void) 
@@ -2063,7 +2078,6 @@ void CAlienSwarm::StartMission()
 	AddBonusChargesToPickups();
 
 	asw_marine_death_cam.SetValue(0);
-	asw_override_max_marines.SetValue(4);
 }
 
 void CAlienSwarm::UpdateLaunching()
@@ -6915,7 +6929,7 @@ void CAlienSwarm::OnPlayerFullyJoined( CASW_Player *pPlayer )
 		}
 		m_hEquipReq = NULL;
 	}
-	asw_override_max_marines.SetValue(4);
+	//asw_override_max_marines.SetValue(4);
 	// player_join_time_.Insert(pPlayer, gpGlobals->curtime + 5);
 }
 
