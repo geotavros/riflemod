@@ -937,7 +937,7 @@ void rm_ammo_bonusf(const CCommand &args)
 			return;
 		}
 
-		int ammo_count = clamp(atoi(args[1]), 0, 20);
+		int ammo_count = clamp(atoi(args[1]), 0, 40);
 
 		ASWGameRules()->m_iAmmoBonus = ammo_count;
 
