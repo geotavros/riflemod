@@ -874,16 +874,19 @@ void CAlienSwarm::ResetModsSoloPlayer()
 		asw_override_max_marines.SetValue(1);
 	SetMaxMarines(NULL);
 
-	for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
+	if (ASWGameResource())
 	{
-		for (int RosterIndex = 0; RosterIndex < 8; ++RosterIndex)
+		for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
 		{
-			CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
-			if (pMR && pMR->GetProfileIndex() == RosterIndex)
+			for (int RosterIndex = 0; RosterIndex < 8; ++RosterIndex)
 			{
-				ASWGameResource()->SetRosterSelected(RosterIndex, 0);
-				ASWGameResource()->DeleteMarineResource(pMR);
-				return;
+				CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+				if (pMR && pMR->GetProfileIndex() == RosterIndex)
+				{
+					ASWGameResource()->SetRosterSelected(RosterIndex, 0);
+					ASWGameResource()->DeleteMarineResource(pMR);
+					return;
+				}
 			}
 		}
 	}
