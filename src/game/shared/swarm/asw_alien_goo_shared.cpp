@@ -231,7 +231,7 @@ int CASW_Alien_Goo::OnTakeDamage( const CTakeDamageInfo &info )
 	}
 
 	// riflemod: goo takes blast damage, e.g. from explosions. But they only ignite it
-	if ( info.GetDamageType() & DMG_BLAST )
+	if ( ASWGameRules()->m_iBiomassIgnite == 1 && info.GetDamageType() & DMG_BLAST )
 	{
 		Ignite( 30.0f );
 

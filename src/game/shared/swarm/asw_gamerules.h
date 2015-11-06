@@ -343,6 +343,7 @@ public:
 		WEAPON_TYPES_MAX
 	};
 
+	void ResetModsToClassicSwarm();
 	void ResetModsToDefault();
 	void ResetModsRiflemodClassic();
 	void ResetModsRifleRun();
@@ -363,6 +364,7 @@ public:
 	int	   m_iInfiniteSpawners; // If 1 all spawners will be set to infinitely spawn aliens 
 	int	   m_iAmmoBonus;	  // the amount of bonus ammo satchels to add 
 	int	   m_iNumPlayers;	  // used to limit the number of marines and optimize rules for them
+	int	   m_iBiomassIgnite;  // If 1 biomass will ignite from explosions
 
 #endif
 

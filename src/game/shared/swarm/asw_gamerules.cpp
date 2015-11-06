@@ -694,6 +694,8 @@ ConVar rm_default_slowmo( "rm_default_slowmo", "1", FCVAR_NONE, "If 0 env_slomo 
 ConVar rm_default_weaponreq( "rm_default_weaponreq", "1", FCVAR_NONE, "If 0 weapon requirement(such as flamer) will be deleted from map on round start(if present)" );
 ConVar rm_ready_mark_override("rm_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
 
+ConVar rm_default_biomass_ignite("rm_default_biomass_ignite", "0", FCVAR_NONE, "If 1 biomass will ignite from explosions");
+
 void RestoreChangedBySoloPlayerCvars()
 {
 // restore cvars
@@ -716,6 +718,26 @@ void RestoreChangedBySoloPlayerCvars()
 
 }
 
+void CAlienSwarm::ResetModsToClassicSwarm()
+{
+	m_iWeaponType		= DEFAULT;
+	m_iCarnageScale		= 1;
+	m_fHeavyScale		= 1.0f;
+	m_fAlienSpeedScale	= 1.0f;
+	m_iRefillSecondary	= 0;
+	m_iAllowRevive		= 0;
+	m_iHpRegen			= 0;
+	m_iAddBots			= 0;
+	m_iWeapon			= 0;
+	m_iFlamer			= 1;
+	m_iInfiniteSpawners = 0;
+	m_iAmmoBonus		= 0;
+	m_iNumPlayers		= 4;
+	m_iBiomassIgnite	= 0;
+
+	RestoreChangedBySoloPlayerCvars();
+}
+
 void CAlienSwarm::ResetModsToDefault() 
 {
 	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
@@ -730,6 +752,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iFlamer			= rm_default_flamer.GetInt();
 	m_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
 	m_iAmmoBonus		= rm_default_ammobonus.GetInt();
+	m_iBiomassIgnite	= rm_default_biomass_ignite.GetInt();
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -749,6 +772,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
+	m_iBiomassIgnite	= 1;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -768,6 +792,7 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
+	m_iBiomassIgnite	= 1;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -787,6 +812,7 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
+	m_iBiomassIgnite	= 1;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -806,6 +832,7 @@ void CAlienSwarm::ResetModsBulletStorm()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus = 0;
 	m_iNumPlayers		= 4;
+	m_iBiomassIgnite	= 1;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -825,6 +852,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 1;
+	m_iBiomassIgnite	= 0;
 
 	m_bMissionRequiresTech = false;
 
@@ -878,7 +906,8 @@ const char * CAlienSwarm::GetGameDescription(void)
 			m_iAddBots						== 0 &&
 			m_iWeapon						== 0 &&
 			m_iFlamer						== 1 &&
-			m_iNumPlayers					== 4 )
+			m_iNumPlayers					== 4 &&
+			m_iBiomassIgnite				== 0 )
 		{
 			return "Alien Swarm"; 
 		}
@@ -1032,12 +1061,13 @@ CAlienSwarm::CAlienSwarm()
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
 
+
 	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
 
 	switch (challenge_id)
 	{
 	case 0:
-		ASWGameRules()->ResetModsToDefault();
+		ASWGameRules()->ResetModsToClassicSwarm();
 		break;
 	case 1:
 		ASWGameRules()->ResetModsRiflemodClassic();
@@ -1053,6 +1083,9 @@ CAlienSwarm::CAlienSwarm()
 		break;
 	case 5:
 		ASWGameRules()->ResetModsSoloPlayer();
+		break;
+	case 6:
+		ASWGameRules()->ResetModsToDefault();
 		break;
 	default:
 		ASWGameRules()->ResetModsToDefault();

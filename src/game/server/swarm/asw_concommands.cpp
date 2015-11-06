@@ -677,16 +677,16 @@ void rm_challengef(const CCommand &args)
 		switch (challenge_id)
 		{
 			case 0:
-				ASWGameRules()->ResetModsToDefault();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "No Challenge" );
+				ASWGameRules()->ResetModsToClassicSwarm();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Classic Alien Swarm" );
 				break;
 			case 1:
 				ASWGameRules()->ResetModsRiflemodClassic();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Rifle Mod Classic" );
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Rifle Mod Casual" );
 				break;
 			case 2:
 				ASWGameRules()->ResetModsLevelOne();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Level One" );
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Level One Weapons" );
 				break;
 			case 3:
 				ASWGameRules()->ResetModsRifleRun();
@@ -700,6 +700,10 @@ void rm_challengef(const CCommand &args)
 			case 5:
 				ASWGameRules()->ResetModsSoloPlayer();
 				Q_snprintf(challenge_name, sizeof(challenge_name), "Solo Player" );
+				break;
+			case 6:
+				ASWGameRules()->ResetModsToDefault();
+				Q_snprintf(challenge_name, sizeof(challenge_name), "Server Defaults" );
 				break;
 			default:
 				break;
@@ -761,6 +765,49 @@ void rm_flamerf(const CCommand &args)
 	}
 }
 ConCommand rm_flamer("rm_flamer", rm_flamerf, "If 0 players' flamers will be replaced with rifles", 0);
+
+void rm_biomass_ignitef(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Biomass setting can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can set biomass setting \n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+		ASWGameRules()->m_iBiomassIgnite = multiplier;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (ASWGameRules()->m_iBiomassIgnite == 0)
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Biomass is set to not ignite from explosions");
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Biomass is set to ignite from explosions");
+		}
+		
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_biomass_ignite("rm_biomass_ignite", rm_biomass_ignitef, "If 1 biomass will ignite from explosions", 0);
 
 void rm_weaponreqf(const CCommand &args)
 {
