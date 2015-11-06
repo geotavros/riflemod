@@ -5,9 +5,15 @@
 *.ncb
 *.suo
 *.exp
+*.log
 *.map
 *.pch
 *.pdb
 *.user
 *.idb
 *.ilk
+*.filters
+*.sdf
+*.ipch
+*.tlog
+*.lastbuildstate
