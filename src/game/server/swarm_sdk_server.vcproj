@@ -15,8 +15,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug_swarm"
-			IntermediateDirectory=".\Debug_swarm"
+			OutputDirectory=".\Debug_swarm2005"
+			IntermediateDirectory=".\Debug_swarm2005"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -82,7 +82,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				UseUnicodeResponseFiles="false"
-				AdditionalDependencies=" winmm.lib"
+				AdditionalDependencies="winmm.lib user32.lib AdvAPI32.Lib"
 				ShowProgress="0"
 				OutputFile="$(OutDir)\server.dll"
 				LinkIncremental="2"
@@ -127,14 +127,14 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Publishing to E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\."
-				CommandLine="if exist &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
+				CommandLine="if exist &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release_swarm"
-			IntermediateDirectory=".\Release_swarm"
+			OutputDirectory=".\Release_swarm2005"
+			IntermediateDirectory=".\Release_swarm2005"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -202,7 +202,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				UseUnicodeResponseFiles="false"
-				AdditionalDependencies=" winmm.lib"
+				AdditionalDependencies="winmm.lib user32.lib AdvAPI32.Lib"
 				ShowProgress="0"
 				OutputFile="$(OutDir)\server.dll"
 				LinkIncremental="1"
@@ -249,7 +249,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Publishing to E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\."
-				CommandLine="if exist &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;E:\Games\Steam\SteamApps\sourcemods\riflemod\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
+				CommandLine="if exist &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;E:\Games\Steam\SteamApps\common\Alien Swarm\swarm\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
