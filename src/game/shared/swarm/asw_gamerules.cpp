@@ -717,6 +717,8 @@ void RestoreChangedBySoloPlayerCvars()
 		asw_override_max_marines.SetValue(4);
 	ASWGameRules()->SetMaxMarines(NULL);
 
+	if (gEntList.FindEntityByClassname(NULL, "asw_tech_marine_req"))
+		ASWGameRules()->m_bMissionRequiresTech = true;
 }
 
 void CAlienSwarm::ResetModsToClassicSwarm()
@@ -755,6 +757,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iFlamer			= rm_default_flamer.GetInt();
 	m_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
 	m_iAmmoBonus		= rm_default_ammobonus.GetInt();
+	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= rm_default_biomass_ignite.GetInt();
 
 	RestoreChangedBySoloPlayerCvars();
@@ -864,7 +867,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 
 	m_bMissionRequiresTech = false;
 
-	// TODO: disable these vars if this mode is disabled
+	
 	ConVarRef asw_simple_hacking("asw_simple_hacking", false);
 	if (asw_simple_hacking.IsValid())
 		asw_simple_hacking.SetValue(1);
@@ -882,6 +885,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 		asw_override_max_marines.SetValue(1);
 	SetMaxMarines(NULL);
 
+	// deselect all marines
 	if (ASWGameResource())
 	{
 		for (int i=0;i<ASWGameResource()->GetMaxMarineResources();i++)
@@ -1073,6 +1077,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iNumPlayers		= 4;
+	m_iBiomassIgnite	= 0;
 
 
 	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
