@@ -658,5 +658,7 @@ ASW_Skill CASW_Marine_Profile::GetSkillMapping( int nSkillSlot )
 
 bool CASW_Marine_Profile::CanHack( void )
 {
-	return GetMarineClass() == MARINE_CLASS_TECH || (ASWGameRules()->m_iNumPlayers == 1);
+	return GetMarineClass() == MARINE_CLASS_TECH || 
+		   ASWGameRules()->m_iNumPlayers == 1 ||
+		   ASWGameRules()->m_iAllowHackAll == 1;
 }

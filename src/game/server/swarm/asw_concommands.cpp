@@ -895,6 +895,62 @@ void rm_weaponreqf(const CCommand &args)
 }
 ConCommand rm_weaponreq("rm_weaponreq", rm_weaponreqf, "If 0 all weapon requirements are disabled", 0);
 
+void rm_techreqf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Tech marine requirement setting can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can set tech requirement setting \n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (multiplier == 0)
+		{
+			if (ASWGameRules())
+			{
+				ASWGameRules()->m_bMissionRequiresTech = false;
+				ASWGameRules()->m_iAllowHackAll = true;
+
+				Q_snprintf(buffer, sizeof(buffer), "Tech requirement was disabled");
+			}
+		}
+		else
+		{
+			if (ASWGameRules())
+			{
+				if (gEntList.FindEntityByClassname(NULL, "asw_tech_marine_req"))
+					ASWGameRules()->m_bMissionRequiresTech = true;
+				ASWGameRules()->m_iAllowHackAll = false;
+
+				Q_snprintf(buffer, sizeof(buffer), "Tech marine requirement was set to default");
+			}
+			
+		}
+
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_techreq("rm_techreq", rm_techreqf, "If 0 all marines can hack doors and computers, tech isn't needed. 1 is default", 0);
+
 void rm_spawners_infinitef(const CCommand &args)
 {
 	if (args.ArgC() < 2)

@@ -366,6 +366,7 @@ public:
 	int	   m_iAmmoBonus;	  // the amount of bonus ammo satchels to add 
 	int	   m_iNumPlayers;	  // used to limit the number of marines and optimize rules for them
 	int	   m_iBiomassIgnite;  // If 1 biomass will ignite from explosions
+	int	   m_iAllowHackAll;   // If 1 all marines can hack doors and computers
 
 #endif
 
