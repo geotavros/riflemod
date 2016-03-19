@@ -141,11 +141,15 @@ void CASW_Queen::Spawn( void )
 	SetHullType(HULL_LARGE_CENTERED);
 	//UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
 	//UTIL_SetSize(this,	Vector(-140, -140, 0), Vector(140, 140, 200) );
+	const float scale = 0.5f;
+
 #ifdef ASW_QUEEN_STATIONARY
-	UTIL_SetSize(this,	Vector(-140, -40, 0), Vector(140, 40, 200) );
+	UTIL_SetSize(this, Vector(-140, -40, 0) * scale, Vector(140, 40, 200) * scale);
 #else
-	UTIL_SetSize(this, Vector(-120,-120,0), Vector(120,120,160));
+	UTIL_SetSize(this, Vector(-120, -120, 0) * scale, Vector(120, 120, 160) * scale);
 #endif
+
+	SetModelScale(scale, 0);
 
 	SetHealthByDifficultyLevel();	
 
