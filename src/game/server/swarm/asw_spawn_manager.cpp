@@ -971,6 +971,24 @@ bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
 	return false;
 }
 
+void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
+{
+	// spawn random parasites 7, boomers 3, mortars 3, harvesters 4, 
+	// drones 15, uber drones 2, shieldbug 1, shaman 7, flies 3
+	
+	// get num nodes
+	// get random node
+	// check if it's far enough from player start, 1000 units
+	// check if valid spawn point for an alien
+	// spawn alien
+
+	int iNumNodes = g_pBigAINet->NumNodes();
+	if (iNumNodes < 50)
+		return;
+
+
+}
+
 // heuristic to find reasonably open space - searches for areas with high node connectivity
 CASW_Open_Area* CASW_Spawn_Manager::FindNearbyOpenArea( const Vector &vecSearchOrigin, int nSearchHull )
 {

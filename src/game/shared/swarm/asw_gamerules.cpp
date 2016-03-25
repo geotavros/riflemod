@@ -726,6 +726,7 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 {
 	m_iWeaponType		= DEFAULT;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -747,7 +748,8 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 void CAlienSwarm::ResetModsToDefault() 
 {
 	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
-	m_iCarnageScale		= rm_default_carnage.GetFloat();
+	m_iCarnageScale		= rm_default_carnage.GetInt();
+	m_iPrespawnScale	= rm_default_prespawn.GetInt();
 	m_iHordeScale		= rm_default_horde_scale.GetFloat();
 	m_fHeavyScale		= rm_default_heavy.GetFloat();
 	m_fAlienSpeedScale	= rm_default_alienspeed.GetFloat();
@@ -772,6 +774,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 {
 	m_iWeaponType		= RIFLE_MOD;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -794,6 +797,7 @@ void CAlienSwarm::ResetModsRifleRun()
 {
 	m_iWeaponType		= RIFLE_MOD;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -816,6 +820,7 @@ void CAlienSwarm::ResetModsLevelOne()
 {
 	m_iWeaponType		= LEVEL_ONE;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -838,6 +843,7 @@ void CAlienSwarm::ResetModsBulletStorm()
 {
 	m_iWeaponType		= BULLET_STORM;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -860,6 +866,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 {
 	m_iWeaponType		= DEFAULT;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -923,6 +930,7 @@ const char * CAlienSwarm::GetGameDescription(void)
 	case DEFAULT:
 		if (
 			m_iCarnageScale					== 1 &&
+			m_iPrespawnScale				== 0 &&
 			m_iHordeScale					== 1 &&
 			fabs(m_fHeavyScale - 1.f)		< 0.0001 &&
 			fabs(m_fAlienSpeedScale - 1.f)	< 0.0001 &&
@@ -1075,6 +1083,7 @@ CAlienSwarm::CAlienSwarm()
 	m_flTechFailureRestartTime = 0.0f;
 
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_iWeaponType		= RIFLE_MOD;
