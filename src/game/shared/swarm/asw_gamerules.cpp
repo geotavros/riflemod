@@ -681,6 +681,7 @@ ConVar rm_add_bots_by_default("rm_add_bots_by_default", "1", 0,
 ConVar rm_default_weapontype("rm_default_weapontype", "0", FCVAR_NONE, "0(default) all weapons, 1 restrict to one weapon(rifle by default), 2 Level One only, 3 Bullet Storm only");
 ConVar rm_default_weapon("rm_default_weapon", "0", FCVAR_NONE, "An ID of weapon marines will be given. If weapon type is set to Restrict to one weapon then this weapon will be given");
 ConVar rm_default_carnage("rm_default_carnage", "1.0", FCVAR_NONE, "Default carnage");
+ConVar rm_default_prespawn("rm_default_prespawn", "0", FCVAR_NONE, "Default prespawn");
 ConVar rm_default_horde_scale("rm_default_horde_scale", "1.0", FCVAR_NONE, "Default horde scale");
 ConVar rm_default_heavy("rm_default_heavy", "1.0", FCVAR_NONE, "Default alien hp scale");
 ConVar rm_default_alienspeed("rm_default_alienspeed", "1.0", FCVAR_NONE, "Default alien speed scale");
@@ -726,6 +727,7 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 {
 	m_iWeaponType		= DEFAULT;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -747,7 +749,8 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 void CAlienSwarm::ResetModsToDefault() 
 {
 	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
-	m_iCarnageScale		= rm_default_carnage.GetFloat();
+	m_iCarnageScale		= rm_default_carnage.GetInt();
+	m_iPrespawnScale	= rm_default_prespawn.GetInt();
 	m_iHordeScale		= rm_default_horde_scale.GetFloat();
 	m_fHeavyScale		= rm_default_heavy.GetFloat();
 	m_fAlienSpeedScale	= rm_default_alienspeed.GetFloat();
@@ -772,6 +775,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 {
 	m_iWeaponType		= RIFLE_MOD;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -794,6 +798,7 @@ void CAlienSwarm::ResetModsRifleRun()
 {
 	m_iWeaponType		= RIFLE_MOD;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -816,6 +821,7 @@ void CAlienSwarm::ResetModsLevelOne()
 {
 	m_iWeaponType		= LEVEL_ONE;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -838,6 +844,7 @@ void CAlienSwarm::ResetModsBulletStorm()
 {
 	m_iWeaponType		= BULLET_STORM;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -860,6 +867,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 {
 	m_iWeaponType		= DEFAULT;
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_fAlienSpeedScale	= 1.0f;
@@ -923,6 +931,7 @@ const char * CAlienSwarm::GetGameDescription(void)
 	case DEFAULT:
 		if (
 			m_iCarnageScale					== 1 &&
+			m_iPrespawnScale				== 0 &&
 			m_iHordeScale					== 1 &&
 			fabs(m_fHeavyScale - 1.f)		< 0.0001 &&
 			fabs(m_fAlienSpeedScale - 1.f)	< 0.0001 &&
@@ -1075,6 +1084,7 @@ CAlienSwarm::CAlienSwarm()
 	m_flTechFailureRestartTime = 0.0f;
 
 	m_iCarnageScale		= 1;
+	m_iPrespawnScale	= 0;
 	m_iHordeScale		= 1;
 	m_fHeavyScale		= 1.0f;
 	m_iWeaponType		= RIFLE_MOD;

@@ -557,4 +557,17 @@ void CASW_Director::OnMissionStarted()
 			}
 		}
 	}
+
+	if (ASWGameRules()->m_iPrespawnScale)
+	{
+		// spawn random parasites 7, boomers 3, mortars 3, harvesters 4, 
+		// drones 15, uber drones 2, shieldbug 1, shaman 7, flies 3
+
+		ASWSpawnManager()->PrespawnAliens(ASWGameRules()->m_iPrespawnScale);
+		// get num nodes
+		// get random node
+		// check if it's far enough from player start, 1000 units
+		// check if valid spawn point for an alien
+		// spawn alien
+	}
 }

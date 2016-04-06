@@ -971,6 +971,96 @@ bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
 	return false;
 }
 
+ConVar rm_prespawn_num_parasites("rm_prespawn_num_parasites", "7", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_boomers("rm_prespawn_num_boomers", "3", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_mortars("rm_prespawn_num_mortars", "3", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_harvesters("rm_prespawn_num_harvesters", "4", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_drones("rm_prespawn_num_drones", "15", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_uber_drones("rm_prespawn_num_uber_drones", "2", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_shieldbugs("rm_prespawn_num_shieldbugs", "1", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_shamans("rm_prespawn_num_shamans", "5", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_buzzers("rm_prespawn_num_buzzers", "1", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+
+void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
+{
+	// spawn random parasites 7, boomers 3, mortars 3, harvesters 4, 
+	// drones 15, uber drones 2, shieldbug 1, shaman 7, flies 1
+	
+	// get num nodes
+	// get random node
+	// check if it's far enough from player start, 1000 units
+	// check if valid spawn point for an alien
+	// spawn alien
+
+	const int NUM_PARASITES		= rm_prespawn_num_parasites.GetInt();
+	const int NUM_BOOMERS		= rm_prespawn_num_boomers.GetInt();
+	const int NUM_MORTARS		= rm_prespawn_num_mortars.GetInt();
+	const int NUM_HARVESTERS	= rm_prespawn_num_harvesters.GetInt();
+	const int NUM_DRONES		= rm_prespawn_num_drones.GetInt();
+	const int NUM_UBER_DRONES	= rm_prespawn_num_uber_drones.GetInt();
+	const int NUM_SHIELDBUGS	= rm_prespawn_num_shieldbugs.GetInt();
+	const int NUM_SHAMANS		= rm_prespawn_num_shamans.GetInt();
+	const int NUM_FLIES			= rm_prespawn_num_buzzers.GetInt();
+
+
+	int iNumNodes = g_pBigAINet->NumNodes();
+	if (iNumNodes < 50)
+		return;
+
+	CBaseEntity *pPlayerStart = gEntList.FindEntityByClassname(NULL, "info_player_start");
+	if (!pPlayerStart)
+		return;
+	Vector playerStartPos = pPlayerStart->GetAbsOrigin();
+
+	PrespawnAlienAtRandomNode("asw_parasite",	NUM_PARASITES * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_boomer",		NUM_BOOMERS * multiplier, HULL_LARGE, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_mortarbug",	NUM_MORTARS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_harvester",	NUM_HARVESTERS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_drone",		NUM_DRONES * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_drone_uber", NUM_UBER_DRONES * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_shieldbug",	NUM_SHIELDBUGS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_shaman",		NUM_SHAMANS * multiplier, HULL_MEDIUM, playerStartPos, iNumNodes);
+	//PrespawnAlienAtRandomNode("asw_buzzer",		NUM_FLIES * multiplier, HULL_LARGE, playerStartPos, iNumNodes);	
+}
+
+
+void CASW_Spawn_Manager::PrespawnAlienAtRandomNode(const char *szAlienClass, const int iNumAliens, const int iHull, const Vector &playerStartPos, const int iNumNodes)
+{
+	for (int i = 0; i < iNumAliens; ++i)
+	{
+		CAI_Node *pNode = NULL;
+		for (int k = 0; k < 30; ++k)
+		{
+			int node_id = RandomInt(0, iNumNodes - 1);
+			pNode = g_pBigAINet->GetNode(node_id);
+			if (!pNode || pNode->GetType() != NODE_GROUND)
+				continue;
+			else if (pNode->GetOrigin().DistToSqr(playerStartPos) < 1000 * 1000)
+			{
+				continue;
+			}
+
+			if (ValidSpawnPoint(pNode->GetPosition(iHull), NAI_Hull::Mins(iHull), NAI_Hull::Maxs(iHull), true, false))
+			{
+				CBaseEntity *pAlien = SpawnAlienAt(szAlienClass, pNode->GetPosition(iHull), RandomAngle(0, 360));
+				IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pAlien);
+				if (pSpawnable)
+				{
+					pSpawnable->SetAlienOrders(AOT_SpreadThenHibernate, vec3_origin, NULL);
+				}
+				if (asw_director_debug.GetBool() && pAlien)
+				{
+					Msg("Spawned alien at %f %f %f\n", pAlien->GetAbsOrigin());
+					NDebugOverlay::Cross3D(pAlien->GetAbsOrigin(), 8.0f, 255, 0, 0, true, 20.0f);
+				}
+				if (pAlien)
+					break;
+			}
+		}
+	}
+}
+
+
 // heuristic to find reasonably open space - searches for areas with high node connectivity
 CASW_Open_Area* CASW_Spawn_Manager::FindNearbyOpenArea( const Vector &vecSearchOrigin, int nSearchHull )
 {

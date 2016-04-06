@@ -73,6 +73,8 @@ public:
 	// spawns a shieldbug somewhere randomly in the map
 	bool SpawnRandomShieldbug();
 	bool SpawnRandomParasitePack( int nParasites );
+	void PrespawnAliens(int multiplier);
+	void PrespawnAlienAtRandomNode(const char *szAlienClass, const int iNumAliens, const int iHull, const Vector &playerStartPos, const int iNumNodes);
 
 private:
 	void UpdateCandidateNodes();

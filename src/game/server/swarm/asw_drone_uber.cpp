@@ -46,6 +46,7 @@ void CASW_Drone_Uber::Spawn( void )
 	// make sure uber drones are green
 	m_nSkin = 0;
 	SetHitboxSet(0);
+	SetModelScale(1.2, 0);
 }
 
 void CASW_Drone_Uber::Precache( void )

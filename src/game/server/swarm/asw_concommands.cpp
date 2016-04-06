@@ -331,6 +331,41 @@ void rm_carnagef(const CCommand &args)
 }
 ConCommand rm_carnage( "rm_carnage", rm_carnagef, "Scales the amount of aliens for all drone spawners", 0 );
 
+void rm_prespawnf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the scale factor from 1 to 15\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Prespawn can only be enabled during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can enable prespawn\n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 15);
+		ASWGameRules()->m_iPrespawnScale = multiplier;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		Q_snprintf(buffer, sizeof(buffer), "Prespawn activated with multiplier: %i", multiplier);
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_prespawn("rm_prespawn", rm_prespawnf, "Scales the amount of prespawned aliens", 0);
+
 void rm_hordescalef(const CCommand &args)
 {
 	if (args.ArgC() < 2)

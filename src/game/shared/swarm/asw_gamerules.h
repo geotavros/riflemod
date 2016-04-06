@@ -353,6 +353,7 @@ public:
 	
 	WeaponTypes m_iWeaponType;// 
 	int	   m_iCarnageScale;   // the factor used to scale the amount of aliens in each drone spawner
+	int	   m_iPrespawnScale;  // the factor used to scale the amount of prespawned aliens
 	int	   m_iHordeScale;     // the factor used to scale the horde size
 	float  m_fHeavyScale;	  // the factor used to scale aliens' health 
 	float  m_fAlienSpeedScale;// the factor used to scale aliens' speed 
