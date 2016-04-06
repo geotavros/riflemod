@@ -681,6 +681,7 @@ ConVar rm_add_bots_by_default("rm_add_bots_by_default", "1", 0,
 ConVar rm_default_weapontype("rm_default_weapontype", "0", FCVAR_NONE, "0(default) all weapons, 1 restrict to one weapon(rifle by default), 2 Level One only, 3 Bullet Storm only");
 ConVar rm_default_weapon("rm_default_weapon", "0", FCVAR_NONE, "An ID of weapon marines will be given. If weapon type is set to Restrict to one weapon then this weapon will be given");
 ConVar rm_default_carnage("rm_default_carnage", "1.0", FCVAR_NONE, "Default carnage");
+ConVar rm_default_prespawn("rm_default_prespawn", "0", FCVAR_NONE, "Default prespawn");
 ConVar rm_default_horde_scale("rm_default_horde_scale", "1.0", FCVAR_NONE, "Default horde scale");
 ConVar rm_default_heavy("rm_default_heavy", "1.0", FCVAR_NONE, "Default alien hp scale");
 ConVar rm_default_alienspeed("rm_default_alienspeed", "1.0", FCVAR_NONE, "Default alien speed scale");
