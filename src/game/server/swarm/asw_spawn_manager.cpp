@@ -1012,7 +1012,7 @@ void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 		return;
 	Vector playerStartPos = pPlayerStart->GetAbsOrigin();
 
-	PrespawnAlienAtRandomNode("asw_parasite",	NUM_PARASITES * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+	PrespawnAlienAtRandomNode("asw_parasite",	NUM_PARASITES * multiplier, HULL_TINY, playerStartPos, iNumNodes);
 	PrespawnAlienAtRandomNode("asw_boomer",		NUM_BOOMERS * multiplier, HULL_LARGE, playerStartPos, iNumNodes);
 	PrespawnAlienAtRandomNode("asw_mortarbug",	NUM_MORTARS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
 	PrespawnAlienAtRandomNode("asw_harvester",	NUM_HARVESTERS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
@@ -1042,7 +1042,8 @@ void CASW_Spawn_Manager::PrespawnAlienAtRandomNode(const char *szAlienClass, con
 
 			if (ValidSpawnPoint(pNode->GetPosition(iHull), NAI_Hull::Mins(iHull), NAI_Hull::Maxs(iHull), true, false))
 			{
-				CBaseEntity *pAlien = SpawnAlienAt(szAlienClass, pNode->GetPosition(iHull), RandomAngle(0, 360));
+				// Raise the end position a little up off the floor, place the npc and drop him down
+				CBaseEntity *pAlien = SpawnAlienAt(szAlienClass, pNode->GetPosition(iHull) + Vector(0.f, 0.f, 12.f), RandomAngle(0, 360));
 				IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pAlien);
 				if (pSpawnable)
 				{
@@ -1058,6 +1059,19 @@ void CASW_Spawn_Manager::PrespawnAlienAtRandomNode(const char *szAlienClass, con
 			}
 		}
 	}
+}
+
+CON_COMMAND_F(rm_spawn_random_parasites, "Spawns parasites somewhere randomly in the map", FCVAR_CHEAT)
+{
+	int iNumNodes = g_pBigAINet->NumNodes();
+	if (iNumNodes < 50)
+		return;
+
+	CBaseEntity *pPlayerStart = gEntList.FindEntityByClassname(NULL, "info_player_start");
+	if (!pPlayerStart)
+		return;
+	Vector playerStartPos = pPlayerStart->GetAbsOrigin();
+	ASWSpawnManager()->PrespawnAlienAtRandomNode("asw_parasite", 5, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
 }
 
 
