@@ -365,6 +365,8 @@ public:
 	int	   m_iFlamer;		  // If 0 flamers will be replaced with rifles, 1 does nothing and is default 
 	int	   m_iInfiniteSpawners; // If 1 all spawners will be set to infinitely spawn aliens 
 	int	   m_iAmmoBonus;	  // the amount of bonus ammo satchels to add 
+	int	   m_iSpawnMedkits;   // if 1 will respawn medkits from killed aliens
+	int	   m_iSpawnAmmo;	  // if 1 will respawn ammo from killed aliens
 	int	   m_iNumPlayers;	  // used to limit the number of marines and optimize rules for them
 	int	   m_iBiomassIgnite;  // If 1 biomass will ignite from explosions
 	int	   m_iAllowHackAll;   // If 1 all marines can hack doors and computers

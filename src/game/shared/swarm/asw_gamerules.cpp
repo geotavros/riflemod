@@ -691,6 +691,8 @@ ConVar rm_default_hpregen("rm_default_hpregen", "0", FCVAR_NONE, "Default health
 ConVar rm_default_flamer("rm_default_flamer", "0", FCVAR_NONE, "Default flamer allowed, if 0 flamers will be replaced with rifles");
 ConVar rm_default_infinitespawners("rm_default_infinitespawners", "0", FCVAR_NONE, "If 1 all spawners will be set to infinitely spawn aliens");
 ConVar rm_default_ammobonus("rm_default_ammobonus", "0", FCVAR_NONE, "Default ammo bonus");
+ConVar rm_default_spawnmedkits("rm_default_spawnmedkits", "0", FCVAR_NONE, "If 1 spawns a med kit from 31st killed alien");
+ConVar rm_default_spawnammo("rm_default_spawnammo", "0", FCVAR_NONE, "If 1 spawns an ammo box from 51st killed alien");
 
 ConVar rm_default_slowmo( "rm_default_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 ConVar rm_default_weaponreq( "rm_default_weaponreq", "1", FCVAR_NONE, "If 0 weapon requirement(such as flamer) will be deleted from map on round start(if present)" );
@@ -739,6 +741,8 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iSpawnMedkits		= 0;
+	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
@@ -762,6 +766,8 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iFlamer			= rm_default_flamer.GetInt();
 	m_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
 	m_iAmmoBonus		= rm_default_ammobonus.GetInt();
+	m_iSpawnMedkits		= rm_default_spawnmedkits.GetInt();
+	m_iSpawnAmmo		= rm_default_spawnammo.GetInt();
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= rm_default_biomass_ignite.GetInt();
 	m_iAllowHackAll		= !rm_default_techreq.GetInt();
@@ -787,6 +793,8 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iSpawnMedkits		= 0;
+	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
@@ -810,6 +818,8 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iSpawnMedkits		= 0;
+	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
@@ -833,6 +843,8 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iSpawnMedkits		= 0;
+	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
@@ -856,6 +868,8 @@ void CAlienSwarm::ResetModsBulletStorm()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iSpawnMedkits		= 0;
+	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
@@ -879,6 +893,8 @@ void CAlienSwarm::ResetModsSoloPlayer()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iSpawnMedkits		= 0;
+	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 1;
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
@@ -941,6 +957,9 @@ const char * CAlienSwarm::GetGameDescription(void)
 			m_iAddBots						== 0 &&
 			m_iWeapon						== 0 &&
 			m_iFlamer						== 1 &&
+			m_iAmmoBonus					== 0 &&
+			m_iSpawnMedkits					== 0 &&
+			m_iSpawnAmmo					== 0 &&
 			m_iNumPlayers					== 4 &&
 			m_iBiomassIgnite				== 0 &&
 			m_iAllowHackAll					== 0)
@@ -1097,6 +1116,8 @@ CAlienSwarm::CAlienSwarm()
 	m_iFlamer			= 1;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
+	m_iSpawnMedkits		= 0;
+	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
@@ -4467,7 +4488,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 		// 31 and 51 are taken so they don't intersect, because when
 		// ammo spawns on top of medkit it sticks to medkit
 		// possible fix to spawn ammo before medkit
-		if (m_iNumPlayers == 1)
+		if (m_iNumPlayers == 1 || m_iSpawnMedkits || m_iSpawnAmmo)
 		{
 			const int iFragsForMedkit = 31;
 			const int iFragsForAmmo = 51;
@@ -4485,7 +4506,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 						if (pNode && pNode->GetType() == NODE_GROUND )
 						{
 							Vector vecDest = pNode->GetPosition(HULL_HUMAN);
-							if (pPlayer->FragCount() % iFragsForMedkit == 0)
+							if (pPlayer->FragCount() % iFragsForMedkit == 0 && (m_iNumPlayers == 1 || m_iSpawnMedkits))
 							{
 								CBaseEntity *pMedkit = (CBaseEntity *)CreateEntityByName("asw_weapon_medkit");
 								UTIL_SetOrigin( pMedkit, vecDest );
@@ -4493,7 +4514,7 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 								//pMedkit->Spawn();
 							}
 
-							if (pPlayer->FragCount() % iFragsForAmmo == 0)
+							if (pPlayer->FragCount() % iFragsForAmmo == 0 && (m_iNumPlayers == 1 || m_iSpawnAmmo))
 							{
 								CBaseEntity *pAmmoDrop = CreateEntityByName( "asw_ammo_drop" );	
 								UTIL_SetOrigin( pAmmoDrop, vecDest );

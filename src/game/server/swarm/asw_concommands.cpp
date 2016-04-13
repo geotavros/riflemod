@@ -1124,7 +1124,91 @@ void rm_ammo_bonusf(const CCommand &args)
 }
 ConCommand rm_ammo_bonus("rm_ammo_bonus", rm_ammo_bonusf, "Gives additional ammo satchels", 0);
 
+void rm_spawnmedkitsf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
 
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Spawn med kits can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can enable med kits spawning \n");
+			return;
+		}
+
+		int iSpawnMedkit = clamp(atoi(args[1]), 0, 1);
+
+		ASWGameRules()->m_iSpawnMedkits = iSpawnMedkit;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (ASWGameRules()->m_iSpawnMedkits)
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Spawning of med kits enabled");
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Spawning of med kits disabled");
+		}
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_spawnmedkits("rm_spawnmedkits", rm_spawnmedkitsf, "If 1 spawns a med kit from 31st killed alien", 0);
+
+void rm_spawnammof(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Spawn ammo can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can enable ammo spawning \n");
+			return;
+		}
+
+		int iSpawnAmmo = clamp(atoi(args[1]), 0, 1);
+
+		ASWGameRules()->m_iSpawnAmmo = iSpawnAmmo;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (ASWGameRules()->m_iSpawnAmmo)
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Spawning of ammo boxes enabled");
+		}
+		else
+		{
+			Q_snprintf(buffer, sizeof(buffer), "Spawning of ammo boxes disabled");
+		}
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_spawnammo("rm_spawnammo", rm_spawnammof, "If 1 spawns an ammo box from 51st killed alien", 0);
 
 void ASW_AllowBriefing_f()
 {
