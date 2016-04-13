@@ -1071,7 +1071,7 @@ CON_COMMAND_F(rm_spawn_random_parasites, "Spawns parasites somewhere randomly in
 	if (!pPlayerStart)
 		return;
 	Vector playerStartPos = pPlayerStart->GetAbsOrigin();
-	ASWSpawnManager()->PrespawnAlienAtRandomNode("asw_parasite", 5, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
+	ASWSpawnManager()->PrespawnAlienAtRandomNode("asw_parasite", 5, HULL_TINY, playerStartPos, iNumNodes);
 }
 
 
