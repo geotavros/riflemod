@@ -136,13 +136,18 @@ extern ConVar old_radius_damage;
 	ConVar sv_vote_kick_ban_duration("sv_vote_kick_ban_duration", "5", 0, "How long should a kick vote ban someone from the server? (in minutes)");
 	ConVar sv_timeout_when_fully_connected( "sv_timeout_when_fully_connected", "30", FCVAR_NONE, "Once fully connected, player will be kicked if he doesn't send a network message within this interval." );
 	ConVar mm_swarm_state( "mm_swarm_state", "ingame", FCVAR_DEVELOPMENTONLY );
+	ConVar rm_update_sv_tags("rm_update_sv_tags", "1", FCVAR_NONE, "If 0 sv_tags will not be updated on difficulty changes");
 
 	static void UpdateMatchmakingTagsCallback( IConVar *pConVar, const char *pOldValue, float flOldValue )
 	{
 		// update sv_tags to force an update of the matchmaking tags
 		static ConVarRef sv_tags( "sv_tags" );
 
-		if ( sv_tags.IsValid() )
+		// riflemod: added check for rm_update_sv_tags
+		// when server has sv_steamgroup 111111,22222 set every change of
+		// difficulty or onslaugh leads to sv_tags spam in chat
+		// this cvar will diable udpating of sv_tags and prevent this spam
+		if ( sv_tags.IsValid() && rm_update_sv_tags.GetBool())
 		{
 			char buffer[ 1024 ];
 			Q_snprintf( buffer, sizeof( buffer ), "%s", sv_tags.GetString() );
