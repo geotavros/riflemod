@@ -694,6 +694,7 @@ ConVar rm_default_refillsecondary("rm_default_refillsecondary", "0", FCVAR_NONE,
 ConVar rm_default_allowrevive("rm_default_allowrevive", "0", FCVAR_NONE, "Default allow reviving of fallen marines");
 ConVar rm_default_hpregen("rm_default_hpregen", "0", FCVAR_NONE, "Default health regeneration");
 ConVar rm_default_flamer("rm_default_flamer", "0", FCVAR_NONE, "Default flamer allowed, if 0 flamers will be replaced with rifles");
+ConVar rm_default_difficultyscale("rm_default_difficultyscale", "0", FCVAR_NONE, "Default difficulty scale, If 1 than Easy difficulty acts as Brutal + 1");
 ConVar rm_default_infinitespawners("rm_default_infinitespawners", "0", FCVAR_NONE, "If 1 all spawners will be set to infinitely spawn aliens");
 ConVar rm_default_ammobonus("rm_default_ammobonus", "0", FCVAR_NONE, "Default ammo bonus");
 ConVar rm_default_spawnmedkits("rm_default_spawnmedkits", "0", FCVAR_NONE, "If 1 spawns a med kit from 31st killed alien");
@@ -751,6 +752,7 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
+	m_iDifficultyScale	= 0;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -769,6 +771,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= rm_default_weapon.GetInt();
 	m_iFlamer			= rm_default_flamer.GetInt();
+	m_iDifficultyScale	= rm_default_difficultyscale.GetInt();
 	m_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
 	m_iAmmoBonus		= rm_default_ammobonus.GetInt();
 	m_iSpawnMedkits		= rm_default_spawnmedkits.GetInt();
@@ -796,6 +799,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iDifficultyScale	= 0;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iSpawnMedkits		= 0;
@@ -821,6 +825,7 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iDifficultyScale	= 0;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iSpawnMedkits		= 0;
@@ -846,6 +851,7 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iDifficultyScale	= 0;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iSpawnMedkits		= 0;
@@ -871,6 +877,7 @@ void CAlienSwarm::ResetModsBulletStorm()
 	m_iAddBots			= rm_add_bots_by_default.GetInt();
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iDifficultyScale	= 0;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iSpawnMedkits		= 0;
@@ -896,6 +903,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 	m_iAddBots			= 0;
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
+	m_iDifficultyScale	= 0;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iSpawnMedkits		= 0;
@@ -962,6 +970,7 @@ const char * CAlienSwarm::GetGameDescription(void)
 			m_iAddBots						== 0 &&
 			m_iWeapon						== 0 &&
 			m_iFlamer						== 1 &&
+			m_iDifficultyScale				== 0 &&
 			m_iAmmoBonus					== 0 &&
 			m_iSpawnMedkits					== 0 &&
 			m_iSpawnAmmo					== 0 &&
@@ -1119,6 +1128,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iAddBots			= 1;
 	m_iWeapon			= 0;	
 	m_iFlamer			= 1;
+	m_iDifficultyScale	= 0;
 	m_iInfiniteSpawners = 0;
 	m_iAmmoBonus		= 0;
 	m_iSpawnMedkits		= 0;
@@ -5908,6 +5918,15 @@ void CAlienSwarm::OnSkillLevelChanged( int iNewLevel )
 	else  // normal
 	{
 		m_iMissionDifficulty = 5;
+	}
+
+	if (m_iDifficultyScale == 1)
+	{
+		m_iMissionDifficulty += 12;
+	}
+	else if (m_iDifficultyScale == 2)
+	{
+		m_iMissionDifficulty += 24;
 	}
 
 	// modify mission difficulty by campaign modifier

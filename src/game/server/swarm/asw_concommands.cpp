@@ -836,6 +836,41 @@ void rm_flamerf(const CCommand &args)
 }
 ConCommand rm_flamer("rm_flamer", rm_flamerf, "If 0 players' flamers will be replaced with rifles", 0);
 
+void rm_difficultyscalef(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 2\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Difficulty Scale setting can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can set Difficulty Scale setting \n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 2);
+		ASWGameRules()->m_iDifficultyScale = multiplier;
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		Q_snprintf(buffer, sizeof(buffer), "Difficulty scale activated with multiplier: %i", multiplier);
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_difficultyscale("rm_difficultyscale", rm_difficultyscalef, "If 1 than Easy difficulty acts as Brutal + 1", 0);
+
 void rm_biomass_ignitef(const CCommand &args)
 {
 	if (args.ArgC() < 2)

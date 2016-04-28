@@ -1095,6 +1095,31 @@ void CASW_Parasite::UpdatePlaybackRate()
 		case 2: boost *= asw_alien_speed_scale_normal.GetFloat(); break;
 		default: boost *= asw_alien_speed_scale_easy.GetFloat(); break;
 	}
+
+	if (ASWGameRules()->m_iDifficultyScale == 1)
+	{
+		switch (ASWGameRules()->GetSkillLevel())
+		{
+		case 5: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.6; break;
+		case 4: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.5; break;
+		case 3: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.4; break;
+		case 2: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.3; break;
+		default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.2; break;
+		}
+	}
+
+	if (ASWGameRules()->m_iDifficultyScale == 2)
+	{
+		switch (ASWGameRules()->GetSkillLevel())
+		{
+		case 5: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.1; break;
+		case 4: boost *= asw_alien_speed_scale_insane.GetFloat() + 1.0; break;
+		case 3: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.9; break;
+		case 2: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.8; break;
+		default: boost *= asw_alien_speed_scale_insane.GetFloat() + 0.7; break;
+		}
+	}
+
 	m_flPlaybackRate = boost;
 }
 
