@@ -683,7 +683,7 @@ ConVar rm_default_bots("rm_default_bots", "1", 0,
 							  "If 1 bot marines will be added to fill "
 							  "empty slots");
 
-ConVar rm_default_weapontype("rm_default_weapontype", "0", FCVAR_NONE, "0(default) all weapons, 1 restrict to one weapon(rifle by default), 2 Level One only, 3 Bullet Storm only");
+ConVar rm_default_weapons("rm_default_weapons", "0", FCVAR_NONE, "0(default) all weapons, 1 restrict to one weapon(rifle by default), 2 Level One only, 3 Bullet Storm only");
 ConVar rm_default_weapon("rm_default_weapon", "0", FCVAR_NONE, "An ID of weapon marines will be given. If weapon type is set to Restrict to one weapon then this weapon will be given");
 ConVar rm_default_carnage("rm_default_carnage", "1.0", FCVAR_NONE, "Default carnage");
 ConVar rm_default_prespawn("rm_default_prespawn", "0", FCVAR_NONE, "Default prespawn");
@@ -699,7 +699,6 @@ ConVar rm_default_infinitespawners("rm_default_infinitespawners", "0", FCVAR_NON
 ConVar rm_default_ammobonus("rm_default_ammobonus", "0", FCVAR_NONE, "Default ammo bonus");
 ConVar rm_default_spawnmedkits("rm_default_spawnmedkits", "0", FCVAR_NONE, "If 1 spawns a med kit from 31st killed alien");
 ConVar rm_default_spawnammo("rm_default_spawnammo", "0", FCVAR_NONE, "If 1 spawns an ammo box from 51st killed alien");
-
 ConVar rm_default_slowmo( "rm_default_slowmo", "1", FCVAR_NONE, "If 0 env_slomo will be deleted from map on round start(if present)" );
 ConVar rm_default_weaponreq( "rm_default_weaponreq", "1", FCVAR_NONE, "If 0 weapon requirement(such as flamer) will be deleted from map on round start(if present)" );
 ConVar rm_ready_mark_override("rm_ready_mark_override", "0", FCVAR_NONE, "If set to 1 all players will be auto ready, the green ready mark will be set to checked state");
@@ -759,7 +758,7 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 
 void CAlienSwarm::ResetModsToDefault() 
 {
-	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
+	m_iWeaponType		= WeaponTypes(rm_default_weapons.GetInt());
 	m_iCarnageScale		= rm_default_carnage.GetInt();
 	m_iPrespawnScale	= rm_default_prespawn.GetInt();
 	m_iHordeScale		= rm_default_hordescale.GetFloat();
