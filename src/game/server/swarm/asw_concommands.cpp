@@ -519,7 +519,7 @@ void rm_alienspeedf(const CCommand &args)
 }
 ConCommand rm_alienspeed( "rm_alienspeed", rm_alienspeedf, "Scales aliens' speed", 0 );
 
-void rm_refill_secondaryf(const CCommand &args)
+void rm_refillsecondaryf(const CCommand &args)
 {
 	if ( args.ArgC() < 2 )
 	{
@@ -554,7 +554,7 @@ void rm_refill_secondaryf(const CCommand &args)
 		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
 	}
 }
-ConCommand rm_refill_secondary("rm_refill_secondary", rm_refill_secondaryf, 
+ConCommand rm_refillsecondary("rm_refillsecondary", rm_refillsecondaryf, 
   "If 1 the secondary ammo get refilled with primary", 0 );
 
 void rm_revivef(const CCommand &args)
