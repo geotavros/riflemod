@@ -1156,7 +1156,7 @@ void rm_ammo_bonusf(const CCommand &args)
 		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
 	}
 }
-ConCommand rm_ammo_bonus("rm_ammo_bonus", rm_ammo_bonusf, "Gives additional ammo satchels", 0);
+ConCommand rm_ammobonus("rm_ammobonus", rm_ammo_bonusf, "Gives additional ammo satchels", 0);
 
 void rm_spawnmedkitsf(const CCommand &args)
 {
