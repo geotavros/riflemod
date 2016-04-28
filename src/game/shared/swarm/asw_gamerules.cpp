@@ -679,7 +679,7 @@ ConVar rm_default_mod("rm_default_mod", "1", 0,
 							"2 = Level One Challenge, "
 							"3 = Rifle Run");
 
-ConVar rm_add_bots_by_default("rm_add_bots_by_default", "1", 0, 
+ConVar rm_default_bots("rm_default_bots", "1", 0, 
 							  "If 1 bot marines will be added to fill "
 							  "empty slots");
 
@@ -768,7 +768,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iRefillSecondary	= rm_default_refillsecondary.GetInt();
 	m_iAllowRevive		= rm_default_allowrevive.GetInt();
 	m_iHpRegen			= rm_default_hpregen.GetInt();
-	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iAddBots			= rm_default_bots.GetInt();
 	m_iWeapon			= rm_default_weapon.GetInt();
 	m_iFlamer			= rm_default_flamer.GetInt();
 	m_iDifficultyScale	= rm_default_difficultyscale.GetInt();
@@ -796,7 +796,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iRefillSecondary	= 1;
 	m_iAllowRevive		= 1;
 	m_iHpRegen			= 1;
-	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iAddBots			= 0;
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iDifficultyScale	= 0;
@@ -822,7 +822,7 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iRefillSecondary	= 0;
 	m_iAllowRevive		= 0;
 	m_iHpRegen			= 0;
-	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iAddBots			= 0;
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iDifficultyScale	= 0;
@@ -848,7 +848,7 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iRefillSecondary	= 0;
 	m_iAllowRevive		= 0;
 	m_iHpRegen			= 0;
-	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iAddBots			= 0;
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iDifficultyScale	= 0;
@@ -874,7 +874,7 @@ void CAlienSwarm::ResetModsBulletStorm()
 	m_iRefillSecondary	= 0;
 	m_iAllowRevive		= 0;
 	m_iHpRegen			= 0;
-	m_iAddBots			= rm_add_bots_by_default.GetInt();
+	m_iAddBots			= 0;
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iDifficultyScale	= 0;
