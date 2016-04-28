@@ -862,6 +862,8 @@ void rm_difficultyscalef(const CCommand &args)
 
 		int multiplier = clamp(atoi(args[1]), 0, 2);
 		ASWGameRules()->m_iDifficultyScale = multiplier;
+		// update mission difficulty
+		ASWGameRules()->OnSkillLevelChanged(ASWGameRules()->m_iSkillLevel );
 
 		CReliableBroadcastRecipientFilter filter;
 		char buffer[512];
