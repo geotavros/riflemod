@@ -1061,7 +1061,7 @@ void rm_spawners_infinitef(const CCommand &args)
 		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
 	}
 }
-ConCommand rm_spawners_infinite("rm_spawners_infinite", rm_spawners_infinitef, "Makes all spawners infinitely spawn aliens", 0);
+ConCommand rm_spawnersinfinite("rm_spawnersinfinite", rm_spawners_infinitef, "Makes all spawners infinitely spawn aliens", 0);
 
 
 void rm_slowmof(const CCommand &args)
