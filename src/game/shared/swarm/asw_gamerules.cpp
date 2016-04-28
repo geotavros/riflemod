@@ -684,7 +684,7 @@ ConVar rm_default_bots("rm_default_bots", "1", 0,
 							  "empty slots");
 
 ConVar rm_default_weapons("rm_default_weapons", "0", FCVAR_NONE, "0(default) all weapons, 1 restrict to one weapon(rifle by default), 2 Level One only, 3 Bullet Storm only");
-ConVar rm_default_weapon("rm_default_weapon", "0", FCVAR_NONE, "An ID of weapon marines will be given. If weapon type is set to Restrict to one weapon then this weapon will be given");
+ConVar rm_default_weaponid("rm_default_weaponid", "0", FCVAR_NONE, "An ID of weapon marines will be given. If weapon type is set to Restrict to one weapon then this weapon will be given");
 ConVar rm_default_carnage("rm_default_carnage", "1.0", FCVAR_NONE, "Default carnage");
 ConVar rm_default_prespawn("rm_default_prespawn", "0", FCVAR_NONE, "Default prespawn");
 ConVar rm_default_hordescale("rm_default_hordescale", "1.0", FCVAR_NONE, "Default horde scale");
@@ -768,7 +768,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iAllowRevive		= rm_default_revive.GetInt();
 	m_iHpRegen			= rm_default_hpregen.GetInt();
 	m_iAddBots			= rm_default_bots.GetInt();
-	m_iWeapon			= rm_default_weapon.GetInt();
+	m_iWeapon			= rm_default_weaponid.GetInt();
 	m_iFlamer			= rm_default_flamer.GetInt();
 	m_iDifficultyScale	= rm_default_difficultyscale.GetInt();
 	m_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
