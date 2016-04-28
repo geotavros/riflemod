@@ -973,13 +973,14 @@ bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
 
 ConVar rm_prespawn_num_parasites("rm_prespawn_num_parasites", "7", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_boomers("rm_prespawn_num_boomers", "3", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_mortars("rm_prespawn_num_mortars", "3", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_mortars("rm_prespawn_num_mortars", "2", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_harvesters("rm_prespawn_num_harvesters", "4", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_drones("rm_prespawn_num_drones", "15", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_uber_drones("rm_prespawn_num_uber_drones", "2", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_shieldbugs("rm_prespawn_num_shieldbugs", "1", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_shamans("rm_prespawn_num_shamans", "5", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_buzzers("rm_prespawn_num_buzzers", "1", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_rangers("rm_prespawn_num_rangers", "2", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 
 void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 {
@@ -1000,7 +1001,8 @@ void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 	const int NUM_UBER_DRONES	= rm_prespawn_num_uber_drones.GetInt();
 	const int NUM_SHIELDBUGS	= rm_prespawn_num_shieldbugs.GetInt();
 	const int NUM_SHAMANS		= rm_prespawn_num_shamans.GetInt();
-	const int NUM_FLIES			= rm_prespawn_num_buzzers.GetInt();
+	//const int NUM_FLIES			= rm_prespawn_num_buzzers.GetInt();
+	const int NUM_RANGERS		= rm_prespawn_num_rangers.GetInt();
 
 
 	int iNumNodes = g_pBigAINet->NumNodes();
@@ -1021,6 +1023,7 @@ void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 	PrespawnAlienAtRandomNode("asw_shieldbug",	NUM_SHIELDBUGS * multiplier, HULL_WIDE_SHORT, playerStartPos, iNumNodes);
 	PrespawnAlienAtRandomNode("asw_shaman",		NUM_SHAMANS * multiplier, HULL_MEDIUM, playerStartPos, iNumNodes);
 	//PrespawnAlienAtRandomNode("asw_buzzer",		NUM_FLIES * multiplier, HULL_LARGE, playerStartPos, iNumNodes);	
+	PrespawnAlienAtRandomNode("asw_ranger",		NUM_RANGERS * multiplier, HULL_MEDIUMBIG, playerStartPos, iNumNodes);
 }
 
 
