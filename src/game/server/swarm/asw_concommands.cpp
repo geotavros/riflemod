@@ -912,7 +912,7 @@ void rm_biomass_ignitef(const CCommand &args)
 		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
 	}
 }
-ConCommand rm_biomass_ignite("rm_biomass_ignite", rm_biomass_ignitef, "If 1 biomass will ignite from explosions", 0);
+ConCommand rm_biomassignite("rm_biomassignite", rm_biomass_ignitef, "If 1 biomass will ignite from explosions", 0);
 
 void rm_weaponreqf(const CCommand &args)
 {
