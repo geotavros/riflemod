@@ -671,7 +671,7 @@ const char * GenerateNewSaveGameName()
 	return NULL;
 }
 
-ConVar rm_default_game_mode("rm_default_game_mode", "1", 0, 
+ConVar rm_default_mod("rm_default_mod", "1", 0, 
 							"The server will be hosting this game mode as "
 							"default. "
 							"0 = default Alien Swarm, "
@@ -1128,9 +1128,9 @@ CAlienSwarm::CAlienSwarm()
 	m_iAllowHackAll		= 0;
 
 
-	int challenge_id = clamp(rm_default_game_mode.GetInt(), 0, 20);
+	const int mod_id = clamp(rm_default_mod.GetInt(), 0, 20);
 
-	switch (challenge_id)
+	switch (mod_id)
 	{
 	case 0:
 		ASWGameRules()->ResetModsToClassicSwarm();

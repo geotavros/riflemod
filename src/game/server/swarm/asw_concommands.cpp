@@ -716,7 +716,7 @@ void rm_weaponf(const CCommand &args)
 }
 ConCommand rm_weapon( "rm_weapon", rm_weaponf, "Sets the default weapon for weapon restricted mode, values from 0 to 20 are accepted", 0 );
 
-void rm_challengef(const CCommand &args)
+void rm_modf(const CCommand &args)
 {
 	if ( args.ArgC() < 2 )
 	{
@@ -726,7 +726,7 @@ void rm_challengef(const CCommand &args)
 
 	if ( !ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING) )
 	{
-		Msg( "Challenge can only be changed during briefing \n" );
+		Msg( "Mod can only be changed during briefing \n" );
 		return;
 	}
 
@@ -736,54 +736,53 @@ void rm_challengef(const CCommand &args)
 	{
 		if (ASWGameResource()->m_Leader.Get() != pPlayer)
 		{
-			Msg( "Only leader can enable challenge \n" );
+			Msg( "Only leader can enable mod \n" );
 			return;
 		}
 
-		int challenge_id = clamp(atoi(args[1]), 0, 20);
-		char challenge_name[255];
+		int mod_id = clamp(atoi(args[1]), 0, 20);
+		char mod_name[255];
 		char additional_message[255];
 		additional_message[0] = 0;
 
-		switch (challenge_id)
+		switch (mod_id)
 		{
 			case 0:
 				ASWGameRules()->ResetModsToClassicSwarm();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Classic Alien Swarm" );
+				Q_snprintf(mod_name, sizeof(mod_name), "Classic Alien Swarm" );
 				break;
 			case 1:
 				ASWGameRules()->ResetModsRiflemodClassic();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Rifle Mod Casual" );
+				Q_snprintf(mod_name, sizeof(mod_name), "Rifle Mod Casual" );
 				break;
 			case 2:
 				ASWGameRules()->ResetModsLevelOne();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Level One Weapons" );
+				Q_snprintf(mod_name, sizeof(mod_name), "Level One Weapons" );
 				break;
 			case 3:
 				ASWGameRules()->ResetModsRifleRun();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Rifle Run" );
+				Q_snprintf(mod_name, sizeof(mod_name), "Rifle Run" );
 				break;
 			case 4:
 				ASWGameRules()->ResetModsBulletStorm();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Bullet Storm");
+				Q_snprintf(mod_name, sizeof(mod_name), "Bullet Storm");
 				Q_snprintf(additional_message, sizeof(additional_message), "Allowed guns: Rifles, Autogun, Shotgun, Sniper, PDW, Sentries, Medguns");
 				break;
 			case 5:
 				ASWGameRules()->ResetModsSoloPlayer();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Solo Player" );
+				Q_snprintf(mod_name, sizeof(mod_name), "Solo Player" );
 				break;
 			case 6:
-				ASWGameRules()->ResetModsToDefault();
-				Q_snprintf(challenge_name, sizeof(challenge_name), "Server Defaults" );
-				break;
 			default:
+				ASWGameRules()->ResetModsToDefault();
+				Q_snprintf(mod_name, sizeof(mod_name), "Server Defaults" );
 				break;
 		}
 
 		CReliableBroadcastRecipientFilter filter;
 		char buffer[255];
 		
-		Q_snprintf(buffer, sizeof(buffer), "Challenge activated %s", challenge_name );
+		Q_snprintf(buffer, sizeof(buffer), "Mod activated %s", mod_name );
 		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
 
 		if (additional_message[0] != 0)
@@ -792,7 +791,7 @@ void rm_challengef(const CCommand &args)
 		}
 	}
 }
-ConCommand rm_challenge( "rm_challenge", rm_challengef, "Activates a challenge which is a modification of game rules, like Rifle Mod, ASBI or Ch1ckensCoop", 0 );
+ConCommand rm_mod( "rm_mod", rm_modf, "Activates a modification of game rules, like Rifle Mod, ASBI or Ch1ckensCoop", 0 );
 
 void rm_flamerf(const CCommand &args)
 {
