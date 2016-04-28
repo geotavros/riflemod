@@ -687,7 +687,7 @@ ConVar rm_default_weapontype("rm_default_weapontype", "0", FCVAR_NONE, "0(defaul
 ConVar rm_default_weapon("rm_default_weapon", "0", FCVAR_NONE, "An ID of weapon marines will be given. If weapon type is set to Restrict to one weapon then this weapon will be given");
 ConVar rm_default_carnage("rm_default_carnage", "1.0", FCVAR_NONE, "Default carnage");
 ConVar rm_default_prespawn("rm_default_prespawn", "0", FCVAR_NONE, "Default prespawn");
-ConVar rm_default_horde_scale("rm_default_horde_scale", "1.0", FCVAR_NONE, "Default horde scale");
+ConVar rm_default_hordescale("rm_default_hordescale", "1.0", FCVAR_NONE, "Default horde scale");
 ConVar rm_default_heavy("rm_default_heavy", "1.0", FCVAR_NONE, "Default alien hp scale");
 ConVar rm_default_alienspeed("rm_default_alienspeed", "1.0", FCVAR_NONE, "Default alien speed scale");
 ConVar rm_default_refillsecondary("rm_default_refillsecondary", "0", FCVAR_NONE, "Default refill secondary ammo");
@@ -762,7 +762,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iWeaponType		= WeaponTypes(rm_default_weapontype.GetInt());
 	m_iCarnageScale		= rm_default_carnage.GetInt();
 	m_iPrespawnScale	= rm_default_prespawn.GetInt();
-	m_iHordeScale		= rm_default_horde_scale.GetFloat();
+	m_iHordeScale		= rm_default_hordescale.GetFloat();
 	m_fHeavyScale		= rm_default_heavy.GetFloat();
 	m_fAlienSpeedScale	= rm_default_alienspeed.GetFloat();
 	m_iRefillSecondary	= rm_default_refillsecondary.GetInt();
