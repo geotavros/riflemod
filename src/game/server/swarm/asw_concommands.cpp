@@ -714,7 +714,7 @@ void rm_weaponf(const CCommand &args)
 		UTIL_ClientPrintFilter( filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer );
 	}
 }
-ConCommand rm_weapon( "rm_weapon", rm_weaponf, "Sets the default weapon for weapon restricted mode, values from 0 to 20 are accepted", 0 );
+ConCommand rm_weaponid( "rm_weaponid", rm_weaponf, "Sets the default weapon for weapon restricted mode, values from 0 to 20 are accepted", 0 );
 
 void rm_modf(const CCommand &args)
 {
