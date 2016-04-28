@@ -35,6 +35,12 @@ void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 	// precache even if not in the level, for onslaught mode
 	UTIL_PrecacheOther( "asw_shieldbug" );
 	UTIL_PrecacheOther( "asw_parasite" );
+	UTIL_PrecacheOther( "asw_boomer" );
+	UTIL_PrecacheOther( "asw_mortarbug" );
+	UTIL_PrecacheOther( "asw_harvester" );
+	UTIL_PrecacheOther( "asw_drone_uber" );
+	UTIL_PrecacheOther( "asw_shaman" );
+	UTIL_PrecacheOther( "asw_ranger" );
 }
 
 bool g_bOfflineGame = false;
