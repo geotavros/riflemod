@@ -691,7 +691,7 @@ ConVar rm_default_hordescale("rm_default_hordescale", "1.0", FCVAR_NONE, "Defaul
 ConVar rm_default_heavy("rm_default_heavy", "1.0", FCVAR_NONE, "Default alien hp scale");
 ConVar rm_default_alienspeed("rm_default_alienspeed", "1.0", FCVAR_NONE, "Default alien speed scale");
 ConVar rm_default_refillsecondary("rm_default_refillsecondary", "0", FCVAR_NONE, "Default refill secondary ammo");
-ConVar rm_default_allowrevive("rm_default_allowrevive", "0", FCVAR_NONE, "Default allow reviving of fallen marines");
+ConVar rm_default_revive("rm_default_revive", "0", FCVAR_NONE, "Default allow reviving of fallen marines");
 ConVar rm_default_hpregen("rm_default_hpregen", "0", FCVAR_NONE, "Default health regeneration");
 ConVar rm_default_flamer("rm_default_flamer", "0", FCVAR_NONE, "Default flamer allowed, if 0 flamers will be replaced with rifles");
 ConVar rm_default_difficultyscale("rm_default_difficultyscale", "0", FCVAR_NONE, "Default difficulty scale, If 1 than Easy difficulty acts as Brutal + 1");
@@ -766,7 +766,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_fHeavyScale		= rm_default_heavy.GetFloat();
 	m_fAlienSpeedScale	= rm_default_alienspeed.GetFloat();
 	m_iRefillSecondary	= rm_default_refillsecondary.GetInt();
-	m_iAllowRevive		= rm_default_allowrevive.GetInt();
+	m_iAllowRevive		= rm_default_revive.GetInt();
 	m_iHpRegen			= rm_default_hpregen.GetInt();
 	m_iAddBots			= rm_default_bots.GetInt();
 	m_iWeapon			= rm_default_weapon.GetInt();
