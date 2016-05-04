@@ -795,7 +795,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iRefillSecondary	= 1;
 	m_iAllowRevive		= 1;
 	m_iHpRegen			= 1;
-	m_iAddBots			= 0;
+	m_iAddBots			= 1;
 	m_iWeapon			= 0;
 	m_iFlamer			= 1;
 	m_iDifficultyScale	= 0;
