@@ -951,7 +951,9 @@ bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
 	{
 		for ( int i = 0; i < nParasites; i++ )
 		{
-			CBaseEntity *pAlien = SpawnAlienAt( "asw_parasite", pBestArea->m_pNode->GetPosition( nHull ), RandomAngle( 0, 360 ) );
+			// raise the position by 12 units, a workaround for parasites
+			// falling through displacements
+			CBaseEntity *pAlien = SpawnAlienAt( "asw_parasite", pBestArea->m_pNode->GetPosition( nHull )  + Vector(0.f, 0.f, 12.f), RandomAngle( 0, 360 ) );
 			IASW_Spawnable_NPC *pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>( pAlien );
 			if ( pSpawnable )
 			{
@@ -980,7 +982,7 @@ ConVar rm_prespawn_num_uber_drones("rm_prespawn_num_uber_drones", "2", FCVAR_NON
 ConVar rm_prespawn_num_shieldbugs("rm_prespawn_num_shieldbugs", "1", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_shamans("rm_prespawn_num_shamans", "5", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 ConVar rm_prespawn_num_buzzers("rm_prespawn_num_buzzers", "1", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
-ConVar rm_prespawn_num_rangers("rm_prespawn_num_rangers", "2", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
+ConVar rm_prespawn_num_rangers("rm_prespawn_num_rangers", "5", FCVAR_NONE, "Num aliens to randomly spawn if rm_prespawn 1");
 
 void CASW_Spawn_Manager::PrespawnAliens(int multiplier)
 {
