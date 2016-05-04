@@ -1,5 +1,5 @@
 # Rifle Mod 
-Rifle Mod is a server side mod for Alien Swarm. It's initial purpose was to force players to use only rifles. Now it contains a big number of features and modifiers which can change gameplay drastically. Including player reviving, much smarter bots(AI marines), modifiers for alien speed and health, weapon restrictions and much more. See details at https://sites.google.com/site/swarmaddons/server-mods/rifle-mod
+Rifle Mod is a server side mod for Alien Swarm. It's initial purpose was to force players to use only rifles. Now it contains a big number of features and modifiers which can change gameplay drastically. It's now more a sandbox experience where a Leader player(the one who joins server first or is hosting a game) can input console commands which change game rules. Including player reviving, much smarter bots(AI marines), modifiers for alien speed and health, weapon restrictions and much more. See details at https://sites.google.com/site/swarmaddons/server-mods/rifle-mod
 The mod works by building a new server.dll file and replacing this file on your Alien Swarm dedicated server or your game. 
 
 # Building
