@@ -322,7 +322,7 @@ CASW_Hack_Computer* CASW_Computer_Area::GetCurrentHack()
 // traditional Swarm hacking
 void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 {
-	if ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() )
+	if ( (asw_simple_hacking.GetBool() || ASWGameRules()->m_iFastHack) || !pMarine->IsInhabited() )
 	{
 		if ( m_bIsInUse && HasDownloadObjective() && GetHackProgress() < 1.0f )
 		{
@@ -330,7 +330,7 @@ void CASW_Computer_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 			float fTime = (deltatime * (1.0f/((float)m_iHackLevel)));
 			// boost fTime by the marine's hack skill
 			fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
-			fTime *= asw_ai_computer_hacking_scale.GetFloat();
+			fTime *= ASWGameRules()->m_iFastHack == 1 ? 1 : asw_ai_computer_hacking_scale.GetFloat();
 			m_fHackProgress += fTime;
 
 			if ( GetHackProgress() > 0.0f && flOldHackProgress == 0.0f )

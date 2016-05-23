@@ -153,7 +153,7 @@ void CASW_Button_Area::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
 					m_iAliensKilledBeforeHack = ASWGameResource()->GetAliensKilledInThisMission();
 
 					m_OnButtonHackStarted.FireOutput( pMarine, this );
-					if ( !asw_simple_hacking.GetBool() && pMarine->IsInhabited() )
+					if ( !(asw_simple_hacking.GetBool() || ASWGameRules()->m_iFastHack) && pMarine->IsInhabited() )
 					{
 						if ( !GetCurrentHack() )	// if we haven't created a hack object for this computer yet, then create one	
 						{
@@ -297,12 +297,12 @@ CASW_Hack* CASW_Button_Area::GetCurrentHack()
 // traditional Swarm hacking
 void CASW_Button_Area::MarineUsing(CASW_Marine* pMarine, float deltatime)
 {
-	if (m_bIsInUse && m_bIsLocked && ( asw_simple_hacking.GetBool() || !pMarine->IsInhabited() ) )
+	if (m_bIsInUse && m_bIsLocked && ( (asw_simple_hacking.GetBool() || ASWGameRules()->m_iFastHack) || !pMarine->IsInhabited()))
 	{
 		float fTime = (deltatime * (1.0f/((float)m_iHackLevel)));
 		// boost fTime by the marine's hack skill
 		fTime *= MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_HACKING, ASW_MARINE_SUBSKILL_HACKING_SPEED_SCALE);
-		fTime *= asw_ai_button_hacking_scale.GetFloat();
+		fTime *= ASWGameRules()->m_iFastHack == 1 ? 1 : asw_ai_button_hacking_scale.GetFloat();
 		SetHackProgress(m_fHackProgress + fTime, pMarine);
 	}
 }
@@ -413,7 +413,7 @@ void CASW_Button_Area::SetHackProgress(float f, CASW_Marine *pMarine)
 	}
 	if (m_fHackProgress < 1.0f && f >= 1.0f)
 	{	
-		if ( asw_simple_hacking.GetBool() )
+		if ( asw_simple_hacking.GetBool() || ASWGameRules()->m_iFastHack )
 		{
 			pMarine->StopUsing();
 		}

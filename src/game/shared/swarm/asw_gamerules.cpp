@@ -705,6 +705,7 @@ ConVar rm_ready_mark_override("rm_ready_mark_override", "0", FCVAR_NONE, "If set
 
 ConVar rm_default_biomass_ignite("rm_default_biomass_ignite", "0", FCVAR_NONE, "If 1 biomass will ignite from explosions");
 ConVar rm_default_techreq("rm_default_techreq", "1", FCVAR_NONE, "If 0 tech marine isn't needed to hack doors and computers");
+ConVar rm_default_fasthack("rm_default_fasthack", "0", FCVAR_NONE, "If 1 hacking will be automatic and taking 2 seconds");
 
 void RestoreChangedBySoloPlayerCvars()
 {
@@ -751,6 +752,7 @@ void CAlienSwarm::ResetModsToClassicSwarm()
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
+	m_iFastHack			= 0;
 	m_iDifficultyScale	= 0;
 
 	RestoreChangedBySoloPlayerCvars();
@@ -780,6 +782,7 @@ void CAlienSwarm::ResetModsToDefault()
 	m_iAllowHackAll		= !rm_default_techreq.GetInt();
 	if (0 == rm_default_techreq.GetInt())
 		ASWGameRules()->m_bMissionRequiresTech = false;
+	m_iFastHack			= rm_default_fasthack.GetInt();
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -806,6 +809,7 @@ void CAlienSwarm::ResetModsRiflemodClassic()
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
+	m_iFastHack			= 0;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -832,6 +836,7 @@ void CAlienSwarm::ResetModsRifleRun()
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
+	m_iFastHack			= 0;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -858,6 +863,7 @@ void CAlienSwarm::ResetModsLevelOne()
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
+	m_iFastHack			= 0;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -884,6 +890,7 @@ void CAlienSwarm::ResetModsBulletStorm()
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 1;
 	m_iAllowHackAll		= 0;
+	m_iFastHack			= 0;
 
 	RestoreChangedBySoloPlayerCvars();
 }
@@ -910,6 +917,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 	m_iNumPlayers		= 1;
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
+	m_iFastHack			= 1;
 
 	m_bMissionRequiresTech = false;
 
@@ -975,7 +983,8 @@ const char * CAlienSwarm::GetGameDescription(void)
 			m_iSpawnAmmo					== 0 &&
 			m_iNumPlayers					== 4 &&
 			m_iBiomassIgnite				== 0 &&
-			m_iAllowHackAll					== 0)
+			m_iAllowHackAll					== 0 &&
+			m_iFastHack						== 0)
 		{
 			return "Alien Swarm"; 
 		}
@@ -1135,6 +1144,7 @@ CAlienSwarm::CAlienSwarm()
 	m_iNumPlayers		= 4;
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
+	m_iFastHack			= 0;
 
 
 	const int mod_id = clamp(rm_default_mod.GetInt(), 0, 20);

@@ -1022,6 +1022,67 @@ void rm_techreqf(const CCommand &args)
 }
 ConCommand rm_techreq("rm_techreq", rm_techreqf, "If 0 all marines can hack doors and computers, tech isn't needed. 1 is default", 0);
 
+void rm_fasthackf(const CCommand &args)
+{
+	if (args.ArgC() < 2)
+	{
+		Msg("Please supply the value from 0 to 1\n");
+		return;
+	}
+
+	if (!ASWGameRules() || (ASWGameRules()->GetGameState() != ASW_GS_BRIEFING))
+	{
+		Msg("Fast hacking setting can only be changed during briefing \n");
+		return;
+	}
+
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());
+
+	if (pPlayer && ASWGameResource() && ASWGameRules())
+	{
+		if (ASWGameResource()->m_Leader.Get() != pPlayer)
+		{
+			Msg("Only leader can enable fast hacking \n");
+			return;
+		}
+
+		int multiplier = clamp(atoi(args[1]), 0, 1);
+
+		CReliableBroadcastRecipientFilter filter;
+		char buffer[512];
+		if (multiplier == 1)
+		{
+			if (ASWGameRules())
+			{
+				ASWGameRules()->m_iFastHack = 1;
+
+// 				ConVarRef asw_simple_hacking("asw_simple_hacking", false);
+// 				if (asw_simple_hacking.IsValid())
+// 					asw_simple_hacking.SetValue(1);
+
+				Q_snprintf(buffer, sizeof(buffer), "Fast hacking was enabled, doors and PCs are hacked automatically");
+			}
+		}
+		else
+		{
+			if (ASWGameRules())
+			{
+				
+				ASWGameRules()->m_iFastHack = 0;
+
+// 				ConVarRef asw_simple_hacking("asw_simple_hacking", false);
+// 				if (asw_simple_hacking.IsValid())
+// 					asw_simple_hacking.SetValue(0);
+
+				Q_snprintf(buffer, sizeof(buffer), "Fast hacking was disabled");
+			}
+		}
+
+		UTIL_ClientPrintFilter(filter, ASW_HUD_PRINTTALKANDCONSOLE, buffer);
+	}
+}
+ConCommand rm_fasthack("rm_fasthack", rm_fasthackf, "If 1 hacking will be automatic and taking 2 seconds", 0);
+
 void rm_spawners_infinitef(const CCommand &args)
 {
 	if (args.ArgC() < 2)
