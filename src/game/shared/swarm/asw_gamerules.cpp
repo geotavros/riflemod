@@ -707,6 +707,29 @@ ConVar rm_default_biomass_ignite("rm_default_biomass_ignite", "0", FCVAR_NONE, "
 ConVar rm_default_techreq("rm_default_techreq", "1", FCVAR_NONE, "If 0 tech marine isn't needed to hack doors and computers");
 ConVar rm_default_fasthack("rm_default_fasthack", "0", FCVAR_NONE, "If 1 hacking will be automatic and taking 2 seconds");
 
+ConVar rm_save_settings("rm_save_settings", "0", FCVAR_NONE, "If 1 all mods enabled by leader will be saved after round restart");
+static int g_iWeaponType = CAlienSwarm::DEFAULT;
+static int g_iCarnageScale = 1;
+static int g_iPrespawnScale = 0;
+static int g_iHordeScale = 1;
+static int g_fHeavyScale = 1.0f;
+static int g_fAlienSpeedScale = 1.0f;
+static int g_iRefillSecondary = 0;
+static int g_iAllowRevive = 0;
+static int g_iHpRegen = 0;
+static int g_iAddBots = 0;
+static int g_iWeapon = 0;
+static int g_iFlamer = 1;
+static int g_iInfiniteSpawners = 0;
+static int g_iAmmoBonus = 0;
+static int g_iSpawnMedkits = 0;
+static int g_iSpawnAmmo = 0;
+static int g_iNumPlayers = 4;
+static int g_iBiomassIgnite = 0;
+static int g_iAllowHackAll = 0;
+static int g_iFastHack = 0;
+static int g_iDifficultyScale = 0;
+
 void RestoreChangedBySoloPlayerCvars()
 {
 // restore cvars
@@ -1145,36 +1168,61 @@ CAlienSwarm::CAlienSwarm()
 	m_iBiomassIgnite	= 0;
 	m_iAllowHackAll		= 0;
 	m_iFastHack			= 0;
-
-
-	const int mod_id = clamp(rm_default_mod.GetInt(), 0, 20);
-
-	switch (mod_id)
+	
+	if (rm_save_settings.GetInt())
 	{
-	case 0:
-		ASWGameRules()->ResetModsToClassicSwarm();
-		break;
-	case 1:
-		ASWGameRules()->ResetModsRiflemodClassic();
-		break;
-	case 2:
-		ASWGameRules()->ResetModsLevelOne();
-		break;
-	case 3:
-		ASWGameRules()->ResetModsRifleRun();
-		break;
-	case 4:
-		ASWGameRules()->ResetModsBulletStorm();
-		break;
-	case 5:
-		ASWGameRules()->ResetModsSoloPlayer();
-		break;
-	case 6:
-		ASWGameRules()->ResetModsToDefault();
-		break;
-	default:
-		ASWGameRules()->ResetModsToDefault();
-		break;
+		m_iWeaponType = WeaponTypes(g_iWeaponType);
+		m_iCarnageScale = g_iCarnageScale;
+		m_iPrespawnScale = g_iPrespawnScale;
+		m_iHordeScale = g_iHordeScale;
+		m_fHeavyScale = g_fHeavyScale;
+		m_fAlienSpeedScale = g_fAlienSpeedScale;
+		m_iRefillSecondary = g_iRefillSecondary;
+		m_iAllowRevive = g_iAllowRevive;
+		m_iHpRegen = g_iHpRegen;
+		m_iAddBots = g_iAddBots;
+		m_iWeapon = g_iWeapon;
+		m_iFlamer = g_iFlamer;
+		m_iInfiniteSpawners = g_iInfiniteSpawners;
+		m_iAmmoBonus = g_iAmmoBonus;
+		m_iSpawnMedkits = g_iSpawnMedkits;
+		m_iSpawnAmmo = g_iSpawnAmmo;
+		m_iNumPlayers = g_iNumPlayers;
+		m_iBiomassIgnite = g_iBiomassIgnite;
+		m_iAllowHackAll = g_iAllowHackAll;
+		m_iFastHack = g_iFastHack;
+		m_iDifficultyScale = g_iDifficultyScale;
+	}
+	else
+	{
+		const int mod_id = clamp(rm_default_mod.GetInt(), 0, 20);
+		switch (mod_id)
+		{
+		case 0:
+			ASWGameRules()->ResetModsToClassicSwarm();
+			break;
+		case 1:
+			ASWGameRules()->ResetModsRiflemodClassic();
+			break;
+		case 2:
+			ASWGameRules()->ResetModsLevelOne();
+			break;
+		case 3:
+			ASWGameRules()->ResetModsRifleRun();
+			break;
+		case 4:
+			ASWGameRules()->ResetModsBulletStorm();
+			break;
+		case 5:
+			ASWGameRules()->ResetModsSoloPlayer();
+			break;
+		case 6:
+			ASWGameRules()->ResetModsToDefault();
+			break;
+		default:
+			ASWGameRules()->ResetModsToDefault();
+			break;
+		}
 	}
 }
 
@@ -2196,6 +2244,31 @@ void CAlienSwarm::StartMission()
 	AddBonusChargesToPickups();
 
 	asw_marine_death_cam.SetValue(0);
+
+	if (rm_save_settings.GetInt())
+	{
+		g_iWeaponType = m_iWeaponType;
+		g_iCarnageScale = m_iCarnageScale;
+		g_iPrespawnScale = m_iPrespawnScale;
+		g_iHordeScale = m_iHordeScale;
+		g_fHeavyScale = m_fHeavyScale;
+		g_fAlienSpeedScale = m_fAlienSpeedScale;
+		g_iRefillSecondary = m_iRefillSecondary;
+		g_iAllowRevive = m_iAllowRevive;
+		g_iHpRegen = m_iHpRegen;
+		g_iAddBots = m_iAddBots;
+		g_iWeapon = m_iWeapon;
+		g_iFlamer = m_iFlamer;
+		g_iInfiniteSpawners = m_iInfiniteSpawners;
+		g_iAmmoBonus = m_iAmmoBonus;
+		g_iSpawnMedkits = m_iSpawnMedkits;
+		g_iSpawnAmmo = m_iSpawnAmmo;
+		g_iNumPlayers = m_iNumPlayers;
+		g_iBiomassIgnite = m_iBiomassIgnite;
+		g_iAllowHackAll = m_iAllowHackAll;
+		g_iFastHack = m_iFastHack;
+		g_iDifficultyScale = m_iDifficultyScale;
+	}
 }
 
 void CAlienSwarm::UpdateLaunching()
@@ -3311,6 +3384,28 @@ void CAlienSwarm::OnServerHibernating()
 			iPlayers++;
 		}
 	}
+
+	g_iWeaponType = rm_default_weapons.GetInt();
+	g_iCarnageScale = rm_default_carnage.GetInt();
+	g_iPrespawnScale = rm_default_prespawn.GetInt();
+	g_iHordeScale = rm_default_hordescale.GetInt();
+	g_fHeavyScale = rm_default_heavy.GetFloat();
+	g_fAlienSpeedScale = rm_default_alienspeed.GetFloat();
+	g_iRefillSecondary = rm_default_refillsecondary.GetInt();
+	g_iAllowRevive = rm_default_revive.GetInt();
+	g_iHpRegen = rm_default_hpregen.GetInt();
+	g_iAddBots = rm_default_bots.GetInt();
+	g_iWeapon = rm_default_weaponid.GetInt();
+	g_iFlamer = rm_default_flamer.GetInt();
+	g_iInfiniteSpawners = rm_default_infinitespawners.GetInt();
+	g_iAmmoBonus = rm_default_ammobonus.GetInt();
+	g_iSpawnMedkits = rm_default_spawnmedkits.GetInt();
+	g_iSpawnAmmo = rm_default_spawnammo.GetInt();
+	g_iNumPlayers = 4;
+	g_iBiomassIgnite = rm_default_biomass_ignite.GetInt();
+	g_iAllowHackAll = rm_default_techreq.GetInt();
+	g_iFastHack = rm_default_fasthack.GetInt();
+	g_iDifficultyScale = rm_default_difficultyscale.GetInt();
 
 	if ( iPlayers <= 0 )
 	{
