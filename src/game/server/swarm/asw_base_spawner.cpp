@@ -266,7 +266,17 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	QAngle angles = GetAbsAngles();
 	angles.x = 0.0;
 	angles.z = 0.0;	
-	pEntity->SetAbsOrigin( GetAbsOrigin() );	
+	// reactivedrop: added + Vector(0, 0, vecHullMaxs.z - vecHullMins.z)
+	// raise the position of spawned alien by it's hull because otherwise it 
+	// falls through displacement
+	// make this workaround only for parasites, because other aliens seems to
+	// spawn ok
+	Vector vecEntityPos = GetAbsOrigin();
+	if (!Q_strcmp("asw_parasite", szAlienClassName))
+	{
+		vecEntityPos += Vector(0, 0, vecHullMaxs.z - vecHullMins.z);
+	}
+	pEntity->SetAbsOrigin( vecEntityPos );
 	pEntity->SetAbsAngles( angles );
 
 	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
