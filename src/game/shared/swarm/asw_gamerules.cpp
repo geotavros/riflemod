@@ -3385,6 +3385,36 @@ void CAlienSwarm::OnServerHibernating()
 		}
 	}
 
+	const int mod_id = clamp(rm_default_mod.GetInt(), 0, 20);
+	switch (mod_id)
+	{
+	case 0:
+		ASWGameRules()->ResetModsToClassicSwarm();
+		break;
+	case 1:
+		ASWGameRules()->ResetModsRiflemodClassic();
+		break;
+	case 2:
+		ASWGameRules()->ResetModsLevelOne();
+		break;
+	case 3:
+		ASWGameRules()->ResetModsRifleRun();
+		break;
+	case 4:
+		ASWGameRules()->ResetModsBulletStorm();
+		break;
+	case 5:
+		ASWGameRules()->ResetModsSoloPlayer();
+		break;
+	case 6:
+		ASWGameRules()->ResetModsToDefault();
+		break;
+	default:
+		ASWGameRules()->ResetModsToDefault();
+		break;
+	}
+
+	/*
 	g_iWeaponType = rm_default_weapons.GetInt();
 	g_iCarnageScale = rm_default_carnage.GetInt();
 	g_iPrespawnScale = rm_default_prespawn.GetInt();
@@ -3403,9 +3433,10 @@ void CAlienSwarm::OnServerHibernating()
 	g_iSpawnAmmo = rm_default_spawnammo.GetInt();
 	g_iNumPlayers = 4;
 	g_iBiomassIgnite = rm_default_biomass_ignite.GetInt();
-	g_iAllowHackAll = rm_default_techreq.GetInt();
+	g_iAllowHackAll = !rm_default_techreq.GetInt();
 	g_iFastHack = rm_default_fasthack.GetInt();
 	g_iDifficultyScale = rm_default_difficultyscale.GetInt();
+	//*/
 
 	if ( iPlayers <= 0 )
 	{
