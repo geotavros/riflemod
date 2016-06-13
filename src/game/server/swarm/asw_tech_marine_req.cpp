@@ -20,10 +20,13 @@ void CASW_Tech_Marine_Req::Spawn()
 	extern ConVar rm_default_mod;
 	extern ConVar rm_default_techreq;
 
-	const bool techreq_disabled_by_default_mod = rm_default_mod.GetInt() == 6 && rm_default_techreq.GetInt() == 0;
+	if (!ASWGameRules())
+		return;
+
+	const bool techreq_disabled_by_default_mod = (rm_default_mod.GetInt() == 6 && rm_default_techreq.GetInt() == 0) || ASWGameRules()->m_iAllowHackAll;
 
 	//Msg("CASW_Tech_Marine_Req::Spawn setting mission requires tech to true\n");
-	if (ASWGameRules() && !techreq_disabled_by_default_mod)
+	if (!techreq_disabled_by_default_mod)
 	{
 		ASWGameRules()->m_bMissionRequiresTech = true;
 	}

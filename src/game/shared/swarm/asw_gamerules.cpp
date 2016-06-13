@@ -939,7 +939,7 @@ void CAlienSwarm::ResetModsSoloPlayer()
 	m_iSpawnAmmo		= 0;
 	m_iNumPlayers		= 1;
 	m_iBiomassIgnite	= 0;
-	m_iAllowHackAll		= 0;
+	m_iAllowHackAll		= 1;
 	m_iFastHack			= 1;
 
 	m_bMissionRequiresTech = false;
