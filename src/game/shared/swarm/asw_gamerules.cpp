@@ -3414,6 +3414,28 @@ void CAlienSwarm::OnServerHibernating()
 		break;
 	}
 
+	g_iWeaponType = m_iWeaponType;
+	g_iCarnageScale = m_iCarnageScale;
+	g_iPrespawnScale = m_iPrespawnScale;
+	g_iHordeScale = m_iHordeScale;
+	g_fHeavyScale = m_fHeavyScale;
+	g_fAlienSpeedScale = m_fAlienSpeedScale;
+	g_iRefillSecondary = m_iRefillSecondary;
+	g_iAllowRevive = m_iAllowRevive;
+	g_iHpRegen = m_iHpRegen;
+	g_iAddBots = m_iAddBots;
+	g_iWeapon = m_iWeapon;
+	g_iFlamer = m_iFlamer;
+	g_iInfiniteSpawners = m_iInfiniteSpawners;
+	g_iAmmoBonus = m_iAmmoBonus;
+	g_iSpawnMedkits = m_iSpawnMedkits;
+	g_iSpawnAmmo = m_iSpawnAmmo;
+	g_iNumPlayers = m_iNumPlayers;
+	g_iBiomassIgnite = m_iBiomassIgnite;
+	g_iAllowHackAll = m_iAllowHackAll;
+	g_iFastHack = m_iFastHack;
+	g_iDifficultyScale = m_iDifficultyScale;
+
 	/*
 	g_iWeaponType = rm_default_weapons.GetInt();
 	g_iCarnageScale = rm_default_carnage.GetInt();
