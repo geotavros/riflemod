@@ -1754,6 +1754,7 @@ exit 1
     <ClInclude Include="soundscape_system.h" />
     <ClInclude Include="spark.h" />
     <ClInclude Include="spatialentity.h" />
+    <ClInclude Include="spawn_helper_nut.h" />
     <ClInclude Include="spotlightend.h" />
     <ClInclude Include="steamjet.h" />
     <ClInclude Include="swarm\asw_ai_behavior.h" />
@@ -1943,6 +1944,7 @@ exit 1
     <ClInclude Include="vguiscreen.h" />
     <ClInclude Include="vgui_gamedll_int.h" />
     <ClInclude Include="vscript_server.h" />
+    <ClInclude Include="vscript_server_nut.h" />
     <ClInclude Include="waterbullet.h" />
     <ClInclude Include="wcedit.h" />
     <ClInclude Include="world.h" />
