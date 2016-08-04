@@ -72,11 +72,7 @@ ConVar asw_grenade_launcher_gravity( "asw_grenade_launcher_gravity", "2.4f", FCV
 #endif
 
 void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
-{	
-	CASW_Player *pPlayer = GetCommander();
-	if ( !pPlayer )
-		return;
-
+{
 	// NOTE: this class is now a grenade launcher, do we want to rename it at some point?
 	CASW_Marine *pMarine = GetMarine();
 	if ( !pMarine || pMarine->GetWaterLevel() == 3 )
@@ -94,7 +90,8 @@ void CASW_Weapon_Grenade_Launcher::PrimaryAttack( void )
 	if (pm.fraction < 1.0f)
 		vecSrc = pm.endpos;
 
-	Vector vecDest = pPlayer->GetCrosshairTracePos();
+	CASW_Player *pPlayer = GetCommander();
+	Vector vecDest = (pPlayer && pMarine->IsInhabited()) ? pPlayer->GetCrosshairTracePos() : pMarine->GetEnemyLKP();
 	Vector newVel = UTIL_LaunchVector( vecSrc, vecDest, asw_grenade_launcher_gravity.GetFloat() ) * 28.0f;
 
 	const float &fGrenadeDamage = MarineSkills()->GetSkillBasedValueByMarine(pMarine, ASW_MARINE_SKILL_GRENADES, ASW_MARINE_SUBSKILL_GRENADE_CLUSTER_DMG);
