@@ -678,6 +678,11 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 
 void CASW_Parasite::StartInfestation()
 {
+	if ( !IsAlive() )
+	{
+		return;
+	}
+
 	CASW_Marine* pMarine = CASW_Marine::AsMarine( m_hPrepareToInfest.Get() );
 	if ( pMarine )
 	{
