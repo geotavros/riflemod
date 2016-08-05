@@ -678,6 +678,11 @@ bool CASW_Parasite::CheckInfestTarget( CBaseEntity *pOther )
 
 void CASW_Parasite::StartInfestation()
 {
+	if ( !IsAlive() )
+	{
+		return;
+	}
+
 	CASW_Marine* pMarine = CASW_Marine::AsMarine( m_hPrepareToInfest.Get() );
 	if ( pMarine )
 	{
@@ -763,7 +768,8 @@ void CASW_Parasite::InfestMarine(CASW_Marine* pMarine)
 				ResetSequence(iInfestAttack);
 			}
 		}
-		
+
+		m_takedamage = DAMAGE_NO;
 		AddFlag( FL_NOTARGET );
 		SetThink( &CASW_Parasite::InfestThink );
 		SetTouch( NULL );
