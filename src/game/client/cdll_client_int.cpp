@@ -138,6 +138,7 @@
 
 #include "tier1/UtlDict.h"
 #include "keybindinglistener.h"
+#include "game_timescale_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -2364,7 +2365,16 @@ void OnRenderStart()
 	MDLCACHE_CRITICAL_SECTION();
 	MDLCACHE_COARSE_LOCK();
 
-
+	// BenLubar(demo-timescale): rescale time in demos during slow motion
+	INetChannelInfo *nci = engine->GetNetChannelInfo();
+	if ( nci && nci->IsPlayback() && GameTimescale()->GetCurrentTimescale() != 1 )
+	{
+		float flServerTime = engine->GetLastTimeStamp();
+		float flTimeSince = nci->GetTimeSinceLastReceived();
+		float flTimeScale = GameTimescale()->GetCurrentTimescale();
+		gpGlobals->curtime = flServerTime + flTimeSince * flTimeScale * flTimeScale;
+		gpGlobals->frametime *= flTimeScale;
+	}
 
 	partition->SuppressLists( PARTITION_ALL_CLIENT_EDICTS, true );
 	C_BaseEntity::SetAbsQueriesValid( false );
