@@ -429,25 +429,34 @@ void CASW_Player::PostThink()
 			if ( !this->HasLiveMarines() && pGameResource )
 			{
 				bool found_available_marine = false;
+				CASW_Marine *pBotMarine = NULL;
 
-				for (int i=0;i<pGameResource->GetMaxMarineResources();i++)
+				if ( GetSpectatingMarine() && !GetSpectatingMarine()->IsInhabited() )
 				{
-					CASW_Marine_Resource* pMR = pGameResource->GetMarineResource( i );
-					if ( !pMR )
-						continue;
-					CASW_Marine *pMarine = pMR->GetMarineEntity();
-
-					if ( pMarine && !pMarine->IsInhabited() )
+					found_available_marine = true;
+					pBotMarine = GetSpectatingMarine();
+				}
+				else 
+				{
+					for ( int i = 0; i < pGameResource->GetMaxMarineResources(); i++ )
 					{
-						pMarine->SetCommander( this );
-						pMR->SetCommander( this );
-						found_available_marine = true;
-						break;
+						CASW_Marine_Resource* pMR = pGameResource->GetMarineResource( i );
+						if ( !pMR )
+							continue;
+						CASW_Marine *pMarine = pMR->GetMarineEntity();
+
+						if ( pMarine && !pMarine->IsInhabited() )
+						{
+							found_available_marine = true;
+							break;
+						}
 					}
 				}
 				if (found_available_marine)
 				{
-					Msg(" Riflemod Drop-In. Switching player to marine 0\n");
+					DevMsg(" Riflemod Drop-In. Switching player to marine 0\n");
+					pBotMarine->SetCommander(this);
+					pBotMarine->GetMarineResource()->SetCommander(this);
 					SetSpectatingMarine(NULL);
 					SwitchMarine(0, false);
 				}
