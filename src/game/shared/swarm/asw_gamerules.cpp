@@ -1807,6 +1807,12 @@ void CAlienSwarm::ReassignMarines(CASW_Player *pPlayer)
 					//Msg("iNewCommander looping\n");
 					iNewCommanderIndex = 1;
 				}
+
+				// riflemod: don't assign marines to a spectator
+				if ( pNewCommander && !pNewCommander->GetMarine() )
+				{
+					pNewCommander = NULL;
+				}
 			}
 			//Msg("after search loop: Newcommander entindex is %d\n", pNewCommander ? pNewCommander->entindex() : -1);
 			
