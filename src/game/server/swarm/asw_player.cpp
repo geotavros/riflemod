@@ -460,6 +460,17 @@ void CASW_Player::PostThink()
 					pBotMarine->GetMarineResource()->SetCommander(this);
 					SetSpectatingMarine(NULL);
 					SwitchMarine(0, false);
+
+					// riflemod: additionally check bots. If they have no 
+					// commander then assign to this player
+					for (int i = 0; i < pGameResource->GetMaxMarineResources(); ++i)
+					{
+						CASW_Marine_Resource* pMR = pGameResource->GetMarineResource( i );
+						if (!pMR || pMR->GetHealthPercent() <= 0)
+							continue;
+						if (pMR->GetCommander() == NULL)
+							pMR->SetCommander( this );
+					}
 				}
 				else 
 				{
