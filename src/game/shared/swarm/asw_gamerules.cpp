@@ -2092,19 +2092,55 @@ void CAlienSwarm::StartMission()
 		//*/
 		CASW_Player *pLeader = ASWGameResource() ? ASWGameResource()->GetLeader() : NULL;
 		int nPreferredSlot = -1; // we don't care which slot will it take 
-		for (int i = 0; i < 4; ++i)
+		const int RM_MAX_BOTS = 4;
+		// we add bots in this order
+		// medic Faith, officer Sarge, spec. weapons Wildcat, tech Crash
+		int nBotIds[RM_MAX_BOTS] = {2, 0, 1, 3};
+		for (int i = 0; i < RM_MAX_BOTS; ++i)
 		{
-			if ( RosterSelect( pLeader, i, nPreferredSlot ) )
+			if ( RosterSelect( pLeader, nBotIds[i], nPreferredSlot ) )
 			{
 				// 0 is Sarge, select fire mines(11) for him
-				if (0 == i)
-					LoadoutSelect(pLeader, i, 2, 11);	// Sarge has asw_weapon_mines
-				if (1 == i)
-					LoadoutSelect(pLeader, i, 2,  6);   // Wildcat has asw_weapon_hornet_barrage
-				if (2 == i)
-					LoadoutSelect(pLeader, i, 2,  7);   // Faith has asw_weapon_freeze_grenades
-				if (3 == i)
-					LoadoutSelect(pLeader, i, 2, 10);   // Tech has asw_weapon_electrified_armor
+				if (nBotIds[i] == 0)
+				{
+					LoadoutSelect(pLeader, nBotIds[i], 2, 11);	// Sarge has asw_weapon_mines
+					// for default game mode  
+					if (m_iWeaponType == DEFAULT)
+					{
+						LoadoutSelect(pLeader, nBotIds[i], 0, 3); // Vindicator
+						LoadoutSelect(pLeader, nBotIds[i], 1, 7); // Ammo
+					}
+				}
+				if (nBotIds[i] == 1)
+				{
+					LoadoutSelect(pLeader, nBotIds[i], 2,  6);   // Wildcat has asw_weapon_hornet_barrage
+					// for default game mode  
+					if (m_iWeaponType == DEFAULT)
+					{
+						LoadoutSelect(pLeader, nBotIds[i], 0, 2); // Autogun
+						LoadoutSelect(pLeader, nBotIds[i], 1, 7); // Ammo
+					}
+				}
+				if (nBotIds[i] == 2)
+				{
+					LoadoutSelect(pLeader, nBotIds[i], 2,  7);   // Faith has asw_weapon_freeze_grenades
+					// for default game mode  
+					if (m_iWeaponType == DEFAULT)
+					{
+						LoadoutSelect(pLeader, nBotIds[i], 0, 9);  // Tesla
+						LoadoutSelect(pLeader, nBotIds[i], 1, 11); // Healgun
+					}
+				}
+				if (nBotIds[i] == 3)
+				{
+					LoadoutSelect(pLeader, nBotIds[i], 2, 10);   // Tech has asw_weapon_electrified_armor
+					// for default game mode  
+					if (m_iWeaponType == DEFAULT)
+					{
+						LoadoutSelect(pLeader, nBotIds[i], 0, 1); // Prifle
+						LoadoutSelect(pLeader, nBotIds[i], 1, 7); // Ammo
+					}
+				}
 			}
 		}
 		// end of riflemod code
