@@ -448,6 +448,7 @@ void CASW_Player::PostThink()
 						if ( pMarine && !pMarine->IsInhabited() )
 						{
 							found_available_marine = true;
+							pBotMarine = pMarine;
 							break;
 						}
 					}
