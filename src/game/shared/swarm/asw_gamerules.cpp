@@ -708,6 +708,9 @@ ConVar rm_default_techreq("rm_default_techreq", "1", FCVAR_NONE, "If 0 tech mari
 ConVar rm_default_fasthack("rm_default_fasthack", "0", FCVAR_NONE, "If 1 hacking will be automatic and taking 2 seconds");
 
 ConVar rm_save_settings("rm_save_settings", "0", FCVAR_NONE, "If 1 all mods enabled by leader will be saved after round restart");
+
+ConVar rm_max_marines("rm_max_marines", "4", FCVAR_NONE, "Set it to 5 to allow 5 playing marines. 5 is max, 4 is default");
+
 static int g_iWeaponType = CAlienSwarm::DEFAULT;
 static int g_iCarnageScale = 1;
 static int g_iPrespawnScale = 0;
@@ -747,7 +750,7 @@ void RestoreChangedBySoloPlayerCvars()
 
 	//ConVarRef asw_override_max_marines("asw_override_max_marines", false);
 	//if (asw_override_max_marines.IsValid())
-		asw_override_max_marines.SetValue(4);
+		asw_override_max_marines.SetValue(rm_max_marines.GetInt());
 	ASWGameRules()->SetMaxMarines(NULL);
 
 	if (gEntList.FindEntityByClassname(NULL, "asw_tech_marine_req"))

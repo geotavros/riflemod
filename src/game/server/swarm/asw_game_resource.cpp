@@ -317,7 +317,7 @@ void CASW_Game_Resource::RemoveAMarineFor(CASW_Player *pPlayer)
 
 bool CASW_Game_Resource::AddMarineResource( CASW_Marine_Resource *m, int nPreferredSlot )
 {
-	const int max_resources = 4; // limit number of marines to 4 to prevent crashes 
+	const int max_resources = 5; // limit number of marines to 4 to prevent crashes 
 	if ( nPreferredSlot != -1 )
 	{
 		CASW_Marine_Resource *pExisting = static_cast<CASW_Marine_Resource*>( m_MarineResources[ nPreferredSlot ].Get() );
